@@ -1,0 +1,1 @@
+{"model":"jev-1.13.0","answers":{"model":{"type":"choice","choice":"claude-haiku-4-5","confidence":0.99,"probabilities":{"claude-sonnet-5":0.0,"claude-haiku-4-5":1.0,"claude-opus-5":0.0,"claude-fable-5-1":0.0}}},"usage":{"input_tokens":447,"output_tokens":76}}

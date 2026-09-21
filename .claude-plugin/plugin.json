@@ -1,0 +1,8 @@
+{
+  "name": "jev-box",
+  "version": "0.1.0",
+  "description": "Picks the Claude model for each turn and for selected subagents by asking TypeSafe Jev, directly or through OpenRouter. Reads ~/.config/jev-box/config.json; does nothing without CLAUDE_CODE_ENABLE_FUNCTION_HOOKS.",
+  "author": {
+    "name": "yar"
+  }
+}

@@ -1,0 +1,1 @@
+{"model":"typesafe/jev-1.13-20260917","answers":{"model":{"type":"choice","choice":"claude-haiku-4-5","probabilities":{"claude-fable-5-1":0,"claude-sonnet-5":0.01,"claude-opus-5":0,"claude-haiku-4-5":0.99},"confidence":0.99}},"usage":{"input_tokens":447,"output_tokens":76,"cost":0.000018774},"id":"gen-dec-1790033480-nrVe7xYVO7RNaAS90gn6","provider":"TypeSafe"}

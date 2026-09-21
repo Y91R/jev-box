@@ -1,0 +1,4 @@
+{
+  "description": "turn.start asks Jev which model of ~/.config/jev-box/config.json fits the prompt; turn.step sends the main loop's requests of that turn on it unless the engine fell back to another model; agent.spawn does the same for the configured subagent types",
+  "modules": ["./register.ts"]
+}

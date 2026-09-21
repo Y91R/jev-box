@@ -1,0 +1,37 @@
+{
+  "provider": "openrouter",
+  "models": [
+    {
+      "id": "claude-haiku-4-5",
+      "description": "Trivial requests: short factual questions, renaming, one-line edits, running a single known command, formatting.",
+      "contextWindow": 200000
+    },
+    {
+      "id": "claude-sonnet-5",
+      "description": "Routine coding: small features, fixing a clear bug, writing tests for existing code, explaining a file.",
+      "contextWindow": 1000000
+    },
+    {
+      "id": "claude-opus-5",
+      "description": "Hard engineering: multi-file changes, unclear bugs, architecture and design decisions, careful review.",
+      "contextWindow": 1000000
+    },
+    {
+      "id": "claude-fable-5-1",
+      "description": "The hardest long-horizon work: large refactors across a codebase, deep research, problems other models failed on.",
+      "contextWindow": 1000000
+    }
+  ],
+  "subagentTypes": [
+    "general-purpose"
+  ],
+  "timeoutMs": 3000,
+  "typesafe": {
+    "apiKey": "",
+    "model": "jev-latest"
+  },
+  "openrouter": {
+    "apiKey": "",
+    "model": "~typesafe/jev-latest"
+  }
+}
