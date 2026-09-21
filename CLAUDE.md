@@ -8,7 +8,11 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 Требования: `docs/requirements/model_choice.md`. Это источник истины по поведению, схеме конфига и обработке ошибок; при расхождении с этим файлом прав СТ.
 
-Статус: кода ещё нет.
+## Устройство кода
+
+Логика — чистые модули без `$`: `config.ts` (чтение и проверка конфига по FR-4), `candidates.ts` (отбор по окну контекста), `jev.ts` (запрос к Jev и разбор ответа, общие для обоих провайдеров), `classify.ts` (вызов с таймаутом, коды отказов, лог), `turns.ts` (решение на ход и правило о резервной модели движка). `register.ts` только связывает события с этими модулями.
+
+Валидатор плагинов (`claude plugin validate`) запрещает передавать `$` в функции из других файлов: вызов `$` должен быть записан в том же файле как `$.noun.event(...)`. Поэтому модули получают не `$`, а объект из `hostOf($)` в `register.ts`: в нём нужные вызовы `$` обёрнуты в обычные функции. Новый вызов `$` в модуле — это новое поле в `ConfigHost`/`ClassifyHost` и в `hostOf`.
 
 ## Function Hooks: что важно знать
 
@@ -37,7 +41,10 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Команды
 
+- Установка: `bun install` (в песочнице Claude Code — с `BUN_TMPDIR="$TMPDIR"`).
+- Тесты: `bun test`; один файл — `bun test tests/jev.test.ts`; один тест — `bun test -t "<часть имени>"`. Тесты работают с фейковым `$`; в `tests/fixtures/` лежат реальные ответы Jev от TypeSafe и OpenRouter.
+- Проверка типов: `./node_modules/.bin/tsc -p .` (`tests/` в неё не входят: там типы `bun:test`).
+- Проверка плагина: `claude plugin validate .` — показывает хуки, вызовы `$` и читаемые переменные окружения.
 - Запуск с плагином из исходников: `CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1 claude --plugin-dir .`
-- Проверка типов: `tsc -p tsconfig.json`. За основу брать `mods/tsconfig.json` апстрима: `strict`, `noUncheckedIndexedAccess`, `moduleResolution: bundler`, `noEmit`, include `types` и `hooks`.
-- Проверка манифеста: `claude plugin validate .`
-- Тесты пишутся на `claude-code/testing` (`tier`, `describe`, `test`, `mock.env/store/clock`). Апстрим запускает их через `claude plugin test <dir>`, но в `claude plugin --help` версии 2.1.278 этой подкоманды нет. Перед использованием проверить.
+- Какая модель реально отвечала: `CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1 claude -p "<промпт>" --plugin-dir . --output-format json` → поле `modelUsage`. Строки `$.ui.log` в режиме `-p` не выводятся, их видно только в интерактивной сессии.
+- `claude plugin test` в 2.1.278 нет, поэтому `claude-code/testing` не используется.
