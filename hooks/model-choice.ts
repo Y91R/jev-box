@@ -1,14 +1,10 @@
-import type { Config, Model, Provider } from './config'
+import type { Config, Model } from './config'
 import type { ChoiceQuestion } from './core/questions'
-import { buildJevRequest, type JevRequest } from './core/request'
+import { buildJevRequest, ENDPOINTS, type JevRequest } from './core/request'
 import { peekAnswer, peekModel } from './core/response'
 
+export { ENDPOINTS }
 export type { JevRequest }
-
-export const ENDPOINTS: Record<Provider, string> = {
-  typesafe: 'https://api.typesafe.ai/v1/systemone',
-  openrouter: 'https://openrouter.ai/api/alpha/decisions',
-}
 
 export const QUESTION = 'Which Claude model should handle this task?'
 // Растёт при смене смысла QUESTION: калибровка minConfidence после этого устаревает.

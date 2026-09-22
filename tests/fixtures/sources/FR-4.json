@@ -1,0 +1,85 @@
+{
+ "locate": {
+  "state": {
+   "requirement": "**FR-4.** Система должна позволять пользователю отменить заказ после передачи его курьеру."
+  },
+  "questions": {
+   "locate": {
+    "type": "choice",
+    "instructions": "Which passage speaks about the same thing as `requirement`, whether it agrees with it or not?",
+    "criteria": {
+     "p2": "Задача: отмена заказа: После передачи заказа курьеру отмена невозможна: пользователь может оформить возврат после получения.",
+     "p1": "Задача: отмена заказа: Пользователь может отменить заказ, пока заказ не передан в доставку.",
+     "p7": "Уведомления и склад: Служба поддержки может отменить заказ по просьбе пользователя на тех же условиях.",
+     "p3": "Задача: отмена заказа: При отмене оплаченного заказа система инициирует возврат платежа на тот же способ оплаты.",
+     "p4": "Задача: отмена заказа: Отменённый заказ получает статус CANCELLED и больше не меняет статус.",
+     "p5": "Уведомления и склад: Пользователь получает уведомление об отмене по электронной почте.",
+     "p6": "Уведомления и склад: Резерв товара на складе снимается при отмене заказа.",
+     "p8": "Уведомления и склад: История статусов заказа хранится и доступна пользователю в личном кабинете.",
+     "none": "No passage speaks about what the requirement states"
+    }
+   }
+  },
+  "response": {
+   "model": "jev-1.13.0",
+   "answers": {
+    "locate": {
+     "type": "choice",
+     "choice": "p2",
+     "confidence": 0.96,
+     "probabilities": {
+      "p8": 0,
+      "p7": 0,
+      "p2": 0.97,
+      "p6": 0,
+      "p1": 0.03,
+      "none": 0,
+      "p3": 0,
+      "p4": 0,
+      "p5": 0
+     }
+    }
+   },
+   "usage": {
+    "input_tokens": 915,
+    "output_tokens": 90
+   }
+  }
+ },
+ "relation": {
+  "state": {
+   "claim": "**FR-4.** Система должна позволять пользователю отменить заказ после передачи его курьеру.",
+   "section": "Задача: отмена заказа: После передачи заказа курьеру отмена невозможна: пользователь может оформить возврат после получения."
+  },
+  "questions": {
+   "relation": {
+    "type": "choice",
+    "instructions": "How does `section` relate to `claim`?",
+    "criteria": {
+     "supports": "The section states the claim or directly implies that it is true",
+     "contradicts": "The section states the opposite of the claim or implies it is false",
+     "says_nothing": "The section does not address what the claim asserts, either way"
+    }
+   }
+  },
+  "response": {
+   "model": "jev-1.13.0",
+   "answers": {
+    "relation": {
+     "type": "choice",
+     "choice": "contradicts",
+     "confidence": 1,
+     "probabilities": {
+      "supports": 0,
+      "says_nothing": 0,
+      "contradicts": 1
+     }
+    }
+   },
+   "usage": {
+    "input_tokens": 486,
+    "output_tokens": 46
+   }
+  }
+ }
+}

@@ -1,0 +1,41 @@
+{
+ "state": {
+  "step": "Шаг 4. Публикация\n\nФайлы: `.claude-plugin/plugin.json`.\n\n- Поднять версию и опубликовать ветку:\n\n```bash\n# публикация ветки\ngit push origin feat/jev-skills\n```\n\n- Открыть `/plugin`, обновить `jev-box`, затем вручную прогнать скилл и посмотреть, что вывод выглядит правильно.",
+  "check": "проверить глазами, что после обновления скилл работает."
+ },
+ "questions": {
+  "manual_action": {
+   "type": "noul",
+   "instructions": "Does `step` or `check` require a manual action by a person or an action in another system, such as publishing, deploying or checking by eye?"
+  },
+  "unverified_behavior": {
+   "type": "noul",
+   "instructions": "Does `step` rely on how a library, framework or external service behaves without saying how that behaviour is checked?"
+  },
+  "observable_check": {
+   "type": "noul",
+   "instructions": "Does `check` name a concrete command or test and the result it must show?"
+  }
+ },
+ "response": {
+  "model": "jev-1.13.0",
+  "answers": {
+   "manual_action": {
+    "type": "noul",
+    "noul": 0.99
+   },
+   "unverified_behavior": {
+    "type": "noul",
+    "noul": 0.6
+   },
+   "observable_check": {
+    "type": "noul",
+    "noul": 0.14
+   }
+  },
+  "usage": {
+   "input_tokens": 543,
+   "output_tokens": 57
+  }
+ }
+}

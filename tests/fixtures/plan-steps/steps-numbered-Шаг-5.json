@@ -1,0 +1,41 @@
+{
+ "state": {
+  "step": "5. Выбор модели на ядре: `hooks/jev.ts` → `hooks/model-choice.ts`\nФайл переименовывается: после рефакторинга это потребитель, а не клиент Jev. `ENDPOINTS`, `QUESTION`, `FailCode`, `Decision`, сигнатуры `buildRequest(config, text, candidates)` и `parseResponse(res, config, candidates)` сохраняются.\n\n- `modelQuestion(candidates)` → `{ model: ChoiceQuestion }` с `criteria` из `description`; `buildRequest` = `buildJevRequest` с url, ключом и моделью активного провайдера.\n- `parseResponse` = `parseJevResponse` + перевод: `malformed` → `bad_response`; `invalid` с `choice_not_in_criteria` на ключе `model` → `unknown_model`, остальное `invalid` → `bad_response`; `http_N` как есть; затем порог `minConfidence` ровно как сейчас (задан, а `confidence` нет или меньше → `low_confidence`, равен → проходит).\n- `export const QUESTION_VERSION = 1` рядом с `QUESTION`: вопрос, его версия и применение порога живут в одном модуле. Версия растёт при смене смысла формулировки — тогда калибровка `minConfidence` устаревает (§8.4 анализа).\n- `answerOf = (text) => peekAnswer(text, 'model')`, `responseModelOf = peekModel`.\n- `tests/jev.test.ts` → `tests/model-choice.test.ts`: меняется только путь импорта; плюс кейс «`probabilities` без одной из опций при верном `choice`» → `bad_response`, не `unknown_model`.\n\n\nКоммит: `refactor(model-choice): build the model question on the shared Jev core`",
+  "check": "`bun test tests/model-choice.test.ts` — все прежние ожидания зелёные; `git diff -M` по тестовому файлу — только строка импорта и новый кейс; тело запроса на всех прежних кейсах `buildRequest` совпадает с ожидаемым через `toEqual`."
+ },
+ "questions": {
+  "manual_action": {
+   "type": "noul",
+   "instructions": "Does `step` or `check` require a manual action by a person or an action in another system, such as publishing, deploying or checking by eye?"
+  },
+  "unverified_behavior": {
+   "type": "noul",
+   "instructions": "Does `step` rely on how a library, framework or external service behaves without saying how that behaviour is checked?"
+  },
+  "observable_check": {
+   "type": "noul",
+   "instructions": "Does `check` name a concrete command or test and the result it must show?"
+  }
+ },
+ "response": {
+  "model": "jev-1.13.0",
+  "answers": {
+   "manual_action": {
+    "type": "noul",
+    "noul": 0.45
+   },
+   "unverified_behavior": {
+    "type": "noul",
+    "noul": 0.41
+   },
+   "observable_check": {
+    "type": "noul",
+    "noul": 0.97
+   }
+  },
+  "usage": {
+   "input_tokens": 1083,
+   "output_tokens": 57
+  }
+ }
+}

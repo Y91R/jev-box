@@ -14,11 +14,32 @@ The plugin runs on **Function Hooks**, a preview feature of Claude Code enabled 
 - **Failures.** If Jev does not answer within the timeout, returns an error, picks a model outside the list, or the config is broken, the turn runs on the session model as usual, and the failure is written as one line in the transcript.
 - **Left alone.** `effort`, and the fallback model Claude Code switches to by itself.
 
+## Skills with Jev hints
+
+The plugin ships four skills — copies of the global `analyst-reviewer`, `system-analyst`, `feature-planner` and `review-plan` with a cheap Jev pass:
+
+- `/jev-box:analyst-reviewer <spec.md>` — before the codex review, Jev flags requirements (`- **FR-N.** …`) with no observable result or with an evaluative word lacking a threshold. The flags set the order of the own review and go to the codex prompt as one paragraph; codex and the full review always run.
+- `/jev-box:system-analyst` — before handing over, the draft goes through the same pass; every flag is either fixed or kept with a reason in the summary.
+- `/jev-box:feature-planner` — before the self-check, the saved plan goes through a step check: code flags steps with no `**Проверка:**` line and no file paths, Jev flags a check with no command and result, manual actions, and reliance on third-party behaviour without a way to verify it.
+- `/jev-box:review-plan <plan.md>` — the same step check before the plan goes to codex; the flags set the order of the own review and go to the codex prompt as one paragraph.
+
+Hints never block anything, and the thresholds are not calibrated yet. The skills run `bun run ${CLAUDE_PLUGIN_ROOT}/cli/verify.ts` and open the sandbox to `api.typesafe.ai` and `openrouter.ai`; in the default permission mode Claude Code asks you to approve a run outside the sandbox. If Jev is unavailable, the summary says "Слой Jev пропущен: <code>" and the review runs as usual.
+
+If the spec has a local source (a task file, a brief), `analyst-reviewer` makes a second pass that checks the spec against it: it flags requirements the source contradicts (`contradicts`) and requirements with no support in the source (`unsupported`). It only checks that nothing was made up; source constraints the spec left out are not searched for.
+
+The same passes by hand:
+
+```bash
+bun run cli/verify.ts requirements docs/requirements/model_choice.md
+bun run cli/verify.ts sources <spec.md> --source <source.md>
+bun run cli/verify.ts plan-steps <plan.md>
+```
+
 ## Requirements
 
 - **Claude Code with the Function Hooks preview runtime.** Tested on 2.1.278; third-party articles say the runtime ships since 2.1.260.
 - **An API key** for TypeSafe or OpenRouter. Only one provider is used — the one named in the config.
-- **For development only:** [Bun](https://bun.sh/) 1.3+. The plugin itself does not need Bun.
+- **[Bun](https://bun.sh/) 1.3+** — for the skills with Jev hints and for development. The model-choice hooks do not need Bun.
 
 ## Installation
 

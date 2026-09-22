@@ -1,0 +1,32 @@
+{
+ "state": {
+  "step": "Шаг 5. Фильтр удалённых заказов\n\nФайлы: `internal/repo/orders.go`.\n\n- Выборка заказов через ORM: ORM сам добавит условие `deleted_at IS NULL`, отдельный фильтр не нужен."
+ },
+ "questions": {
+  "manual_action": {
+   "type": "noul",
+   "instructions": "Does `step` or `check` require a manual action by a person or an action in another system, such as publishing, deploying or checking by eye?"
+  },
+  "unverified_behavior": {
+   "type": "noul",
+   "instructions": "Does `step` rely on how a library, framework or external service behaves without saying how that behaviour is checked?"
+  }
+ },
+ "response": {
+  "model": "jev-1.13.0",
+  "answers": {
+   "manual_action": {
+    "type": "noul",
+    "noul": 0.16
+   },
+   "unverified_behavior": {
+    "type": "noul",
+    "noul": 0.92
+   }
+  },
+  "usage": {
+   "input_tokens": 435,
+   "output_tokens": 40
+  }
+ }
+}

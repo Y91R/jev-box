@@ -1,0 +1,41 @@
+{
+ "state": {
+  "step": "3. Запрос и разбор ответа: `hooks/core/request.ts`, `hooks/core/response.ts`\n```ts\n// request.ts — ни провайдера, ни Config ядро не знает\nexport type JevRequest = { url: string; init: { method: 'POST'; headers: Record<string, string>; body: string } }\nexport function buildJevRequest<M extends QuestionMap>(p: {\n  url: string; apiKey: string; jevModel: string; state: string; questions: M\n}): JevRequest\n\n// response.ts\nexport type AnswerFailure = {\n  key: string\n  reason: 'wrong_type' | 'missing_field' | 'out_of_range' | 'choice_not_in_criteria' | 'probabilities_mismatch'\n}\nexport type ParsedAnswers<M extends QuestionMap> =\n  | { ok: true; jevModel: string | undefined; answers: AnswerMap<M> }\n  | { ok: false; fail: `http_${number}` | 'malformed' }\n  | { ok: false; fail: 'invalid'; errors: AnswerFailure[] }\nexport function parseJevResponse<M extends QuestionMap>(res: { status: number; text: string }, questions: M): ParsedAnswers<M>\nexport function peekAnswer(text: string, key: string): Record<string, unknown> | undefined // для trace\nexport function peekModel(text: string): string | undefined                              // поле model ответа\n```\nПравила `validateAnswer` (порядок: статус → JSON → `answers` объект → каждый ключ вопроса):\n- `type` ответа совпадает с типом вопроса, иначе `wrong_type` (сюда же отсутствующий ключ);\n- noul: `noul` — число в [0, 1];\n- choice: `choice` — строка (`missing_field`) и ключ `criteria` (`choice_not_in_criteria`); `probabilities`, если есть, покрывают все опции (`probabilities_mismatch`) и лежат в [0, 1];\n- score: `score` — число в [0, `criteria.length − 1`]; `probabilities`, если есть, имеют ключи `\"0\"`…`\"n−1\"`;\n- `confidence`, если есть, в [0, 1].\n\n`choice_not_in_criteria` и `probabilities_mismatch` — разные причины: в шаге 5 из первой получается `unknown_model`, из второй — `bad_response`, и перепутать их нельзя.\n\nНовые тесты: `tests/core/request.test.ts`, `tests/core/response.test.ts` (кейсы — в «Тестах»), в том числе на фикстурах шага 1.\n\n\nКоммит: `feat(core): Jev question types, request builder and validated answer parsing`",
+  "check": "`bun test tests/core` — зелёный; каждая мутация из «Тестов» для `core/` роняет свой тест."
+ },
+ "questions": {
+  "manual_action": {
+   "type": "noul",
+   "instructions": "Does `step` or `check` require a manual action by a person or an action in another system, such as publishing, deploying or checking by eye?"
+  },
+  "unverified_behavior": {
+   "type": "noul",
+   "instructions": "Does `step` rely on how a library, framework or external service behaves without saying how that behaviour is checked?"
+  },
+  "observable_check": {
+   "type": "noul",
+   "instructions": "Does `check` name a concrete command or test and the result it must show?"
+  }
+ },
+ "response": {
+  "model": "jev-1.13.0",
+  "answers": {
+   "manual_action": {
+    "type": "noul",
+    "noul": 0.35
+   },
+   "unverified_behavior": {
+    "type": "noul",
+    "noul": 0.3
+   },
+   "observable_check": {
+    "type": "noul",
+    "noul": 0.97
+   }
+  },
+  "usage": {
+   "input_tokens": 1163,
+   "output_tokens": 57
+  }
+ }
+}
