@@ -169,7 +169,7 @@ async function verifySources(io: Io, file: string, source: string | undefined): 
     if (choice === sources.NONE || passage === undefined) {
       return { item, model: located.jevModel, findings: sources.findingsOf(item, located.answers, undefined, passages) }
     }
-    const relation = await askJev(io, jev, { claim: item.text, section: passage.text }, sources.RELATION_QUESTIONS)
+    const relation = await askJev(io, jev, { claim: item.text, section: sources.passageText(passage) }, sources.RELATION_QUESTIONS)
     if (!relation.ok) return { item, fail: relation.fail }
     return {
       item,
@@ -205,21 +205,36 @@ async function verifySources(io: Io, file: string, source: string | undefined): 
   }
 }
 
+// Пометки кода (нет проверки, нет путей) от Jev не зависят: при любом его отказе они остаются в выводе.
 async function verifyPlanSteps(io: Io, file: string): Promise<PlanStepsReport> {
-  const { jev, provider } = await jevOf(io)
   const steps = stepsOf(await readOrSkip(io, file, 'no_document'))
   if (steps.length === 0) throw new Skip('no_steps')
+  const codeFindings = steps.flatMap((step) => planSteps.codeFindingsOf(step))
+  const withoutJev = (code: string): PlanStepsReport => ({
+    ...skipped(code, file, planSteps.QUESTION_VERSION, planSteps.LIMITATIONS),
+    checked: steps.length,
+    findings: codeFindings,
+    measurements: [],
+  })
+
+  let jevConfig: Awaited<ReturnType<typeof jevOf>>
+  try {
+    jevConfig = await jevOf(io)
+  } catch (e) {
+    if (e instanceof Skip) return withoutJev(e.code)
+    throw e
+  }
+  const { jev, provider } = jevConfig
   const outcomes = await mapLimited(steps, PARALLEL, async (step) => ({
     step,
     reply: await askJev(io, jev, planSteps.stateOf(step), planSteps.questionsFor(step)),
   }))
 
   const failures: Failure[] = []
-  const findings: planSteps.Finding[] = []
+  const findings: planSteps.Finding[] = [...codeFindings]
   const measurements: PlanStepsReport['measurements'] = []
   let model: string | undefined
   for (const { step, reply } of outcomes) {
-    findings.push(...planSteps.codeFindingsOf(step))
     if (!reply.ok) {
       failures.push({ id: step.id, line: step.line, code: reply.fail })
       continue
@@ -232,7 +247,7 @@ async function verifyPlanSteps(io: Io, file: string): Promise<PlanStepsReport> {
       values: Object.fromEntries(Object.entries(reply.answers).map(([k, a]) => [k, a.noul])),
     })
   }
-  if (failures.length === steps.length) throw new Skip(failures[0]!.code)
+  if (failures.length === steps.length) return withoutJev(failures[0]!.code)
 
   return {
     file,
@@ -285,6 +300,11 @@ function sourcesMarkdown(r: SourcesReport): string {
 }
 
 function planStepsMarkdown(r: PlanStepsReport): string {
+  if (r.skipped !== undefined) {
+    if (r.findings.length === 0) return skipLine(r)
+    const rows = r.findings.map((f) => `| ${r.file}:${f.line} | ${f.id} | ${f.signal} | код | ${f.zone} |`)
+    return [skipLine(r), '', 'Пометки кода (без Jev):', '', '| место | шаг | сигнал | значение | зона |', '|---|---|---|---|---|', ...rows].join('\n')
+  }
   const lines = headerOf(r, 'шаги плана', 'шагов')
   if (r.findings.length === 0) lines.push('Пометок нет.')
   else {

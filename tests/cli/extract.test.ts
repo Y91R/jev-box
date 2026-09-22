@@ -2,7 +2,7 @@ import { describe, expect, test } from 'bun:test'
 import { requirementsOf, stepsOf } from '../../cli/extract'
 
 const root = `${import.meta.dir}/../..`
-const st = () => Bun.file(`${root}/docs/requirements/model_choice.md`).text()
+const st = () => Bun.file(`${root}/tests/fixtures/requirements/model_choice.md`).text()
 
 describe('requirementsOf on the real requirements', () => {
   test('finds every FR and NFR item in document order', async () => {
@@ -44,6 +44,11 @@ describe('requirementsOf on small documents', () => {
     ])
   })
 
+  test('numbers with a document prefix are requirements too', async () => {
+    const md = await Bun.file(`${root}/tests/fixtures/requirements/prefixed.md`).text()
+    expect(requirementsOf(md).map((i) => i.id)).toEqual(['SUB-FR-1', 'SUB-FR-2', 'SUB-FR-3', 'SUB-NFR-1'])
+  })
+
   test('other list items are not requirements', () => {
     expect(requirementsOf('- обычный пункт\n- **Термин** — определение')).toEqual([])
   })
@@ -83,5 +88,23 @@ describe('stepsOf', () => {
 
   test('a document without steps', () => {
     expect(stepsOf('# План\n\nТекст.')).toEqual([])
+  })
+})
+
+describe('code blocks', () => {
+  test('headings inside ~~~ and indented fences are not steps', () => {
+    const md = [
+      '## Шаг 1. Настоящий', '', '~~~md', '## Шаг 9. Пример', '~~~', '',
+      '- пример:', '   ```md', '## Шаг 8. Тоже пример', '   ```', '',
+      '**Проверка:** `bun test`.', '',
+    ].join('\n')
+    const steps = stepsOf(md)
+    expect(steps.map((s) => s.id)).toEqual(['Шаг 1'])
+    expect(steps[0]!.check).toBe('`bun test`.')
+  })
+
+  test('a longer fence is closed only by a fence at least as long', () => {
+    const md = ['## Шаг 1. A', '````', '```', '## Шаг 2. Внутри', '````', '## Шаг 3. B'].join('\n')
+    expect(stepsOf(md).map((s) => s.id)).toEqual(['Шаг 1', 'Шаг 3'])
   })
 })

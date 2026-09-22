@@ -45,3 +45,14 @@ describe('shortlist', () => {
     expect(shortlist('Система должна отправлять письма', passages)).toEqual([])
   })
 })
+
+describe('passagesOf and code blocks', () => {
+  test('code blocks are not passages and their lines are not headings', () => {
+    const md = '# Раздел\n\nТекст.\n\n```bash\n# комментарий\n\nкоманда\n```\n\n~~~\nсхема\n~~~\n\nЕщё текст.'
+    const passages = passagesOf(md)
+    expect(passages.map((p) => [p.text, p.heading])).toEqual([
+      ['Текст.', 'Раздел'],
+      ['Ещё текст.', 'Раздел'],
+    ])
+  })
+})

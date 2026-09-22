@@ -11,7 +11,11 @@ export const LIMITATIONS = [
   'порог уверенности не откалиброван на русских СТ',
   'проверено только «не выдумано ли»: потерянные ограничения источника не ищутся',
   'кандидаты отбираются по общим основам слов — требование, пересказанное синонимами, может остаться без фрагмента',
+  'требование сверяется с одним фрагментом: опора, разнесённая по нескольким абзацам, не распознаётся',
 ]
+
+// Заголовок участвует в отборе кандидатов, поэтому Jev видит его вместе с текстом фрагмента.
+export const passageText = (p: Passage): string => (p.heading === undefined ? p.text : `${p.heading}: ${p.text}`)
 
 export const locateQuestions = (candidates: readonly Passage[]) => ({
   locate: {
@@ -19,7 +23,7 @@ export const locateQuestions = (candidates: readonly Passage[]) => ({
     instructions:
       'Which passage speaks about the same thing as `requirement`, whether it agrees with it or not?',
     criteria: {
-      ...Object.fromEntries(candidates.map((p) => [p.id, p.text])),
+      ...Object.fromEntries(candidates.map((p) => [p.id, passageText(p)])),
       [NONE]: 'No passage speaks about what the requirement states',
     },
   } as ChoiceQuestion,

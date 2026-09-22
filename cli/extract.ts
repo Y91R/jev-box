@@ -2,7 +2,8 @@ export type Item = { id: string; line: number; text: string }
 
 export type Step = Item & { check?: string; paths: string[] }
 
-const REQUIREMENT = /^- \*\*(N?FR)-(\d+)/
+// Номер с префиксом документа (`SUB-FR-3`) — тоже требование: так нумеруют второй СТ одного сервиса.
+const REQUIREMENT = /^- \*\*((?:[A-Z]+-)?N?FR)-(\d+)/
 
 // Пункт требования продолжается строками с отступом (блоки кода, вложенные списки)
 // и пустыми строками между ними; первая строка без отступа его закрывает.
@@ -28,6 +29,24 @@ export function requirementsOf(markdown: string): Item[] {
   return items
 }
 
+// Ограда блока кода по CommonMark: ``` или ~~~ (три и больше), отступ до трёх пробелов;
+// закрывает ограда того же символа, не короче открывающей, без текста после неё.
+const FENCE = /^ {0,3}(`{3,}|~{3,})/
+
+export function codeTracker(): (line: string) => boolean {
+  let open: string | undefined
+  return (line) => {
+    const m = FENCE.exec(line)
+    if (open === undefined) {
+      if (m) open = m[1]!
+      return m !== null
+    }
+    const run = m?.[1]
+    if (run !== undefined && run[0] === open[0] && run.length >= open.length && line.trim() === run) open = undefined
+    return true
+  }
+}
+
 const STEP_HEADING = /^## Шаг (\d+)\.?/
 const NUMBERED_HEADING = /^### (\d+)\.\s/
 const CHECK = '**Проверка:**'
@@ -42,7 +61,7 @@ const pathsOf = (text: string): string[] =>
 export function stepsOf(markdown: string): Step[] {
   const steps: Step[] = []
   let current: { id: string; line: number; level: number; lines: string[]; check: string[] } | undefined
-  let fenced = false
+  const inCode = codeTracker()
   let inCheck = false
   let section = ''
   const close = () => {
@@ -59,7 +78,7 @@ export function stepsOf(markdown: string): Step[] {
     current = undefined
   }
   for (const [i, line] of markdown.split('\n').entries()) {
-    if (line.startsWith('```')) fenced = !fenced
+    const fenced = inCode(line)
     const heading = !fenced && /^#{1,6} /.test(line) ? line.indexOf(' ') : 0
     if (heading > 0) {
       if (current && heading <= current.level) close()

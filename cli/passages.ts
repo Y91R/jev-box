@@ -1,3 +1,5 @@
+import { codeTracker } from './extract'
+
 export type Passage = { id: string; line: number; heading?: string; text: string }
 
 const STEM = 5
@@ -9,6 +11,7 @@ const STOP = new Set(
 )
 
 // Абзацы и пункты списков — фрагменты; заголовок фрагментом не бывает, но идёт к нему контекстом.
+// Блоки кода — не фрагменты: схемы и примеры не опора для требования.
 export function passagesOf(markdown: string): Passage[] {
   const passages: Passage[] = []
   let heading: string | undefined
@@ -24,9 +27,12 @@ export function passagesOf(markdown: string): Passage[] {
     }
     block = undefined
   }
+  const inCode = codeTracker()
   for (const [i, raw] of markdown.split('\n').entries()) {
     const line = raw.trim()
-    if (line === '') {
+    if (inCode(raw)) {
+      close()
+    } else if (line === '') {
       close()
     } else if (line.startsWith('#')) {
       close()

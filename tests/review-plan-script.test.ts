@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'bun:test'
-import { mkdtempSync, mkdirSync, writeFileSync } from 'node:fs'
+import { existsSync, mkdtempSync, mkdirSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 
 const script = `${import.meta.dir}/../skills/review-plan/review-plan.sh`
@@ -20,11 +20,23 @@ const runScript = (home: string, env: Record<string, string>, ...args: string[])
 }
 
 describe('review-plan.sh in the plugin', () => {
-  test('appends JEV_HINTS to the reviewer prompt', () => {
+  test('appends the hints file to the reviewer prompt, quotes and shell characters as they are', () => {
     const home = fakeHome()
-    const out = runScript(home, { JEV_HINTS: 'Дешёвый проход пометил шаги: Шаг 3.' }, `${home}/plan.md`)
+    const hints = `Дешёвый проход пометил шаги: Шаг 3 — план 'o'$(touch ${home}/pwned)"; \`id\`.`
+    writeFileSync(`${home}/hints.txt`, hints)
+    const out = runScript(home, { JEV_HINTS_FILE: `${home}/hints.txt` }, `${home}/plan.md`)
     expect(out).toContain('Ты — сторонний ревьюер плана реализации.')
-    expect(out.trimEnd()).toEndWith('Дешёвый проход пометил шаги: Шаг 3.')
+    expect(out.trimEnd()).toEndWith(hints)
+    expect(existsSync(`${home}/pwned`)).toBe(false)
+  })
+
+  test('a missing or empty hints file adds nothing', () => {
+    const home = fakeHome()
+    writeFileSync(`${home}/empty.txt`, '')
+    for (const file of [`${home}/empty.txt`, `${home}/none.txt`]) {
+      const out = runScript(home, { JEV_HINTS_FILE: file }, `${home}/plan.md`)
+      expect(out.trimEnd()).toEndWith('Ничего в репозитории не меняй.')
+    }
   })
 
   test('without JEV_HINTS the prompt is the original one', () => {

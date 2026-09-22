@@ -25,9 +25,26 @@ describe('send', () => {
     expect(log).toEqual(['start 4321', 'cancel'])
   })
 
-  test('no reply before the timer fires is a timeout', async () => {
+  test('no reply before the timer fires is a timeout, and the request is aborted', async () => {
     const { timer } = timerOf(true)
-    expect(await send(() => never(), timer, req, 1000)).toEqual({ fail: 'timeout' })
+    let seen: AbortSignal | undefined
+    const http: Http = (_url, _init, signal) => {
+      seen = signal
+      return never()
+    }
+    expect(await send(http, timer, req, 1000)).toEqual({ fail: 'timeout' })
+    expect(seen?.aborted).toBe(true)
+  })
+
+  test('a reply in time leaves the request signal alone', async () => {
+    const { timer } = timerOf(false)
+    let seen: AbortSignal | undefined
+    const http: Http = async (_url, _init, signal) => {
+      seen = signal
+      return { status: 200, text: '' }
+    }
+    await send(http, timer, req, 1000)
+    expect(seen?.aborted).toBe(false)
   })
 
   test('a rejected request is a network failure and the timer is cancelled', async () => {

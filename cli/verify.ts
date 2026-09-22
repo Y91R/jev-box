@@ -11,8 +11,8 @@ const timer: Timer = (ms) => {
 
 const code = await run(
   {
-    http: async (url, init) => {
-      const res = await fetch(url, init)
+    http: async (url, init, signal) => {
+      const res = await fetch(url, { ...init, signal })
       return { status: res.status, text: await res.text() }
     },
     timer,

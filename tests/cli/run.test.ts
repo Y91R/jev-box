@@ -39,7 +39,7 @@ const replying = (status: number, body: unknown): Http => async () => ({
 
 describe('run requirements', () => {
   test('one request per requirement, at most 8 in flight', async () => {
-    const st = await Bun.file(`${root}/docs/requirements/model_choice.md`).text()
+    const st = await Bun.file(`${root}/tests/fixtures/requirements/model_choice.md`).text()
     const { response } = await recorded('FR-13')
     let calls = 0
     let inFlight = 0
@@ -184,8 +184,8 @@ describe('run sources', () => {
     const rows = out[0]!.split('\n').filter((l) => l.startsWith('| artifact.md:'))
     expect(rows).toEqual([
       '| artifact.md:8 | FR-4 | contradicts | 1.00 | flag | source.md:5 |',
-      '| artifact.md:9 | FR-5 | contradicts | 0.97 | flag | source.md:3 |',
-      '| artifact.md:10 | FR-6 | unsupported | 0.82 | flag | — |',
+      '| artifact.md:9 | FR-5 | contradicts | 0.99 | flag | source.md:3 |',
+      '| artifact.md:10 | FR-6 | unsupported | 0.85 | flag | — |',
     ])
   })
 
@@ -237,6 +237,23 @@ describe('run plan-steps', () => {
       '| plan.md:49 | Шаг 5 | no_check | код | flag |',
       '| plan.md:49 | Шаг 5 | unverified_behavior | 0.92 | flag |',
     ])
+  })
+
+  test('when Jev is unavailable the code flags stay, under the skipped line', async () => {
+    const md = '## Шаг 1. A\n\nФайлы: `a/b.ts`.\n\n**Проверка:** `bun test`.\n\n## Шаг 2. B\n\nБез файлов.\n'
+    const cases: [Record<string, string>, Http, string][] = [
+      [{ [CONFIG_PATH]: config, 'plan.md': md }, replying(401, {}), 'http_401'],
+      [{ 'plan.md': md }, replying(200, {}), 'config_rule_1'],
+      [{ [CONFIG_PATH]: config, 'plan.md': md }, replying(403, 'Forbidden'), 'http_403'],
+    ]
+    for (const [files, http, code] of cases) {
+      const { io, out } = setup(files, http)
+      expect(await run(io, ['plan-steps', 'plan.md'])).toBe(0)
+      const lines = out[0]!.split('\n')
+      expect(lines[0]).toStartWith(`Слой Jev пропущен: ${code}`)
+      expect(lines).toContain('| plan.md:7 | Шаг 2 | no_check | код | flag |')
+      expect(lines).toContain('| plan.md:7 | Шаг 2 | no_paths | код | flag |')
+    }
   })
 
   test('a plan without steps is skipped', async () => {
