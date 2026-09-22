@@ -30,6 +30,7 @@ const engine = (
     usageFails?: boolean
     fetchHangs?: boolean
     sessionId?: string
+    configMissing?: boolean
   } = {},
 ) => {
   const calls: string[] = []
@@ -51,7 +52,15 @@ const engine = (
         calls.push(`fs.write ${path}`)
         files[path] = text
       },
+      exists: async (path: string) => !(opts.configMissing && path.endsWith('config.json')),
     },
+    process: {
+      run: async (argv: string[]) => {
+        calls.push(argv.join(' '))
+        return { exitCode: 0 }
+      },
+    },
+    plugin: { root: '/plugin', name: 'jev-box' },
     http: {
       fetch: async (url: string) => {
         calls.push(`http.fetch ${url}`)
@@ -331,5 +340,24 @@ describe('register', () => {
       expect(Object.keys(first.files)).toEqual([logPath('sess-b')])
       expect(Object.keys(second.files)).toEqual([logPath('sess-c')])
     })
+  })
+
+  test('a missing config is created on session start with one line and no invalid-config line', async () => {
+    const hooks = hooksOf()
+    await hooks['session.end']!(engine().$, { reason: 'clear' }, passthrough)
+    const { $, calls, logs, files } = engine({ configMissing: true, config: '{"provider":"openrouter","models":[]}' })
+    await hooks['session.start']!($, {}, passthrough)
+    await hooks['turn.start']!($, { text: 'x', turnId: 'b1' }, passthrough)
+    expect(Object.keys(files)).toEqual(['/home/u/.config/jev-box/config.json'])
+    expect(calls).toContain('chmod 600 /home/u/.config/jev-box/config.json')
+    expect(logs).toEqual(['jev-box: created ~/.config/jev-box/config.json, set provider and apiKey to start'])
+    await hooks['session.end']!($, { reason: 'clear' }, passthrough)
+  })
+
+  test('an existing config is never overwritten', async () => {
+    const hooks = hooksOf()
+    const { $, calls } = engine()
+    await hooks['session.start']!($, {}, passthrough)
+    expect(calls.filter((c) => c.startsWith('fs.write') || c.startsWith('chmod'))).toEqual([])
   })
 })

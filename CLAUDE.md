@@ -39,7 +39,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Конфиг
 
-`~/.config/jev-box/config.json` (шаблон — `config.example.json`): провайдер, ключи, список моделей (`id`, `description`, `contextWindow`), `subagentTypes`, `timeoutMs` (не больше 9000: у хука лимит 10 с), `contextReserve` (какую долю окна модели может занимать текущий контекст, по умолчанию 0.5), `minConfidence`, `logLevel` (`off` | `debug`: отладочный лог сессии в `~/.config/jev-box/logs/<id сессии>.jsonl`, FR-25). Ключи лежат в этом же файле. `userConfig` в `plugin.json` и переменные окружения для настроек не используются. Конфиг перечитывается перед каждой классификацией.
+`~/.config/jev-box/config.json`. Если его нет, плагин на `session.start` создаёт его из `config.example.json` (`$.plugin.root`) и делает `chmod 600`/`700` через `$.process.run` (FR-26); поэтому `config.example.json` — часть плагина, а не просто пример. Поля: провайдер, ключи, список моделей (`id`, `description`, `contextWindow`), `subagentTypes`, `timeoutMs` (не больше 9000: у хука лимит 10 с), `contextReserve` (какую долю окна модели может занимать текущий контекст, по умолчанию 0.5), `minConfidence`, `logLevel` (`off` | `debug`: отладочный лог сессии в `~/.config/jev-box/logs/<id сессии>.jsonl`, FR-25). Ключи лежат в этом же файле. `userConfig` в `plugin.json` и переменные окружения для настроек не используются. Конфиг перечитывается перед каждой классификацией.
 
 ## Команды
 

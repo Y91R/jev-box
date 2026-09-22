@@ -27,30 +27,21 @@ The plugin runs on **Function Hooks**, a preview feature of Claude Code enabled 
 The repository is also a Claude Code plugin marketplace. Add it and install the plugin:
 
 ```bash
-# from a local clone
-claude plugin marketplace add /path/to/claude_model_choice
-
-# or from GitHub, once the repository is published (use your owner/repo)
-claude plugin marketplace add <owner>/<repo>
-
+claude plugin marketplace add Y91R/jev-box
 claude plugin install jev-box@jev-box
 ```
 
 The plugin is installed for the user by default (`--scope user`); use `--scope project` or `--scope local` for a single project.
 
-To try it without installing, start Claude Code with the plugin directory:
+### 2. Fill in the config
 
-```bash
-CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1 claude --plugin-dir /path/to/claude_model_choice
+The config creates itself. On the first Claude Code start with Function Hooks enabled (step 3), the plugin creates `~/.config/jev-box/config.json` from its template, restricts access (`chmod 600` on the file, `700` on the directory) and writes to the transcript:
+
+```
+jev-box: created ~/.config/jev-box/config.json, set provider and apiKey to start
 ```
 
-### 2. Create the config
-
-```bash
-mkdir -p ~/.config/jev-box
-cp /path/to/claude_model_choice/config.example.json ~/.config/jev-box/config.json
-chmod 600 ~/.config/jev-box/config.json
-```
+An existing config is never overwritten. If the line ends with `run chmod 600 …`, the permissions could not be set; run the command yourself.
 
 Open `~/.config/jev-box/config.json` and fill in:
 
@@ -58,7 +49,7 @@ Open `~/.config/jev-box/config.json` and fill in:
 - **`apiKey`** in the section of that provider;
 - **`description`** of each model — Jev compares the task against these descriptions, so tailor them to your work.
 
-The keys live in this file, so keep the permissions at `600`: only your user should be able to read it.
+The keys live in this file, so keep the permissions at `600`: only your user should be able to read it. Until a key is set the plugin does nothing; edits are picked up without a restart.
 
 ### 3. Enable Function Hooks
 

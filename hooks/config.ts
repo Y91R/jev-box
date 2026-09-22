@@ -34,7 +34,9 @@ export type ConfigHost = {
   fs: { read: (path: string) => Promise<string> }
 }
 
-export const CONFIG_SUBPATH = '.config/jev-box/config.json'
+export const CONFIG_DIR_SUBPATH = '.config/jev-box'
+export const CONFIG_SUBPATH = `${CONFIG_DIR_SUBPATH}/config.json`
+export const TEMPLATE_FILE = 'config.example.json'
 const MAX_MODELS = 255
 const MAX_TIMEOUT_MS = 9000
 
@@ -181,3 +183,48 @@ export async function loadConfig($: ConfigHost): Promise<ConfigResult> {
 
 export const describeInvalid = (r: { rule: number; field: string }): string =>
   `jev-box: config ignored, rule ${r.rule} failed at ${r.field}`
+
+export type BootstrapHost = ConfigHost & {
+  fs: {
+    exists: (path: string) => Promise<boolean>
+    write: (path: string, text: string) => Promise<void>
+  }
+  process: { run: (argv: readonly string[]) => Promise<{ exitCode: number | null }> }
+  plugin: { root: string }
+}
+
+export type Bootstrap = 'exists' | 'created' | 'created_insecure' | 'failed'
+
+export async function ensureConfig($: BootstrapHost): Promise<Bootstrap> {
+  try {
+    const home = await $.env.get('HOME')
+    if (!home) return 'failed'
+    const path = `${home}/${CONFIG_SUBPATH}`
+    if (await $.fs.exists(path)) return 'exists'
+    const template = await $.fs.read(`${$.plugin.root}/${TEMPLATE_FILE}`)
+    await $.fs.write(path, template)
+    const secured = await Promise.all([
+      chmod($, '700', `${home}/${CONFIG_DIR_SUBPATH}`),
+      chmod($, '600', path),
+    ])
+    return secured.every(Boolean) ? 'created' : 'created_insecure'
+  } catch {
+    return 'failed'
+  }
+}
+
+const chmod = ($: BootstrapHost, mode: string, path: string): Promise<boolean> =>
+  $.process.run(['chmod', mode, path]).then(
+    (r) => r.exitCode === 0,
+    () => false,
+  )
+
+export const describeBootstrap = (b: Bootstrap): string | undefined => {
+  const path = `~/${CONFIG_SUBPATH}`
+  if (b === 'created') return `jev-box: created ${path}, set provider and apiKey to start`
+  if (b === 'created_insecure') {
+    return `jev-box: created ${path}, set provider and apiKey to start; could not restrict access, run chmod 600 ${path}`
+  }
+  return undefined
+}
+

@@ -1,9 +1,12 @@
 import { describe, expect, test } from 'bun:test'
 import {
   CONFIG_SUBPATH,
+  describeBootstrap,
   describeInvalid,
+  ensureConfig,
   loadConfig,
   validateConfig,
+  type BootstrapHost,
   type ConfigHost,
 } from '../hooks/config'
 
@@ -177,4 +180,81 @@ test('describeInvalid names the rule and field, never values', () => {
   expect(describeInvalid(r)).toBe(
     'jev-box: config ignored, rule 10 failed at openrouter.apiKey',
   )
+})
+
+describe('ensureConfig', () => {
+  const home = '/home/u'
+  const path = `${home}/${CONFIG_SUBPATH}`
+  const template = '{ "provider": "openrouter" }\n'
+
+  const bootHost = (opts: { exists?: boolean; chmodExit?: number | 'reject'; template?: boolean } = {}) => {
+    const writes: [string, string][] = []
+    const runs: string[][] = []
+    const $: BootstrapHost = {
+      env: { get: async () => home },
+      fs: {
+        exists: async () => opts.exists ?? false,
+        read: async (p) => {
+          if (p === '/plugin/config.example.json' && opts.template !== false) return template
+          throw new Error('ENOENT')
+        },
+        write: async (p, text) => {
+          writes.push([p, text])
+        },
+      },
+      process: {
+        run: async (argv) => {
+          runs.push([...argv])
+          if (opts.chmodExit === 'reject') throw new Error('CLI only')
+          return { exitCode: opts.chmodExit ?? 0 }
+        },
+      },
+      plugin: { root: '/plugin' },
+    }
+    return { $, writes, runs }
+  }
+
+  test('an existing config is left untouched', async () => {
+    const { $, writes, runs } = bootHost({ exists: true })
+    expect(await ensureConfig($)).toBe('exists')
+    expect(writes).toEqual([])
+    expect(runs).toEqual([])
+  })
+
+  test('a missing config is created from the shipped template and locked down', async () => {
+    const { $, writes, runs } = bootHost()
+    expect(await ensureConfig($)).toBe('created')
+    expect(writes).toEqual([[path, template]])
+    expect(runs).toEqual([
+      ['chmod', '700', `${home}/.config/jev-box`],
+      ['chmod', '600', path],
+    ])
+  })
+
+  test('a failed chmod is reported, the file stays', async () => {
+    expect(await ensureConfig(bootHost({ chmodExit: 1 }).$)).toBe('created_insecure')
+    expect(await ensureConfig(bootHost({ chmodExit: 'reject' }).$)).toBe('created_insecure')
+  })
+
+  test('a missing template creates nothing', async () => {
+    const { $, writes } = bootHost({ template: false })
+    expect(await ensureConfig($)).toBe('failed')
+    expect(writes).toEqual([])
+  })
+
+  test('messages tell what to do next', () => {
+    expect(describeBootstrap('created')).toBe(
+      'jev-box: created ~/.config/jev-box/config.json, set provider and apiKey to start',
+    )
+    expect(describeBootstrap('created_insecure')).toContain('chmod 600 ~/.config/jev-box/config.json')
+    expect(describeBootstrap('exists')).toBeUndefined()
+    expect(describeBootstrap('failed')).toBeUndefined()
+  })
+})
+
+test('the shipped template is a config that only lacks the api key', async () => {
+  const raw = JSON.parse(await Bun.file(`${import.meta.dir}/../config.example.json`).text())
+  expect(failure(raw)).toEqual({ rule: 10, field: `${raw.provider}.apiKey` })
+  raw[raw.provider].apiKey = 'k'
+  expect(validateConfig(raw).ok).toBe(true)
 })

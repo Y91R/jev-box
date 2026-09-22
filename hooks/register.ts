@@ -2,8 +2,11 @@ import type { EngineInterface, On } from 'claude-code'
 import { selectCandidates } from './candidates'
 import { classify, type ClassifyHost, type Trace } from './classify'
 import {
+  describeBootstrap,
   describeInvalid,
+  ensureConfig,
   loadConfig,
+  type BootstrapHost,
   type Config,
   type ConfigHost,
   type ConfigResult,
@@ -44,12 +47,18 @@ const logInternal = ($: EngineInterface, provider?: Provider) => {
   $.ui.log(provider === undefined ? 'jev-box: internal' : `jev-box: ${provider} internal`)
 }
 
-const hostOf = ($: EngineInterface, trace?: Trace): ConfigHost & ClassifyHost & DebugLogHost => ({
+const hostOf = (
+  $: EngineInterface,
+  trace?: Trace,
+): ConfigHost & ClassifyHost & DebugLogHost & BootstrapHost => ({
   env: { get: () => $.env.get('HOME') },
   fs: {
     read: (path) => $.fs.read(path),
     write: (path, text) => $.fs.write(path, text),
+    exists: (path) => $.fs.exists(path),
   },
+  process: { run: (argv) => $.process.run(argv) },
+  plugin: { root: $.plugin.root },
   http: { fetch: (url, init) => $.http.fetch(url, init) },
   clock: { sleep: (ms) => $.clock.sleep(ms) },
   ui: { log: (text) => $.ui.log(text) },
@@ -79,6 +88,11 @@ export function register(on: On): void {
   on('session.start', async ($, e, next) => {
     try {
       if (await isEnabled($)) {
+        const created = describeBootstrap(await ensureConfig(hostOf($)))
+        if (created !== undefined) {
+          isInvalidLogged = true
+          $.ui.log(created)
+        }
         const r = await loadConfig(hostOf($))
         if (!r.ok) logInvalidOnce($, r)
         else (await logFor($, r.config))?.add('session_start', { provider: r.config.provider })

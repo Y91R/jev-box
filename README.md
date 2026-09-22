@@ -27,30 +27,22 @@
 Репозиторий одновременно является маркетплейсом плагинов Claude Code. Добавьте его и установите плагин:
 
 ```bash
-# из локальной копии
-claude plugin marketplace add /путь/к/claude_model_choice
-
-# или с GitHub, если репозиторий опубликован (подставьте свой owner/repo)
-claude plugin marketplace add <owner>/<repo>
-
+claude plugin marketplace add Y91R/jev-box
 claude plugin install jev-box@jev-box
 ```
 
 По умолчанию плагин ставится для пользователя (`--scope user`). Для одного проекта используйте `--scope project` или `--scope local`.
 
-Чтобы попробовать без установки, запустите Claude Code прямо с каталогом плагина:
 
-```bash
-CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1 claude --plugin-dir /путь/к/claude_model_choice
+### 2. Заполнить конфиг
+
+Конфиг создаётся сам. При первом запуске Claude Code с включёнными Function Hooks (шаг 3) плагин создаст `~/.config/jev-box/config.json` из шаблона, закроет доступ (`chmod 600` на файл, `700` на каталог) и напишет в транскрипт:
+
+```
+jev-box: created ~/.config/jev-box/config.json, set provider and apiKey to start
 ```
 
-### 2. Создать конфиг
-
-```bash
-mkdir -p ~/.config/jev-box
-cp /путь/к/claude_model_choice/config.example.json ~/.config/jev-box/config.json
-chmod 600 ~/.config/jev-box/config.json
-```
+Существующий конфиг плагин никогда не перезаписывает. Если в строке есть подсказка `run chmod 600 …`, выставить права не удалось, выполните команду сами.
 
 Откройте `~/.config/jev-box/config.json` и заполните:
 
@@ -58,7 +50,7 @@ chmod 600 ~/.config/jev-box/config.json
 - **`apiKey`** в секции выбранного провайдера;
 - **`description`** у моделей — по этим описаниям Jev сравнивает задачу. Пишите их под свои задачи, лучше на английском.
 
-Ключи лежат в этом же файле, поэтому права `600` обязательны: читать файл должен только ваш пользователь.
+Ключи лежат в этом же файле, поэтому права `600` обязательны: читать файл должен только ваш пользователь. Пока ключ не заполнен, плагин ничего не делает. Правки подхватываются без перезапуска.
 
 ### 3. Включить Function Hooks
 
