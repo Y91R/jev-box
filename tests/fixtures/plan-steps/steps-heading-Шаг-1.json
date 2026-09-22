@@ -1,0 +1,41 @@
+{
+ "state": {
+  "step": "Шаг 1. Разбор требований из Markdown\n\nФайлы: `cli/extract.ts` — новый, `tests/cli/extract.test.ts` — новый.\n\n- `requirementsOf(markdown): { id: string; line: number; text: string }[]` — пункт начинается строкой `- **(N?FR)-N` , продолжается строками с отступом до следующего пункта списка верхнего уровня или заголовка.",
+  "check": "на `docs/requirements/model_choice.md` — 29 пунктов, `FR-17` содержит блок ```json, `FR-26` — вложенный список, первым идёт `FR-24`; документ без требований — пустой список."
+ },
+ "questions": {
+  "manual_action": {
+   "type": "noul",
+   "instructions": "Does `step` or `check` require a manual action by a person or an action in another system, such as publishing, deploying or checking by eye?"
+  },
+  "unverified_behavior": {
+   "type": "noul",
+   "instructions": "Does `step` rely on how a library, framework or external service behaves without saying how that behaviour is checked?"
+  },
+  "observable_check": {
+   "type": "noul",
+   "instructions": "Does `check` name a concrete command or test and the result it must show?"
+  }
+ },
+ "response": {
+  "model": "jev-1.13.0",
+  "answers": {
+   "manual_action": {
+    "type": "noul",
+    "noul": 0.34
+   },
+   "unverified_behavior": {
+    "type": "noul",
+    "noul": 0.23
+   },
+   "observable_check": {
+    "type": "noul",
+    "noul": 0.38
+   }
+  },
+  "usage": {
+   "input_tokens": 599,
+   "output_tokens": 57
+  }
+ }
+}

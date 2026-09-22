@@ -1,0 +1,41 @@
+{
+ "state": {
+  "step": "Шаг 2. Вход `cli/verify.ts requirements`\n\n\nФайлы: `cli/verify.ts` — новый, `cli/run.ts` — новый (`run(io, argv)`), `tests/cli/run.test.ts` — новый.\n\n- `bun run cli/verify.ts requirements <файл.md> [--json]`: конфиг → разбор → запросы по одному на требование, не больше 8 одновременно → вывод.\n- Вывод Markdown: шапка (`response.model` фактический, `QUESTION_VERSION`, язык `ru`, провайдер, пометка «пороги не откалиброваны»), затем таблица `файл:строка | требование | сигнал | значение | зона`. `--json` — то же массивом.\n- Отказ целиком (нет конфига, нет ключа, сеть) — одна строка `Слой Jev пропущен: <код>` и код выхода 0: слой подсказывает и не должен ронять скилл. При кодах `network` и `http_403` (так прокси песочницы отвечает на закрытый хост — проверено живым прогоном) к строке добавляется подсказка: вызов, скорее всего, отрезан песочницей — нужны `allowed_domains` для `api.typesafe.ai` и `openrouter.ai`. Отказ по отдельному требованию — строка в таблице с кодом, остальные проверяются.",
+  "check": "`run()` с фейковыми `http`/`timer`/`readFile`: 29 требований → 29 запросов, не больше 8 одновременно; `http_401` на всех → одна строка «пропущен», выход 0; нет конфига → то же. Ключ API не встречается в выводе (`JSON.stringify` вывода)."
+ },
+ "questions": {
+  "manual_action": {
+   "type": "noul",
+   "instructions": "Does `step` or `check` require a manual action by a person or an action in another system, such as publishing, deploying or checking by eye?"
+  },
+  "unverified_behavior": {
+   "type": "noul",
+   "instructions": "Does `step` rely on how a library, framework or external service behaves without saying how that behaviour is checked?"
+  },
+  "observable_check": {
+   "type": "noul",
+   "instructions": "Does `check` name a concrete command or test and the result it must show?"
+  }
+ },
+ "response": {
+  "model": "jev-1.13.0",
+  "answers": {
+   "manual_action": {
+    "type": "noul",
+    "noul": 0.36
+   },
+   "unverified_behavior": {
+    "type": "noul",
+    "noul": 0.46
+   },
+   "observable_check": {
+    "type": "noul",
+    "noul": 0.89
+   }
+  },
+  "usage": {
+   "input_tokens": 1049,
+   "output_tokens": 57
+  }
+ }
+}

@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'bun:test'
-import { requirementsOf } from '../../cli/extract'
+import { requirementsOf, stepsOf } from '../../cli/extract'
 
 const root = `${import.meta.dir}/../..`
 const st = () => Bun.file(`${root}/docs/requirements/model_choice.md`).text()
@@ -50,5 +50,38 @@ describe('requirementsOf on small documents', () => {
 
   test('a document without requirements', () => {
     expect(requirementsOf('# Заголовок\n\nТекст.')).toEqual([])
+  })
+})
+
+describe('stepsOf', () => {
+  const plan = (name: string) => Bun.file(`${root}/tests/fixtures/plans/${name}.md`).text()
+
+  test('"## Шаг N" steps with their checks and paths', async () => {
+    const steps = stepsOf(await plan('steps-heading'))
+    expect(steps.map((s) => s.id)).toEqual(['Шаг 1', 'Шаг 2', 'Шаг 3', 'Шаг 4', 'Шаг 5'])
+    expect(steps.map((s) => s.check !== undefined)).toEqual([true, true, true, true, false])
+    expect(steps[2]!.check).toBe('код написан, функция `cacheOf` добавлена.')
+    expect(steps[0]!.paths).toEqual(['cli/extract.ts', 'tests/cli/extract.test.ts'])
+  })
+
+  test('the check is not part of the step text', async () => {
+    for (const s of stepsOf(await plan('steps-heading'))) expect(s.text).not.toContain('**Проверка:**')
+  })
+
+  test('a "#" line inside a code block is not a heading', async () => {
+    const steps = stepsOf(await plan('steps-heading'))
+    expect(steps[3]!.text).toContain('# публикация ветки')
+    expect(steps[3]!.check).toContain('проверить глазами')
+  })
+
+  test('"### N." steps count only under "## Решение"', async () => {
+    const steps = stepsOf(await plan('steps-numbered'))
+    expect(steps.map((s) => [s.id, s.line])).toEqual([['Шаг 3', 9], ['Шаг 5', 45]])
+    expect(steps.every((s) => s.check !== undefined)).toBe(true)
+    expect(stepsOf('## Контекст\n\n### 1. Не шаг\n')).toEqual([])
+  })
+
+  test('a document without steps', () => {
+    expect(stepsOf('# План\n\nТекст.')).toEqual([])
   })
 })

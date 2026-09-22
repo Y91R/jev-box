@@ -1,0 +1,41 @@
+{
+ "state": {
+  "step": "Шаг 3. Кэш ответов\n\nФайлы: `cli/cache.ts` — новый.\n\n- Добавить кэш ответов Jev по тексту требования.",
+  "check": "код написан, функция `cacheOf` добавлена."
+ },
+ "questions": {
+  "manual_action": {
+   "type": "noul",
+   "instructions": "Does `step` or `check` require a manual action by a person or an action in another system, such as publishing, deploying or checking by eye?"
+  },
+  "unverified_behavior": {
+   "type": "noul",
+   "instructions": "Does `step` rely on how a library, framework or external service behaves without saying how that behaviour is checked?"
+  },
+  "observable_check": {
+   "type": "noul",
+   "instructions": "Does `check` name a concrete command or test and the result it must show?"
+  }
+ },
+ "response": {
+  "model": "jev-1.13.0",
+  "answers": {
+   "manual_action": {
+    "type": "noul",
+    "noul": 0.37
+   },
+   "unverified_behavior": {
+    "type": "noul",
+    "noul": 0.48
+   },
+   "observable_check": {
+    "type": "noul",
+    "noul": 0.06
+   }
+  },
+  "usage": {
+   "input_tokens": 451,
+   "output_tokens": 57
+  }
+ }
+}
