@@ -1,5 +1,6 @@
 type Turn = {
   engineModel?: string
+  sentDecision?: boolean
   decision: Promise<string | undefined>
 }
 
@@ -19,9 +20,11 @@ export class Turns {
     if (turn === undefined) return { reason: 'unknown_turn' }
     if (turn.engineModel === undefined && step.index === 0) turn.engineModel = step.model
     if (turn.engineModel === undefined) return { reason: 'step0_missing' }
+    if (step.model !== turn.engineModel) return { reason: 'fallback' }
     const id = await turn.decision
     if (id === undefined) return { reason: 'no_decision' }
-    if (step.model !== turn.engineModel) return { reason: 'fallback' }
+    if (turn.sentDecision) return { reason: 'no_decision' }
+    turn.sentDecision = true
     return { id, reason: 'switched' }
   }
 

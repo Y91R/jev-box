@@ -169,6 +169,15 @@ export function register(on: On): void {
       } catch {
         logInternal($)
       }
+    } else {
+      log?.add('step', {
+        turnId: e.turnId,
+        agentId: e.agentId,
+        index: e.index,
+        engineModel: e.model,
+        sent: e.model,
+        reason: 'subagent',
+      })
     }
     return yield* next(id === undefined ? e : { ...e, model: id })
   })

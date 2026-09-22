@@ -329,6 +329,25 @@ describe('register', () => {
       expect(text).not.toContain('y'.repeat(201))
     })
 
+    test('a subagent step is logged and passed through unchanged', async () => {
+      const hooks = hooksOf()
+      const { $, files } = engine({ choice: 'claude-haiku-4-5', config: debugConfig, sessionId: 'sess-s' })
+      await hooks['session.start']!($, {}, passthrough)
+      const step = { turnId: 'd2', index: 3, model: 'claude-sonnet-5', agentId: 'a1', messageCount: 1 }
+      expect(await runStep(hooks['turn.step']!, $, step)).toEqual(step)
+      await hooks['session.end']!($, { reason: 'clear' }, passthrough)
+
+      const events = eventsIn(files[logPath('sess-s')])
+      expect(events.find((e) => e.event === 'step')).toMatchObject({
+        turnId: 'd2',
+        agentId: 'a1',
+        index: 3,
+        engineModel: 'claude-sonnet-5',
+        sent: 'claude-sonnet-5',
+        reason: 'subagent',
+      })
+    })
+
     test('a new session after session.end writes to a new file', async () => {
       const hooks = hooksOf()
       const first = engine({ config: debugConfig, sessionId: 'sess-b' })
