@@ -3,10 +3,11 @@ import {
   answerOf,
   buildRequest,
   parseResponse,
+  responseModelOf,
   type Decision,
   type FailCode,
   type JevRequest,
-} from './jev'
+} from './model-choice'
 
 export type Trace = (event: string, data: Record<string, unknown>) => void
 
@@ -53,6 +54,7 @@ async function ask(
     choice: answer?.choice,
     confidence: answer?.confidence,
     probabilities: answer?.probabilities,
+    model: responseModelOf(reply.res.text),
   })
   return parseResponse(reply.res, config, candidates)
 }

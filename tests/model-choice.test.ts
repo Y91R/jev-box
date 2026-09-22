@@ -1,6 +1,6 @@
 import { describe, expect, test } from 'bun:test'
 import type { Config } from '../hooks/config'
-import { buildRequest, ENDPOINTS, parseResponse, QUESTION } from '../hooks/jev'
+import { buildRequest, ENDPOINTS, parseResponse, QUESTION } from '../hooks/model-choice'
 
 const models = [
   { id: 'claude-haiku-4-5', description: 'Trivial requests', contextWindow: 200000 },
@@ -121,6 +121,36 @@ describe('parseResponse failures', () => {
   test('choice outside the candidates', () => {
     expect(parseResponse(answer({ choice: 'gpt-5' }), config(), [models[0]!])).toEqual({
       fail: 'unknown_model',
+    })
+  })
+
+  describe('FR-17: accepted as long as choice is a string', () => {
+    const cases: [string, Record<string, unknown>][] = [
+      ['no type', { choice: 'claude-opus-5' }],
+      ['another type', { type: 'noul', choice: 'claude-opus-5' }],
+      ['probabilities missing a candidate', { type: 'choice', choice: 'claude-opus-5', probabilities: { 'claude-opus-5': 1 } }],
+      ['probabilities as an array', { type: 'choice', choice: 'claude-opus-5', probabilities: [0.1, 0.9] }],
+      ['confidence is not a number', { type: 'choice', choice: 'claude-opus-5', confidence: 'high' }],
+      ['confidence above one', { type: 'choice', choice: 'claude-opus-5', confidence: 1.5 }],
+    ]
+    for (const [name, model] of cases) {
+      test(name, () => {
+        expect(parseResponse(ok({ answers: { model } }), config(), models)).toEqual({ id: 'claude-opus-5' })
+      })
+    }
+  })
+
+  test('threshold set and confidence not a number is no decision', () => {
+    const res = answer({ choice: 'claude-opus-5', confidence: 'high' })
+    expect(parseResponse(res, config({ minConfidence: 0.5 }), models)).toEqual({
+      none: 'low_confidence',
+    })
+  })
+
+  test('the threshold is checked before the candidate list', () => {
+    const res = answer({ choice: 'gpt-5', confidence: 0.1 })
+    expect(parseResponse(res, config({ minConfidence: 0.5 }), models)).toEqual({
+      none: 'low_confidence',
     })
   })
 

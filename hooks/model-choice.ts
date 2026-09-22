@@ -1,4 +1,9 @@
 import type { Config, Model, Provider } from './config'
+import type { ChoiceQuestion } from './core/questions'
+import { buildJevRequest, type JevRequest } from './core/request'
+import { peekAnswer, peekModel } from './core/response'
+
+export type { JevRequest }
 
 export const ENDPOINTS: Record<Provider, string> = {
   typesafe: 'https://api.typesafe.ai/v1/systemone',
@@ -6,6 +11,8 @@ export const ENDPOINTS: Record<Provider, string> = {
 }
 
 export const QUESTION = 'Which Claude model should handle this task?'
+// Растёт при смене смысла QUESTION: калибровка minConfidence после этого устаревает.
+export const QUESTION_VERSION = 1
 
 export type FailCode =
   | 'network'
@@ -20,10 +27,13 @@ export type Decision =
   | { none: 'low_confidence' }
   | { fail: FailCode }
 
-export type JevRequest = {
-  url: string
-  init: { method: 'POST'; headers: Record<string, string>; body: string }
-}
+const modelQuestion = (candidates: readonly Model[]): { model: ChoiceQuestion } => ({
+  model: {
+    type: 'choice',
+    instructions: QUESTION,
+    criteria: Object.fromEntries(candidates.map((m) => [m.id, m.description])),
+  },
+})
 
 export function buildRequest(
   config: Config,
@@ -31,42 +41,20 @@ export function buildRequest(
   candidates: readonly Model[],
 ): JevRequest {
   const section = config[config.provider]
-  const criteria = Object.fromEntries(candidates.map((m) => [m.id, m.description]))
-  return {
+  return buildJevRequest({
     url: ENDPOINTS[config.provider],
-    init: {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${section.apiKey ?? ''}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        model: section.model,
-        state: text,
-        questions: {
-          model: { type: 'choice', instructions: QUESTION, criteria },
-        },
-      }),
-    },
-  }
+    apiKey: section.apiKey ?? '',
+    jevModel: section.model,
+    state: text,
+    questions: modelQuestion(candidates),
+  })
 }
 
-type Json = Record<string, unknown>
+export const answerOf = (text: string) => peekAnswer(text, 'model')
 
-const isObject = (v: unknown): v is Json =>
-  typeof v === 'object' && v !== null && !Array.isArray(v)
+export const responseModelOf = peekModel
 
-export function answerOf(text: string): Json | undefined {
-  let body: unknown
-  try {
-    body = JSON.parse(text)
-  } catch {
-    return undefined
-  }
-  const answer = isObject(body) && isObject(body.answers) ? body.answers.model : undefined
-  return isObject(answer) ? answer : undefined
-}
-
+// Разбор по FR-17/18 СТ, а не строгая проверка ядра: ответ принимается, если choice — строка.
 export function parseResponse(
   res: { status: number; text: string },
   config: Config,

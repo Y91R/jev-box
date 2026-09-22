@@ -146,6 +146,13 @@ describe('classify', () => {
       expect(events[2]![1]).toEqual({ id: 'claude-opus-5' })
     })
 
+    test('response event names the Jev version that answered', async () => {
+      const text = await Bun.file(`${import.meta.dir}/fixtures/typesafe-complex.json`).text()
+      const { $, events } = traced({ status: 200, text })
+      await classify($, config({ provider: 'typesafe' }), 'x', models)
+      expect(events[1]![1]).toMatchObject({ model: 'jev-1.13.0', choice: 'claude-opus-5' })
+    })
+
     test('timeout: failure event and no decision id', async () => {
       const { $, events } = traced('hang', { sleepResolves: true })
       await classify($, config(), 'x', models)
