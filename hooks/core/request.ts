@@ -1,5 +1,10 @@
 import type { QuestionMap } from './questions'
 
+export const ENDPOINTS = {
+  typesafe: 'https://api.typesafe.ai/v1/systemone',
+  openrouter: 'https://openrouter.ai/api/alpha/decisions',
+} as const
+
 export type JevRequest = {
   url: string
   init: { method: 'POST'; headers: Record<string, string>; body: string }
