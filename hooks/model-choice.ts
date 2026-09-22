@@ -1,7 +1,7 @@
 import type { Config, Model, Provider } from './config'
 import type { ChoiceQuestion } from './core/questions'
 import { buildJevRequest, type JevRequest } from './core/request'
-import { parseJevResponse, peekAnswer, peekModel } from './core/response'
+import { peekAnswer, peekModel } from './core/response'
 
 export type { JevRequest }
 
@@ -54,26 +54,27 @@ export const answerOf = (text: string) => peekAnswer(text, 'model')
 
 export const responseModelOf = peekModel
 
+// Разбор по FR-17/18 СТ, а не строгая проверка ядра: ответ принимается, если choice — строка.
 export function parseResponse(
   res: { status: number; text: string },
   config: Config,
   candidates: readonly Model[],
 ): Decision {
-  const parsed = parseJevResponse(res, modelQuestion(candidates))
-  if (!parsed.ok) {
-    if (parsed.fail === 'malformed') return { fail: 'bad_response' }
-    if (parsed.fail === 'invalid') {
-      const unknown = parsed.errors.some((e) => e.reason === 'choice_not_in_criteria')
-      return { fail: unknown ? 'unknown_model' : 'bad_response' }
-    }
-    return { fail: parsed.fail }
+  if (res.status < 200 || res.status > 299) return { fail: `http_${res.status}` }
+
+  const answer = answerOf(res.text)
+  if (answer === undefined || typeof answer.choice !== 'string') {
+    return { fail: 'bad_response' }
   }
 
-  const answer = parsed.answers.model
   if (config.minConfidence !== undefined) {
-    if (answer.confidence === undefined || answer.confidence < config.minConfidence) {
+    const confidence = answer.confidence
+    if (typeof confidence !== 'number' || confidence < config.minConfidence) {
       return { none: 'low_confidence' }
     }
   }
-  return { id: answer.choice }
+
+  const id = answer.choice
+  if (!candidates.some((m) => m.id === id)) return { fail: 'unknown_model' }
+  return { id }
 }

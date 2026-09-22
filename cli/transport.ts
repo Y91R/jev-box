@@ -5,16 +5,22 @@ export type Http = (
   init: JevRequest['init'],
 ) => Promise<{ status: number; text: string }>
 
-export type Sleep = (ms: number) => Promise<void>
+// Таймер обязан отменяться: иначе после быстрого ответа он держит процесс до конца таймаута.
+export type Timer = (ms: number) => { elapsed: Promise<void>; cancel: () => void }
 
 export type Reply = { status: number; text: string } | { fail: 'network' | 'timeout' }
 
-export function send(http: Http, sleep: Sleep, req: JevRequest, timeoutMs: number): Promise<Reply> {
-  return Promise.race([
-    http(req.url, req.init).then(
-      (res): Reply => res,
-      (): Reply => ({ fail: 'network' }),
-    ),
-    sleep(timeoutMs).then((): Reply => ({ fail: 'timeout' })),
-  ])
+export async function send(http: Http, timer: Timer, req: JevRequest, timeoutMs: number): Promise<Reply> {
+  const t = timer(timeoutMs)
+  try {
+    return await Promise.race([
+      http(req.url, req.init).then(
+        (res): Reply => res,
+        (): Reply => ({ fail: 'network' }),
+      ),
+      t.elapsed.then((): Reply => ({ fail: 'timeout' })),
+    ])
+  } finally {
+    t.cancel()
+  }
 }

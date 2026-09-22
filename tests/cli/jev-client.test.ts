@@ -22,7 +22,7 @@ const config = {
   timeoutMs: 3000,
 }
 
-const never = () => new Promise<void>(() => {})
+const idle = () => ({ elapsed: new Promise<void>(() => {}), cancel: () => {} })
 
 describe('askJev', () => {
   test('runs the core without the engine: request out, typed answers back', async () => {
@@ -32,7 +32,7 @@ describe('askJev', () => {
       sent.push({ url, body: JSON.parse(init.body) })
       return { status: 200, text }
     }
-    const r = await askJev({ http, sleep: never }, config, 'Система должна быстро возвращать деньги.', questions)
+    const r = await askJev({ http, timer: idle }, config, 'Система должна быстро возвращать деньги.', questions)
     expect(sent).toEqual([
       {
         url: config.url,
@@ -46,7 +46,7 @@ describe('askJev', () => {
 
   test('transport failures come back as they are', async () => {
     const http: Http = () => Promise.reject(new Error('down'))
-    expect(await askJev({ http, sleep: never }, config, 's', questions)).toEqual({
+    expect(await askJev({ http, timer: idle }, config, 's', questions)).toEqual({
       ok: false,
       fail: 'network',
     })

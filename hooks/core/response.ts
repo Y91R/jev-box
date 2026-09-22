@@ -10,6 +10,7 @@ export type AnswerFailure = {
     | 'out_of_range'
     | 'choice_not_in_criteria'
     | 'probabilities_mismatch'
+    | 'legend_mismatch'
 }
 
 export type ParsedAnswers<M extends QuestionMap> =
@@ -66,10 +67,18 @@ function faultOf(q: Question, a: unknown): AnswerFailure['reason'] | undefined {
 
   if (typeof a.score !== 'number') return 'missing_field'
   if (a.score < 0 || a.score > q.criteria.length - 1) return 'out_of_range'
-  return probabilitiesFault(
-    a.probabilities,
-    q.criteria.map((_, i) => String(i)),
-  )
+  const levels = q.criteria.map((_, i) => String(i))
+  if (a.legend !== undefined) {
+    const legend = a.legend
+    if (
+      !isObject(legend) ||
+      !levels.every((k) => k in legend) ||
+      !Object.values(legend).every((v) => typeof v === 'string')
+    ) {
+      return 'legend_mismatch'
+    }
+  }
+  return probabilitiesFault(a.probabilities, levels)
 }
 
 export function parseJevResponse<M extends QuestionMap>(

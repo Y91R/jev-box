@@ -110,6 +110,15 @@ describe('parseJevResponse on noul and score answers', () => {
     })
   })
 
+  test('score legend must map every level to a string', () => {
+    for (const legend of [42, { '0': 'x', '1': 'y' }, { '0': 'x', '1': 'y', '2': 3 }]) {
+      const answer = { type: 'score', score: 1, legend }
+      expect(parseJevResponse(ok({ answers: { lvl: answer } }), score)).toMatchObject({
+        errors: [{ key: 'lvl', reason: 'legend_mismatch' }],
+      })
+    }
+  })
+
   test('score probabilities keyed by level index', () => {
     const answer = { type: 'score', score: 1, probabilities: { '0': 0, '1': 1 } }
     expect(parseJevResponse(ok({ answers: { lvl: answer } }), score)).toMatchObject({

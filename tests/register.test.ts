@@ -67,7 +67,7 @@ const engine = (
         if (opts.fetchHangs) return new Promise(() => {})
         return {
           status: 200,
-          text: JSON.stringify({ answers: { model: { type: 'choice', choice: opts.choice ?? 'claude-haiku-4-5' } } }),
+          text: JSON.stringify({ answers: { model: { choice: opts.choice ?? 'claude-haiku-4-5' } } }),
         }
       },
     },
