@@ -29,11 +29,29 @@ const SANDBOX_HINT =
 
 type Failure = { id: string; line: number; code: string }
 
+type Calibration = {
+  model: string
+  questionVersion: number
+  language: string
+  providers: readonly string[]
+}
+
+// Пороги верны только для ключа калибровки: иначе подсказки читаются как откалиброванные, а они нет.
+const calibrationNote = (
+  c: Calibration,
+  model: string | undefined,
+  provider: Provider | undefined,
+): string | undefined =>
+  model === c.model && provider !== undefined && c.providers.includes(provider)
+    ? undefined
+    : `пороги откалиброваны для ${c.model} / ${c.providers.join(', ')}, ответ от ${model ?? 'неизвестной модели'} / ${provider ?? 'неизвестного провайдера'}`
+
 type Common = {
   skipped?: string
   hint?: string
   file: string
   model?: string
+  calibration?: string
   questionVersion: number
   language: 'ru'
   provider?: Provider
@@ -139,12 +157,14 @@ async function verifyRequirements(io: Io, file: string): Promise<RequirementsRep
   }
   if (failures.length === items.length) throw new Skip(failures[0]!.code)
 
+  const note = calibrationNote(requirements.CALIBRATION, model, provider)
   return {
     file,
     ...(model === undefined ? {} : { model }),
     questionVersion: requirements.QUESTION_VERSION,
     language: 'ru',
     provider,
+    ...(note === undefined ? {} : { calibration: note }),
     limitations: requirements.LIMITATIONS,
     checked: items.length,
     failures,
@@ -249,12 +269,14 @@ async function verifyPlanSteps(io: Io, file: string): Promise<PlanStepsReport> {
   }
   if (failures.length === steps.length) return withoutJev(failures[0]!.code)
 
+  const note = calibrationNote(planSteps.CALIBRATION, model, provider)
   return {
     file,
     ...(model === undefined ? {} : { model }),
     questionVersion: planSteps.QUESTION_VERSION,
     language: 'ru',
     provider,
+    ...(note === undefined ? {} : { calibration: note }),
     limitations: planSteps.LIMITATIONS,
     checked: steps.length,
     failures,
@@ -267,6 +289,7 @@ const headerOf = (r: Common, what: string, counted = 'требований'): st
   `Подсказки Jev по ${r.file} (${what}): проверено ${counted} — ${r.checked}, отказов — ${r.failures.length}.`,
   `Модель ${r.model ?? 'неизвестна'}, провайдер ${r.provider}, версия вопросов ${r.questionVersion}, язык ${r.language}.`,
   `Ограничения: ${r.limitations.join('; ')}. Пометка — повод проверить, а не находка.`,
+  ...(r.calibration === undefined ? [] : [`Внимание: ${r.calibration}.`]),
   '',
 ]
 

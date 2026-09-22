@@ -10,7 +10,7 @@ describe('plan steps on recorded Jev answers', () => {
     'steps-heading-Шаг-1': [['observable_check', 'discretion']],
     'steps-heading-Шаг-2': [],
     'steps-heading-Шаг-3': [['observable_check', 'flag']],
-    'steps-heading-Шаг-4': [['observable_check', 'flag'], ['manual_action', 'flag'], ['unverified_behavior', 'discretion']],
+    'steps-heading-Шаг-4': [['observable_check', 'flag'], ['manual_action', 'flag']],
     'steps-heading-Шаг-5': [['no_check', 'flag'], ['unverified_behavior', 'flag']],
     'steps-numbered-Шаг-3': [],
     'steps-numbered-Шаг-5': [],

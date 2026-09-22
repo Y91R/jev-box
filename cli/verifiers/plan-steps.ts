@@ -36,17 +36,24 @@ export type Zone = 'flag' | 'discretion'
 export type Finding = { id: string; line: number; signal: Signal; value?: number; zone: Zone }
 export type Answers = AnswerMap<typeof JUDGMENTS> & Partial<AnswerMap<typeof OBSERVABLE_CHECK>>
 
-// Некалиброванные пороги (docs/plans/README.md, шлагбаум калибровки).
-const FLAG = 0.7
-const DISCRETION = 0.5
+// Ключ набора tests/fixtures/calibration/labels.tsv: пороги ниже верны только для него.
+export const CALIBRATION = { model: 'jev-1.13.0', questionVersion: 1, language: 'ru', providers: ['typesafe'] } as const
+
+type JevSignal = 'observable_check' | 'manual_action' | 'unverified_behavior'
+
+const THRESHOLDS: Record<JevSignal, { flag: number; discretion: number }> = {
+  observable_check: { flag: 0.7, discretion: 0.5 },
+  manual_action: { flag: 0.95, discretion: 0.85 },
+  unverified_behavior: { flag: 0.85, discretion: 0.75 },
+}
 
 export const LIMITATIONS = [
-  'пороги не откалиброваны на русских планах',
+  'пороги откалиброваны предварительно: jev-1.13.0, вопросы v1, ru, typesafe; дефектов в наборе мало (tests/fixtures/calibration)',
   'шаги ищутся только в форматах «## Шаг N» и «### N.» под «## Решение»',
 ]
 
-const zoneOf = (bad: number): Zone | undefined =>
-  bad >= FLAG ? 'flag' : bad >= DISCRETION ? 'discretion' : undefined
+const zoneOf = (signal: JevSignal, bad: number): Zone | undefined =>
+  bad >= THRESHOLDS[signal].flag ? 'flag' : bad >= THRESHOLDS[signal].discretion ? 'discretion' : undefined
 
 export function codeFindingsOf(step: Step): Finding[] {
   const findings: Finding[] = []
@@ -57,7 +64,7 @@ export function codeFindingsOf(step: Step): Finding[] {
 
 // observable_check — положительное свойство: помечается низкое значение.
 export function findingsOf(step: Step, answers: Answers): Finding[] {
-  const measured: [Signal, number, number][] = [
+  const measured: [JevSignal, number, number][] = [
     ['manual_action', answers.manual_action.noul, answers.manual_action.noul],
     ['unverified_behavior', answers.unverified_behavior.noul, answers.unverified_behavior.noul],
   ]
@@ -67,7 +74,7 @@ export function findingsOf(step: Step, answers: Answers): Finding[] {
   }
   const findings: Finding[] = []
   for (const [signal, value, bad] of measured) {
-    const zone = zoneOf(bad)
+    const zone = zoneOf(signal, bad)
     if (zone !== undefined) findings.push({ id: step.id, line: step.line, signal, value, zone })
   }
   return findings
