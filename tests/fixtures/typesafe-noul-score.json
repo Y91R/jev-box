@@ -1,0 +1,1 @@
+{"model":"jev-1.13.0","answers":{"measurable":{"type":"noul","noul":0.08},"specificity":{"type":"score","score":0.09,"confidence":0.86,"legend":{"0":"Vague","1":"Partly specific","2":"Fully specific"},"probabilities":{"0":0.91,"1":0.09,"2":0.0}}},"usage":{"input_tokens":336,"output_tokens":38}}

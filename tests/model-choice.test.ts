@@ -1,6 +1,6 @@
 import { describe, expect, test } from 'bun:test'
 import type { Config } from '../hooks/config'
-import { buildRequest, ENDPOINTS, parseResponse, QUESTION } from '../hooks/jev'
+import { buildRequest, ENDPOINTS, parseResponse, QUESTION } from '../hooks/model-choice'
 
 const models = [
   { id: 'claude-haiku-4-5', description: 'Trivial requests', contextWindow: 200000 },
@@ -122,6 +122,11 @@ describe('parseResponse failures', () => {
     expect(parseResponse(answer({ choice: 'gpt-5' }), config(), [models[0]!])).toEqual({
       fail: 'unknown_model',
     })
+  })
+
+  test('probabilities missing a candidate is a bad response, not an unknown model', () => {
+    const res = answer({ choice: 'claude-opus-5', probabilities: { 'claude-opus-5': 1 } })
+    expect(parseResponse(res, config(), models)).toEqual({ fail: 'bad_response' })
   })
 
   test('threshold set but confidence missing, as OpenRouter may answer', () => {
