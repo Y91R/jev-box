@@ -46,7 +46,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - Установка: `bun install` (в песочнице Claude Code — с `BUN_TMPDIR="$TMPDIR"`).
 - Тесты: `bun test`; один файл — `bun test tests/jev.test.ts`; один тест — `bun test -t "<часть имени>"`. Тесты работают с фейковым `$`; в `tests/fixtures/` лежат реальные ответы Jev от TypeSafe и OpenRouter.
 - Проверка типов: `./node_modules/.bin/tsc -p .` (`tests/` в неё не входят: там типы `bun:test`).
-- Проверка плагина: `claude plugin validate .` — показывает хуки, вызовы `$` и читаемые переменные окружения.
+- Проверка плагина: `claude plugin validate .claude-plugin/plugin.json` — показывает хуки, вызовы `$` и читаемые переменные окружения. `claude plugin validate .` проверяет только `marketplace.json`: репозиторий одновременно маркетплейс.
 - Запуск с плагином из исходников: `CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1 claude --plugin-dir .`
 - Какая модель реально отвечала: `CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1 claude -p "<промпт>" --plugin-dir . --output-format json` → поле `modelUsage`. Строки `$.ui.log` в режиме `-p` не выводятся, их видно только в интерактивной сессии.
 - `claude plugin test` в 2.1.278 нет, поэтому `claude-code/testing` не используется.

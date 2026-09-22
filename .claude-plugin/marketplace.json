@@ -1,0 +1,14 @@
+{
+  "name": "jev-box",
+  "description": "jev-box: Claude Code plugin that picks the Claude model for each turn with TypeSafe Jev.",
+  "owner": {
+    "name": "Yaroslav Shleenkov"
+  },
+  "plugins": [
+    {
+      "name": "jev-box",
+      "source": "./",
+      "description": "Picks the Claude model for each turn and for selected subagents by asking TypeSafe Jev, directly or through OpenRouter."
+    }
+  ]
+}
