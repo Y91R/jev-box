@@ -206,3 +206,57 @@ describe('run sources', () => {
     }
   })
 })
+
+describe('run plan-steps', () => {
+  const fx = `${root}/tests/fixtures`
+  const recordedHttp = async () => {
+    const plan = await Bun.file(`${fx}/plans/steps-heading.md`).text()
+    const { stepsOf } = await import('../../cli/extract')
+    const byStep = new Map<string, unknown>()
+    for (const step of stepsOf(plan)) {
+      const f = await Bun.file(`${fx}/plan-steps/steps-heading-${step.id.replace(' ', '-')}.json`).json()
+      byStep.set(step.text, f.response)
+    }
+    const http: Http = async (_url, init) => ({
+      status: 200,
+      text: JSON.stringify(byStep.get(JSON.parse(init.body).state.step)),
+    })
+    return { plan, http }
+  }
+
+  test('flags the spoiled steps, code flags marked as code', async () => {
+    const { plan, http } = await recordedHttp()
+    const { io, out } = setup({ [CONFIG_PATH]: config, 'plan.md': plan }, http)
+    expect(await run(io, ['plan-steps', 'plan.md'])).toBe(0)
+    expect(out[0]).toContain('проверено шагов — 5, отказов — 0')
+    const flags = out[0]!.split('\n').filter((l) => l.endsWith('| flag |'))
+    expect(flags).toEqual([
+      '| plan.md:26 | Шаг 3 | observable_check | 0.06 | flag |',
+      '| plan.md:34 | Шаг 4 | observable_check | 0.14 | flag |',
+      '| plan.md:34 | Шаг 4 | manual_action | 0.99 | flag |',
+      '| plan.md:49 | Шаг 5 | no_check | код | flag |',
+      '| plan.md:49 | Шаг 5 | unverified_behavior | 0.92 | flag |',
+    ])
+  })
+
+  test('a plan without steps is skipped', async () => {
+    const { io, out } = setup({ [CONFIG_PATH]: config, 'plan.md': '# План\n\nТекст.' }, replying(200, {}))
+    expect(await run(io, ['plan-steps', 'plan.md'])).toBe(0)
+    expect(out).toEqual(['Слой Jev пропущен: no_steps'])
+  })
+
+  test('code flags stay when Jev fails on a step', async () => {
+    const md = '## Шаг 1. A\n\nФайлы: `a/b.ts`.\n\n**Проверка:** `bun test`.\n\n## Шаг 2. B\n\nБез файлов.\n'
+    let n = 0
+    const http: Http = async () => (++n === 1 ? { status: 200, text: JSON.stringify({ answers: {
+      manual_action: { type: 'noul', noul: 0.1 },
+      unverified_behavior: { type: 'noul', noul: 0.1 },
+      observable_check: { type: 'noul', noul: 0.9 },
+    } }) } : { status: 500, text: '' })
+    const { io, out } = setup({ [CONFIG_PATH]: config, 'plan.md': md }, http)
+    await run(io, ['plan-steps', 'plan.md', '--json'])
+    const report = JSON.parse(out[0]!)
+    expect(report.failures).toEqual([{ id: 'Шаг 2', line: 7, code: 'http_500' }])
+    expect(report.findings.map((f: { signal: string }) => f.signal)).toEqual(['no_check', 'no_paths'])
+  })
+})

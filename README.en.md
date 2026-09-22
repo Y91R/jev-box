@@ -16,10 +16,12 @@ The plugin runs on **Function Hooks**, a preview feature of Claude Code enabled 
 
 ## Skills with Jev hints
 
-The plugin ships two skills — copies of the global `analyst-reviewer` and `system-analyst` with a cheap Jev pass:
+The plugin ships four skills — copies of the global `analyst-reviewer`, `system-analyst`, `feature-planner` and `review-plan` with a cheap Jev pass:
 
 - `/jev-box:analyst-reviewer <spec.md>` — before the codex review, Jev flags requirements (`- **FR-N.** …`) with no observable result or with an evaluative word lacking a threshold. The flags set the order of the own review and go to the codex prompt as one paragraph; codex and the full review always run.
 - `/jev-box:system-analyst` — before handing over, the draft goes through the same pass; every flag is either fixed or kept with a reason in the summary.
+- `/jev-box:feature-planner` — before the self-check, the saved plan goes through a step check: code flags steps with no `**Проверка:**` line and no file paths, Jev flags a check with no command and result, manual actions, and reliance on third-party behaviour without a way to verify it.
+- `/jev-box:review-plan <plan.md>` — the same step check before the plan goes to codex; the flags set the order of the own review and go to the codex prompt as one paragraph.
 
 Hints never block anything, and the thresholds are not calibrated yet. The skills run `bun run ${CLAUDE_PLUGIN_ROOT}/cli/verify.ts` and open the sandbox to `api.typesafe.ai` and `openrouter.ai`; in the default permission mode Claude Code asks you to approve a run outside the sandbox. If Jev is unavailable, the summary says "Слой Jev пропущен: <code>" and the review runs as usual.
 
@@ -30,6 +32,7 @@ The same passes by hand:
 ```bash
 bun run cli/verify.ts requirements docs/requirements/model_choice.md
 bun run cli/verify.ts sources <spec.md> --source <source.md>
+bun run cli/verify.ts plan-steps <plan.md>
 ```
 
 ## Requirements

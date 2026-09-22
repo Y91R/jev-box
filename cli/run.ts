@@ -1,9 +1,10 @@
 import { loadConfig, type Provider } from '../hooks/config'
 import { ENDPOINTS } from '../hooks/core/request'
-import { requirementsOf, type Item } from './extract'
+import { requirementsOf, stepsOf, type Item } from './extract'
 import { askJev, type CliJevConfig } from './jev-client'
 import { passagesOf, shortlist } from './passages'
 import type { Http, Timer } from './transport'
+import * as planSteps from './verifiers/plan-steps'
 import * as requirements from './verifiers/requirements'
 import * as sources from './verifiers/sources'
 
@@ -19,6 +20,7 @@ const PARALLEL = 8
 const USAGE = [
   'использование: verify.ts requirements <файл.md> [--json]',
   '               verify.ts sources <файл.md> --source <источник> [--json]',
+  '               verify.ts plan-steps <план.md> [--json]',
 ].join('\n')
 // Прокси песочницы Claude отвечает на закрытый хост статусом 403, а не сетевой ошибкой.
 const SANDBOX_CODES = new Set(['network', 'http_403'])
@@ -45,6 +47,10 @@ type RequirementsReport = Common & {
   measurements: requirements.Measurement[]
 }
 type SourcesReport = Common & { source: string; findings: sources.Finding[] }
+type PlanStepsReport = Common & {
+  findings: planSteps.Finding[]
+  measurements: { id: string; line: number; values: Record<string, number> }[]
+}
 
 class Skip {
   constructor(readonly code: string) {}
@@ -199,8 +205,51 @@ async function verifySources(io: Io, file: string, source: string | undefined): 
   }
 }
 
-const headerOf = (r: Common, what: string): string[] => [
-  `Подсказки Jev по ${r.file} (${what}): проверено требований — ${r.checked}, отказов — ${r.failures.length}.`,
+async function verifyPlanSteps(io: Io, file: string): Promise<PlanStepsReport> {
+  const { jev, provider } = await jevOf(io)
+  const steps = stepsOf(await readOrSkip(io, file, 'no_document'))
+  if (steps.length === 0) throw new Skip('no_steps')
+  const outcomes = await mapLimited(steps, PARALLEL, async (step) => ({
+    step,
+    reply: await askJev(io, jev, planSteps.stateOf(step), planSteps.questionsFor(step)),
+  }))
+
+  const failures: Failure[] = []
+  const findings: planSteps.Finding[] = []
+  const measurements: PlanStepsReport['measurements'] = []
+  let model: string | undefined
+  for (const { step, reply } of outcomes) {
+    findings.push(...planSteps.codeFindingsOf(step))
+    if (!reply.ok) {
+      failures.push({ id: step.id, line: step.line, code: reply.fail })
+      continue
+    }
+    model ??= reply.jevModel
+    findings.push(...planSteps.findingsOf(step, reply.answers))
+    measurements.push({
+      id: step.id,
+      line: step.line,
+      values: Object.fromEntries(Object.entries(reply.answers).map(([k, a]) => [k, a.noul])),
+    })
+  }
+  if (failures.length === steps.length) throw new Skip(failures[0]!.code)
+
+  return {
+    file,
+    ...(model === undefined ? {} : { model }),
+    questionVersion: planSteps.QUESTION_VERSION,
+    language: 'ru',
+    provider,
+    limitations: planSteps.LIMITATIONS,
+    checked: steps.length,
+    failures,
+    findings: findings.sort(byZoneThenLine),
+    measurements,
+  }
+}
+
+const headerOf = (r: Common, what: string, counted = 'требований'): string[] => [
+  `Подсказки Jev по ${r.file} (${what}): проверено ${counted} — ${r.checked}, отказов — ${r.failures.length}.`,
   `Модель ${r.model ?? 'неизвестна'}, провайдер ${r.provider}, версия вопросов ${r.questionVersion}, язык ${r.language}.`,
   `Ограничения: ${r.limitations.join('; ')}. Пометка — повод проверить, а не находка.`,
   '',
@@ -235,6 +284,19 @@ function sourcesMarkdown(r: SourcesReport): string {
   return [...lines, ...failuresOf(r)].join('\n')
 }
 
+function planStepsMarkdown(r: PlanStepsReport): string {
+  const lines = headerOf(r, 'шаги плана', 'шагов')
+  if (r.findings.length === 0) lines.push('Пометок нет.')
+  else {
+    lines.push('| место | шаг | сигнал | значение | зона |', '|---|---|---|---|---|')
+    for (const f of r.findings) {
+      const value = f.value === undefined ? 'код' : f.value.toFixed(2)
+      lines.push(`| ${r.file}:${f.line} | ${f.id} | ${f.signal} | ${value} | ${f.zone} |`)
+    }
+  }
+  return [...lines, ...failuresOf(r)].join('\n')
+}
+
 const skipLine = (r: Common) =>
   `Слой Jev пропущен: ${r.skipped}${r.hint === undefined ? '' : ` (${r.hint})`}`
 
@@ -243,7 +305,7 @@ export async function run(io: Io, argv: readonly string[]): Promise<number> {
   const json = rest.includes('--json')
   const at = rest.indexOf('--source')
   const source = at === -1 ? undefined : rest[at + 1]
-  if (file === undefined || (command !== 'requirements' && command !== 'sources')) {
+  if (file === undefined || !['requirements', 'sources', 'plan-steps'].includes(command ?? '')) {
     io.out(USAGE)
     return 2
   }
@@ -252,13 +314,16 @@ export async function run(io: Io, argv: readonly string[]): Promise<number> {
     io.out(json ? JSON.stringify(r, null, 2) : markdown(r))
   try {
     if (command === 'requirements') print(await verifyRequirements(io, file), requirementsMarkdown)
-    else print(await verifySources(io, file, source), sourcesMarkdown)
+    else if (command === 'sources') print(await verifySources(io, file, source), sourcesMarkdown)
+    else print(await verifyPlanSteps(io, file), planStepsMarkdown)
   } catch (e) {
     if (!(e instanceof Skip)) throw e
     const [version, limitations] =
       command === 'requirements'
         ? [requirements.QUESTION_VERSION, requirements.LIMITATIONS]
-        : [sources.QUESTION_VERSION, sources.LIMITATIONS]
+        : command === 'sources'
+          ? [sources.QUESTION_VERSION, sources.LIMITATIONS]
+          : [planSteps.QUESTION_VERSION, planSteps.LIMITATIONS]
     print(skipped(e.code, file, version, limitations), skipLine)
   }
   return 0

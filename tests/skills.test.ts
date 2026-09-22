@@ -19,8 +19,7 @@ const frontmatterOf = (text: string): Record<string, string> => {
 
 describe('plugin skills', () => {
   test('the plugin ships skills', () => {
-    expect(names).toContain('analyst-reviewer')
-    expect(names).toContain('system-analyst')
+    expect(names.sort()).toEqual(['analyst-reviewer', 'feature-planner', 'review-plan', 'system-analyst'])
   })
 
   for (const name of names) {
