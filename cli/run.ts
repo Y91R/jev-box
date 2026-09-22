@@ -1,17 +1,11 @@
-import { loadConfig } from '../hooks/config'
+import { loadConfig, type Provider } from '../hooks/config'
 import { ENDPOINTS } from '../hooks/core/request'
 import { requirementsOf, type Item } from './extract'
 import { askJev, type CliJevConfig } from './jev-client'
+import { passagesOf, shortlist } from './passages'
 import type { Http, Timer } from './transport'
-import {
-  findingsOf,
-  LIMITATIONS,
-  measurementOf,
-  QUESTION_VERSION,
-  QUESTIONS,
-  type Finding,
-  type Measurement,
-} from './verifiers/requirements'
+import * as requirements from './verifiers/requirements'
+import * as sources from './verifiers/sources'
 
 export type Io = {
   http: Http
@@ -22,7 +16,10 @@ export type Io = {
 }
 
 const PARALLEL = 8
-const USAGE = 'использование: verify.ts requirements <файл.md> [--json]'
+const USAGE = [
+  'использование: verify.ts requirements <файл.md> [--json]',
+  '               verify.ts sources <файл.md> --source <источник> [--json]',
+].join('\n')
 // Прокси песочницы Claude отвечает на закрытый хост статусом 403, а не сетевой ошибкой.
 const SANDBOX_CODES = new Set(['network', 'http_403'])
 const SANDBOX_HINT =
@@ -30,19 +27,27 @@ const SANDBOX_HINT =
 
 type Failure = { id: string; line: number; code: string }
 
-type Report = {
+type Common = {
   skipped?: string
   hint?: string
   file: string
   model?: string
   questionVersion: number
   language: 'ru'
-  provider?: string
+  provider?: Provider
   limitations: string[]
   checked: number
   failures: Failure[]
-  findings: Finding[]
-  measurements: Measurement[]
+}
+
+type RequirementsReport = Common & {
+  findings: requirements.Finding[]
+  measurements: requirements.Measurement[]
+}
+type SourcesReport = Common & { source: string; findings: sources.Finding[] }
+
+class Skip {
+  constructor(readonly code: string) {}
 }
 
 async function mapLimited<T, R>(items: T[], limit: number, fn: (item: T) => Promise<R>): Promise<R[]> {
@@ -58,109 +63,203 @@ async function mapLimited<T, R>(items: T[], limit: number, fn: (item: T) => Prom
   return results
 }
 
-const skip = (file: string, code: string): Report => ({
+const skipped = (code: string, file: string, questionVersion: number, limitations: string[]): Common => ({
   skipped: code,
   ...(SANDBOX_CODES.has(code) ? { hint: SANDBOX_HINT } : {}),
   file,
-  questionVersion: QUESTION_VERSION,
+  questionVersion,
   language: 'ru',
-  limitations: LIMITATIONS,
+  limitations,
   checked: 0,
   failures: [],
-  findings: [],
-  measurements: [],
 })
 
-async function verifyRequirements(io: Io, file: string): Promise<Report> {
+async function jevOf(io: Io): Promise<{ jev: CliJevConfig; provider: Provider }> {
   const loaded = await loadConfig({
     env: { get: async () => io.env('HOME') },
     fs: { read: io.readFile },
   })
-  if (!loaded.ok) return skip(file, `config_rule_${loaded.rule}`)
-  const config = loaded.config
-
-  let markdown: string
-  try {
-    markdown = await io.readFile(file)
-  } catch {
-    return skip(file, 'no_document')
-  }
-  const items = requirementsOf(markdown)
-  if (items.length === 0) return skip(file, 'no_requirements')
-
+  if (!loaded.ok) throw new Skip(`config_rule_${loaded.rule}`)
+  const { config } = loaded
   const section = config[config.provider]
-  const jev: CliJevConfig = {
-    url: ENDPOINTS[config.provider],
-    apiKey: section.apiKey ?? '',
-    jevModel: section.model,
-    timeoutMs: config.timeoutMs,
+  return {
+    provider: config.provider,
+    jev: {
+      url: ENDPOINTS[config.provider],
+      apiKey: section.apiKey ?? '',
+      jevModel: section.model,
+      timeoutMs: config.timeoutMs,
+    },
   }
+}
 
-  const outcomes = await mapLimited(items, PARALLEL, async (item: Item) => ({
+async function readOrSkip(io: Io, path: string, code: string): Promise<string> {
+  try {
+    return await io.readFile(path)
+  } catch {
+    throw new Skip(code)
+  }
+}
+
+async function itemsOf(io: Io, file: string): Promise<Item[]> {
+  const items = requirementsOf(await readOrSkip(io, file, 'no_document'))
+  if (items.length === 0) throw new Skip('no_requirements')
+  return items
+}
+
+const byZoneThenLine = <F extends { zone: string; line: number }>(a: F, b: F) =>
+  a.zone === b.zone ? a.line - b.line : a.zone === 'flag' ? -1 : 1
+
+async function verifyRequirements(io: Io, file: string): Promise<RequirementsReport> {
+  const { jev, provider } = await jevOf(io)
+  const items = await itemsOf(io, file)
+  const outcomes = await mapLimited(items, PARALLEL, async (item) => ({
     item,
-    reply: await askJev(io, jev, item.text, QUESTIONS),
+    reply: await askJev(io, jev, item.text, requirements.QUESTIONS),
   }))
 
   const failures: Failure[] = []
-  const findings: Finding[] = []
-  const measurements: Measurement[] = []
+  const findings: requirements.Finding[] = []
+  const measurements: requirements.Measurement[] = []
   let model: string | undefined
   for (const { item, reply } of outcomes) {
-    if (reply.ok) {
-      model ??= reply.jevModel
-      findings.push(...findingsOf(item, reply.answers))
-      measurements.push(measurementOf(item, reply.answers))
-    } else {
+    if (!reply.ok) {
       failures.push({ id: item.id, line: item.line, code: reply.fail })
+      continue
     }
+    model ??= reply.jevModel
+    findings.push(...requirements.findingsOf(item, reply.answers))
+    measurements.push(requirements.measurementOf(item, reply.answers))
   }
-  if (failures.length === items.length) return skip(file, failures[0]!.code)
+  if (failures.length === items.length) throw new Skip(failures[0]!.code)
 
   return {
     file,
     ...(model === undefined ? {} : { model }),
-    questionVersion: QUESTION_VERSION,
+    questionVersion: requirements.QUESTION_VERSION,
     language: 'ru',
-    provider: config.provider,
-    limitations: LIMITATIONS,
+    provider,
+    limitations: requirements.LIMITATIONS,
     checked: items.length,
     failures,
-    findings: findings.sort(
-      (a, b) => (a.zone === b.zone ? a.line - b.line : a.zone === 'flag' ? -1 : 1),
-    ),
+    findings: findings.sort(byZoneThenLine),
     measurements,
   }
 }
 
-function markdownOf(r: Report): string {
-  if (r.skipped !== undefined) {
-    return `Слой Jev пропущен: ${r.skipped}${r.hint === undefined ? '' : ` (${r.hint})`}`
+async function verifySources(io: Io, file: string, source: string | undefined): Promise<SourcesReport> {
+  if (source === undefined) throw new Skip('no_source')
+  const { jev, provider } = await jevOf(io)
+  const items = await itemsOf(io, file)
+  const passages = passagesOf(await readOrSkip(io, source, 'no_source'))
+  if (passages.length === 0) throw new Skip('no_source')
+
+  const outcomes = await mapLimited(items, PARALLEL, async (item) => {
+    const locateQs = sources.locateQuestions(shortlist(item.text, passages))
+    const located = await askJev(io, jev, { requirement: item.text }, locateQs)
+    if (!located.ok) return { item, fail: located.fail }
+    const choice = located.answers.locate.choice
+    const passage = passages.find((p) => p.id === choice)
+    if (choice === sources.NONE || passage === undefined) {
+      return { item, model: located.jevModel, findings: sources.findingsOf(item, located.answers, undefined, passages) }
+    }
+    const relation = await askJev(io, jev, { claim: item.text, section: passage.text }, sources.RELATION_QUESTIONS)
+    if (!relation.ok) return { item, fail: relation.fail }
+    return {
+      item,
+      model: located.jevModel,
+      findings: sources.findingsOf(item, located.answers, relation.answers, passages),
+    }
+  })
+
+  const failures: Failure[] = []
+  const findings: sources.Finding[] = []
+  let model: string | undefined
+  for (const o of outcomes) {
+    if (o.fail !== undefined) {
+      failures.push({ id: o.item.id, line: o.item.line, code: o.fail })
+      continue
+    }
+    model ??= o.model
+    findings.push(...o.findings)
   }
-  const lines = [
-    `Подсказки Jev по ${r.file}: проверено требований — ${r.checked}, отказов — ${r.failures.length}.`,
-    `Модель ${r.model ?? 'неизвестна'}, провайдер ${r.provider}, версия вопросов ${r.questionVersion}, язык ${r.language}.`,
-    `Ограничения: ${r.limitations.join('; ')}. Пометка — повод проверить, а не находка.`,
-    '',
-  ]
-  if (r.findings.length === 0) {
-    lines.push('Пометок нет.')
-  } else {
+  if (failures.length === items.length) throw new Skip(failures[0]!.code)
+
+  return {
+    file,
+    source,
+    ...(model === undefined ? {} : { model }),
+    questionVersion: sources.QUESTION_VERSION,
+    language: 'ru',
+    provider,
+    limitations: sources.LIMITATIONS,
+    checked: items.length,
+    failures,
+    findings: findings.sort(byZoneThenLine),
+  }
+}
+
+const headerOf = (r: Common, what: string): string[] => [
+  `Подсказки Jev по ${r.file} (${what}): проверено требований — ${r.checked}, отказов — ${r.failures.length}.`,
+  `Модель ${r.model ?? 'неизвестна'}, провайдер ${r.provider}, версия вопросов ${r.questionVersion}, язык ${r.language}.`,
+  `Ограничения: ${r.limitations.join('; ')}. Пометка — повод проверить, а не находка.`,
+  '',
+]
+
+const failuresOf = (r: Common): string[] =>
+  r.failures.map((f) => `Отказ по ${f.id} (${r.file}:${f.line}): ${f.code}`)
+
+function requirementsMarkdown(r: RequirementsReport): string {
+  const lines = headerOf(r, 'формулировки')
+  if (r.findings.length === 0) lines.push('Пометок нет.')
+  else {
     lines.push('| место | требование | сигнал | значение | зона |', '|---|---|---|---|---|')
     for (const f of r.findings) {
       lines.push(`| ${r.file}:${f.line} | ${f.id} | ${f.signal} | ${f.value.toFixed(2)} | ${f.zone} |`)
     }
   }
-  for (const f of r.failures) lines.push(`Отказ по ${f.id} (${r.file}:${f.line}): ${f.code}`)
-  return lines.join('\n')
+  return [...lines, ...failuresOf(r)].join('\n')
 }
 
+function sourcesMarkdown(r: SourcesReport): string {
+  const lines = headerOf(r, `сверка с ${r.source}`)
+  if (r.findings.length === 0) lines.push('Пометок нет.')
+  else {
+    lines.push('| место | требование | сигнал | уверенность | зона | фрагмент источника |', '|---|---|---|---|---|---|')
+    for (const f of r.findings) {
+      const conf = f.confidence === undefined ? '—' : f.confidence.toFixed(2)
+      const where = f.passage === undefined ? '—' : `${r.source}:${f.passage.line}`
+      lines.push(`| ${r.file}:${f.line} | ${f.id} | ${f.signal} | ${conf} | ${f.zone} | ${where} |`)
+    }
+  }
+  return [...lines, ...failuresOf(r)].join('\n')
+}
+
+const skipLine = (r: Common) =>
+  `Слой Jev пропущен: ${r.skipped}${r.hint === undefined ? '' : ` (${r.hint})`}`
+
 export async function run(io: Io, argv: readonly string[]): Promise<number> {
-  const [command, file, ...flags] = argv
-  if (command !== 'requirements' || file === undefined) {
+  const [command, file, ...rest] = argv
+  const json = rest.includes('--json')
+  const at = rest.indexOf('--source')
+  const source = at === -1 ? undefined : rest[at + 1]
+  if (file === undefined || (command !== 'requirements' && command !== 'sources')) {
     io.out(USAGE)
     return 2
   }
-  const report = await verifyRequirements(io, file)
-  io.out(flags.includes('--json') ? JSON.stringify(report, null, 2) : markdownOf(report))
+
+  const print = <R>(r: R, markdown: (r: R) => string) =>
+    io.out(json ? JSON.stringify(r, null, 2) : markdown(r))
+  try {
+    if (command === 'requirements') print(await verifyRequirements(io, file), requirementsMarkdown)
+    else print(await verifySources(io, file, source), sourcesMarkdown)
+  } catch (e) {
+    if (!(e instanceof Skip)) throw e
+    const [version, limitations] =
+      command === 'requirements'
+        ? [requirements.QUESTION_VERSION, requirements.LIMITATIONS]
+        : [sources.QUESTION_VERSION, sources.LIMITATIONS]
+    print(skipped(e.code, file, version, limitations), skipLine)
+  }
   return 0
 }

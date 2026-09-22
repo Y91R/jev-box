@@ -23,10 +23,13 @@ The plugin ships two skills — copies of the global `analyst-reviewer` and `sys
 
 Hints never block anything, and the thresholds are not calibrated yet. The skills run `bun run ${CLAUDE_PLUGIN_ROOT}/cli/verify.ts` and open the sandbox to `api.typesafe.ai` and `openrouter.ai`; in the default permission mode Claude Code asks you to approve a run outside the sandbox. If Jev is unavailable, the summary says "Слой Jev пропущен: <code>" and the review runs as usual.
 
-The same pass by hand:
+If the spec has a local source (a task file, a brief), `analyst-reviewer` makes a second pass that checks the spec against it: it flags requirements the source contradicts (`contradicts`) and requirements with no support in the source (`unsupported`). It only checks that nothing was made up; source constraints the spec left out are not searched for.
+
+The same passes by hand:
 
 ```bash
 bun run cli/verify.ts requirements docs/requirements/model_choice.md
+bun run cli/verify.ts sources <spec.md> --source <source.md>
 ```
 
 ## Requirements

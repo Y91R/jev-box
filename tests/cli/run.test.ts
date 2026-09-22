@@ -149,3 +149,60 @@ describe('run requirements --json', () => {
     ])
   })
 })
+
+describe('run sources', () => {
+  const dir = `${root}/tests/fixtures/sources`
+  const files = async () => ({
+    [CONFIG_PATH]: config,
+    'artifact.md': await Bun.file(`${dir}/artifact.md`).text(),
+    'source.md': await Bun.file(`${dir}/source.md`).text(),
+  })
+  const recordedHttp = async () => {
+    const byText = new Map<string, { locate: any; relation: any }>()
+    for (const id of ['FR-1', 'FR-2', 'FR-3', 'FR-4', 'FR-5', 'FR-6']) {
+      const f = await Bun.file(`${dir}/${id}.json`).json()
+      byText.set(f.locate.state.requirement, f)
+    }
+    const sent: string[] = []
+    const http: Http = async (_url, init) => {
+      const body = JSON.parse(init.body)
+      const key = body.state.requirement ?? body.state.claim
+      const f = byText.get(key)!
+      const kind = 'locate' in body.questions ? 'locate' : 'relation'
+      sent.push(kind)
+      return { status: 200, text: JSON.stringify(f[kind].response) }
+    }
+    return { http, sent }
+  }
+
+  test('flags the contradicting and the invented requirements, with the source passage', async () => {
+    const { http } = await recordedHttp()
+    const { io, out } = setup(await files(), http)
+    expect(await run(io, ['sources', 'artifact.md', '--source', 'source.md'])).toBe(0)
+    expect(out[0]).toContain('проверено требований — 6, отказов — 0')
+    expect(out[0]).toContain('потерянные ограничения источника не ищутся')
+    const rows = out[0]!.split('\n').filter((l) => l.startsWith('| artifact.md:'))
+    expect(rows).toEqual([
+      '| artifact.md:8 | FR-4 | contradicts | 1.00 | flag | source.md:5 |',
+      '| artifact.md:9 | FR-5 | contradicts | 0.97 | flag | source.md:3 |',
+      '| artifact.md:10 | FR-6 | unsupported | 0.82 | flag | — |',
+    ])
+  })
+
+  test('no verdict request when no passage was found', async () => {
+    const { http, sent } = await recordedHttp()
+    const { io } = setup(await files(), http)
+    await run(io, ['sources', 'artifact.md', '--source', 'source.md'])
+    expect(sent.filter((k) => k === 'locate')).toHaveLength(6)
+    expect(sent.filter((k) => k === 'relation')).toHaveLength(5)
+  })
+
+  test('without a readable source the layer is skipped', async () => {
+    const { http } = await recordedHttp()
+    for (const argv of [['sources', 'artifact.md'], ['sources', 'artifact.md', '--source', 'missing.md']]) {
+      const { io, out } = setup(await files(), http)
+      expect(await run(io, argv)).toBe(0)
+      expect(out).toEqual(['Слой Jev пропущен: no_source'])
+    }
+  })
+})
