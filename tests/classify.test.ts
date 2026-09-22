@@ -13,6 +13,7 @@ const config = (patch: Partial<Config> = {}): Config => ({
   subagentTypes: ['general-purpose'],
   timeoutMs: 3000,
   contextReserve: 0.5,
+  logLevel: 'off',
   typesafe: { model: 'jev-latest' },
   openrouter: { apiKey: 'secret-or-key', model: '~typesafe/jev-latest' },
   ...patch,
@@ -119,5 +120,57 @@ describe('classify', () => {
     const ts = config({ provider: 'typesafe', typesafe: { apiKey: 'k', model: 'jev-latest' } })
     await classify($, ts, 'x', models)
     expect(logs).toEqual(['jev-box: typesafe http_529'])
+  })
+
+  describe('trace', () => {
+    const traced = (reply: Reply, opts: { sleepResolves?: boolean } = {}) => {
+      const { $, logs } = host(reply, opts)
+      const events: [string, Record<string, unknown>][] = []
+      const withTrace: ClassifyHost = { ...$, trace: (event, data) => events.push([event, data]) }
+      return { $: withTrace, logs, events }
+    }
+
+    test('success: request, response and decision', async () => {
+      const { $, events } = traced({ status: 200, text: choice('claude-opus-5', 0.87) })
+      await classify($, config(), 'redesign storage', models)
+      expect(events.map(([e]) => e)).toEqual(['jev_request', 'jev_response', 'decision'])
+      expect(events[0]![1]).toEqual({
+        provider: 'openrouter',
+        url: 'https://openrouter.ai/api/alpha/decisions',
+        jevModel: '~typesafe/jev-latest',
+        candidates: ['claude-haiku-4-5', 'claude-opus-5'],
+        timeoutMs: 3000,
+      })
+      expect(events[1]![1]).toMatchObject({ status: 200, choice: 'claude-opus-5', confidence: 0.87 })
+      expect(typeof events[1]![1].ms).toBe('number')
+      expect(events[2]![1]).toEqual({ id: 'claude-opus-5' })
+    })
+
+    test('timeout: failure event and no decision id', async () => {
+      const { $, events } = traced('hang', { sleepResolves: true })
+      await classify($, config(), 'x', models)
+      expect(events.map(([e]) => e)).toEqual(['jev_request', 'jev_failure', 'decision'])
+      expect(events[1]![1]).toMatchObject({ provider: 'openrouter', code: 'timeout' })
+      expect(events[2]![1]).toEqual({ none: 'timeout' })
+    })
+
+    test('http error: response event carries the status', async () => {
+      const { $, events } = traced({ status: 402, text: '{}' })
+      await classify($, config(), 'x', models)
+      expect(events[1]![1]).toMatchObject({ status: 402 })
+      expect(events[2]![1]).toEqual({ none: 'http_402' })
+    })
+
+    test('no candidates: only the decision', async () => {
+      const { $, events } = traced({ status: 200, text: choice('claude-opus-5') })
+      await classify($, config(), 'x', [])
+      expect(events).toEqual([['decision', { none: 'no_candidates' }]])
+    })
+
+    test('the api key appears in no event', async () => {
+      const { $, events } = traced({ status: 401, text: '{"error":"bad key secret-or-key"}' })
+      await classify($, config(), 'x', models)
+      expect(JSON.stringify(events)).not.toContain('secret-or-key')
+    })
   })
 })

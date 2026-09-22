@@ -37,6 +37,7 @@ describe('validateConfig', () => {
       subagentTypes: ['general-purpose'],
       timeoutMs: 3000,
       contextReserve: 0.5,
+      logLevel: 'off',
       typesafe: { model: 'jev-latest' },
       openrouter: { model: '~typesafe/jev-latest', apiKey: 'or-key' },
     })
@@ -47,6 +48,7 @@ describe('validateConfig', () => {
       withField({
         timeoutMs: 9000,
         contextReserve: 1,
+        logLevel: 'debug',
         subagentTypes: ['general-purpose', 'Plan'],
         minConfidence: 0.7,
         typesafe: { apiKey: 'ts-key', model: 'jev-1.13' },
@@ -56,6 +58,7 @@ describe('validateConfig', () => {
     if (!r.ok) throw new Error(`unexpected rule ${r.rule}`)
     expect(r.config.timeoutMs).toBe(9000)
     expect(r.config.contextReserve).toBe(1)
+    expect(r.config.logLevel).toBe('debug')
     expect(r.config.subagentTypes).toEqual(['general-purpose', 'Plan'])
     expect(r.config.minConfidence).toBe(0.7)
     expect(r.config.typesafe).toEqual({ apiKey: 'ts-key', model: 'jev-1.13' })
@@ -116,6 +119,8 @@ describe('validateConfig', () => {
     ['14: contextReserve zero', withField({ contextReserve: 0 }), 14, 'contextReserve'],
     ['14: contextReserve above 1', withField({ contextReserve: 1.5 }), 14, 'contextReserve'],
     ['14: contextReserve not a number', withField({ contextReserve: '0.5' }), 14, 'contextReserve'],
+    ['15: unknown logLevel', withField({ logLevel: 'info' }), 15, 'logLevel'],
+    ['15: logLevel not a string', withField({ logLevel: true }), 15, 'logLevel'],
   ]
   for (const [name, raw, rule, field] of cases) {
     test(`rule ${name}`, () => expect(failure(raw)).toEqual({ rule, field }))

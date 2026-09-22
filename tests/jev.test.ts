@@ -15,6 +15,7 @@ const config = (patch: Partial<Config> = {}): Config => ({
   subagentTypes: ['general-purpose'],
   timeoutMs: 3000,
   contextReserve: 0.5,
+  logLevel: 'off',
   typesafe: { apiKey: 'ts-key', model: 'jev-latest' },
   openrouter: { apiKey: 'or-key', model: '~typesafe/jev-latest' },
   ...patch,

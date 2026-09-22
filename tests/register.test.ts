@@ -29,9 +29,11 @@ const engine = (
     config?: string
     usageFails?: boolean
     fetchHangs?: boolean
+    sessionId?: string
   } = {},
 ) => {
   const calls: string[] = []
+  const files: Record<string, string> = {}
   const logs: string[] = []
   const env: Record<string, string | undefined> = {
     CLAUDE_CODE_ENABLE_FUNCTION_HOOKS: opts.flag ?? '1',
@@ -42,7 +44,12 @@ const engine = (
     fs: {
       read: async (path: string) => {
         calls.push(`fs.read ${path}`)
+        if (path.endsWith('.jsonl')) throw new Error('ENOENT')
         return opts.config ?? configText
+      },
+      write: async (path: string, text: string) => {
+        calls.push(`fs.write ${path}`)
+        files[path] = text
       },
     },
     http: {
@@ -57,6 +64,7 @@ const engine = (
     },
     clock: { sleep: () => new Promise(() => {}) },
     session: {
+      id: async () => opts.sessionId ?? 'sess-1',
       usage: async () => {
         if (opts.usageFails) throw new Error('usage unavailable')
         return { context: { tokens: opts.tokens, window: 1000000 } }
@@ -64,7 +72,7 @@ const engine = (
     },
     ui: { log: (text: string) => logs.push(text) },
   }
-  return { $, calls, logs }
+  return { $, calls, logs, files }
 }
 
 const live = new AbortController().signal
@@ -257,5 +265,71 @@ describe('register', () => {
     await hooks['turn.start']!($, { text: 'z', turnId: 's3' }, passthrough)
     const line = 'jev-box: config ignored, rule 1 failed at .config/jev-box/config.json'
     expect(logs).toEqual([line, line])
+  })
+
+  describe('debug log', () => {
+    const debugConfig = JSON.stringify({ ...JSON.parse(configText), logLevel: 'debug', openrouter: { apiKey: 'secret-key-xyz' } })
+    const logPath = (id: string) => `/home/u/.config/jev-box/logs/${id}.jsonl`
+    const eventsIn = (text: string | undefined) =>
+      (text ?? '').split('\n').filter(Boolean).map((l) => JSON.parse(l))
+
+    test('logLevel off writes nothing', async () => {
+      const hooks = hooksOf()
+      const { $, calls } = engine({ choice: 'claude-haiku-4-5' })
+      await hooks['session.start']!($, {}, passthrough)
+      await hooks['turn.start']!($, { text: 'rename foo', turnId: 'd0' }, passthrough)
+      await runStep(hooks['turn.step']!, $, { turnId: 'd0', index: 0, model: 'claude-opus-5', messageCount: 1 })
+      await hooks['turn.complete']!($, { turnId: 'd0', reason: 'answer' }, passthrough)
+      await hooks['agent.spawn']!($, { fork: false, subagentType: 'general-purpose', description: 'd', prompt: 'p' }, passthrough)
+      await hooks['session.end']!($, { reason: 'clear' }, passthrough)
+      expect(calls.filter((c) => c.startsWith('fs.write'))).toEqual([])
+    })
+
+    test('logLevel debug records the turn in a file named after the session', async () => {
+      const hooks = hooksOf()
+      const { $, files } = engine({ choice: 'claude-haiku-4-5', config: debugConfig, sessionId: 'sess-a' })
+      await hooks['session.start']!($, {}, passthrough)
+      const prompt = 'rename foo ' + 'y'.repeat(300)
+      await hooks['turn.start']!($, { text: prompt, turnId: 'd1' }, passthrough)
+      await runStep(hooks['turn.step']!, $, { turnId: 'd1', index: 0, model: 'claude-opus-5', messageCount: 1 })
+      await hooks['turn.complete']!($, { turnId: 'd1', reason: 'answer' }, passthrough)
+      await hooks['session.end']!($, { reason: 'clear' }, passthrough)
+
+      const text = files[logPath('sess-a')]
+      const events = eventsIn(text)
+      expect(events.map((e) => e.event)).toEqual([
+        'session_start',
+        'turn_start',
+        'jev_request',
+        'jev_response',
+        'decision',
+        'step',
+        'turn_complete',
+        'session_end',
+      ])
+      const start = events[1]
+      expect(start.text).toEqual({ length: prompt.length, head: prompt.slice(0, 200) })
+      expect(start.candidates).toEqual(['claude-haiku-4-5', 'claude-opus-5'])
+      expect(events[5]).toMatchObject({
+        turnId: 'd1',
+        engineModel: 'claude-opus-5',
+        sent: 'claude-haiku-4-5',
+        reason: 'switched',
+      })
+      expect(text).not.toContain('secret-key-xyz')
+      expect(text).not.toContain('y'.repeat(201))
+    })
+
+    test('a new session after session.end writes to a new file', async () => {
+      const hooks = hooksOf()
+      const first = engine({ config: debugConfig, sessionId: 'sess-b' })
+      await hooks['turn.start']!(first.$, { text: 'x', turnId: 'e1' }, passthrough)
+      await hooks['session.end']!(first.$, { reason: 'clear' }, passthrough)
+      const second = engine({ config: debugConfig, sessionId: 'sess-c' })
+      await hooks['turn.start']!(second.$, { text: 'x', turnId: 'e2' }, passthrough)
+      await hooks['session.end']!(second.$, { reason: 'clear' }, passthrough)
+      expect(Object.keys(first.files)).toEqual([logPath('sess-b')])
+      expect(Object.keys(second.files)).toEqual([logPath('sess-c')])
+    })
   })
 })

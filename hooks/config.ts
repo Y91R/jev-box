@@ -1,5 +1,7 @@
 export type Provider = 'typesafe' | 'openrouter'
 
+export type LogLevel = 'off' | 'debug'
+
 export type Model = {
   id: string
   description: string
@@ -17,6 +19,7 @@ export type Config = {
   subagentTypes: string[]
   timeoutMs: number
   contextReserve: number
+  logLevel: LogLevel
   minConfidence?: number
   typesafe: ProviderSection
   openrouter: ProviderSection
@@ -38,6 +41,7 @@ const MAX_TIMEOUT_MS = 9000
 const DEFAULTS = {
   timeoutMs: 3000,
   contextReserve: 0.5,
+  logLevel: 'off' as LogLevel,
   subagentTypes: ['general-purpose'],
   typesafeModel: 'jev-latest',
   openrouterModel: '~typesafe/jev-latest',
@@ -130,6 +134,9 @@ export function validateConfig(raw: unknown): ConfigResult {
     return invalid(14, 'contextReserve')
   }
 
+  const logLevel = raw.logLevel ?? DEFAULTS.logLevel
+  if (logLevel !== 'off' && logLevel !== 'debug') return invalid(15, 'logLevel')
+
   return {
     ok: true,
     config: {
@@ -138,6 +145,7 @@ export function validateConfig(raw: unknown): ConfigResult {
       subagentTypes,
       timeoutMs,
       contextReserve,
+      logLevel,
       ...(minConfidence === undefined ? {} : { minConfidence }),
       typesafe: {
         model: typesafeModel,

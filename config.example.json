@@ -27,6 +27,7 @@
   ],
   "timeoutMs": 3000,
   "contextReserve": 0.5,
+  "logLevel": "off",
   "typesafe": {
     "apiKey": "",
     "model": "jev-latest"

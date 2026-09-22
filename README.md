@@ -95,6 +95,7 @@ CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1 claude -p "Reply with the single word: pong"
 | `subagentTypes` | нет | `["general-purpose"]` | Типы сабагентов, модель которых выбирает плагин |
 | `timeoutMs` | нет | `3000` | Сколько ждать Jev, от 1 до 9000 мс (у хука лимит 10 с) |
 | `contextReserve` | нет | `0.5` | Какую долю окна модели может занимать текущий контекст, чтобы модель осталась в списке |
+| `logLevel` | нет | `"off"` | `"debug"` включает [отладочный лог](#отладочный-лог) в файл |
 | `minConfidence` | нет | — | Порог уверенности Jev от 0 до 1; ниже порога ход остаётся на модели сессии |
 | `typesafe.apiKey` | если `provider = typesafe` | — | Ключ TypeSafe |
 | `typesafe.model` | нет | `jev-latest` | Модель Jev у TypeSafe |
@@ -114,6 +115,34 @@ CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1 claude -p "Reply with the single word: pong"
 | `jev-box: internal`, `jev-box: <провайдер> internal` | Внутренняя ошибка плагина; провайдер указывается, если конфиг уже прочитан |
 
 Во всех этих случаях ход идёт на модели сессии.
+
+## Отладочный лог
+
+Поставьте в конфиге `"logLevel": "debug"`, и плагин начнёт вести лог каждой сессии в файле `~/.config/jev-box/logs/<id сессии>.jsonl`. Id сессии — тот же, что в `claude --resume` и в поле `session_id` вывода `claude -p --output-format json`.
+
+Каждая строка файла — JSON-объект с полями `ts`, `event` и данными события:
+
+| Событие | Что внутри |
+|---|---|
+| `turn_start` | начало промпта (первые 200 символов и длина), заполнение контекста, какие модели остались кандидатами и какие отсеяны по окну |
+| `jev_request` | провайдер, адрес, модель Jev, кандидаты, таймаут |
+| `jev_response` / `jev_failure` | статус, время ответа, выбор Jev, уверенность и вероятности по моделям — или код отказа |
+| `decision` | итоговая модель или почему её нет |
+| `step` | какой шаг хода на какую модель ушёл и почему: `switched`, `fallback`, `no_decision`, `step0_missing`, `aborted` |
+| `spawn` | сабагент: тип, начало задания, выбранная модель или причина пропуска |
+| `turn_complete`, `session_start`, `session_end`, `config_invalid`, `internal` | служебные события |
+
+Смотреть удобно через `jq`:
+
+```bash
+jq -c 'select(.event == "jev_response" or .event == "step")' ~/.config/jev-box/logs/<id>.jsonl
+```
+
+Что стоит знать:
+- **Ключей в логе нет,** но начало каждого промпта в нём есть. Права на файл плагин задать не может, он создаётся по вашему umask. Закройте каталог: `chmod 700 ~/.config/jev-box`.
+- **В файле хранятся последние 2000 записей** сессии.
+- **Старые файлы плагин не удаляет:** удалить файл через API Function Hooks нельзя. Чистите сами, например `find ~/.config/jev-box/logs -name '*.jsonl' -mtime +7 -delete`.
+- **Выключение:** `"logLevel": "off"` или удалить поле.
 
 ## Что стоит знать
 

@@ -56,6 +56,17 @@ type Json = Record<string, unknown>
 const isObject = (v: unknown): v is Json =>
   typeof v === 'object' && v !== null && !Array.isArray(v)
 
+export function answerOf(text: string): Json | undefined {
+  let body: unknown
+  try {
+    body = JSON.parse(text)
+  } catch {
+    return undefined
+  }
+  const answer = isObject(body) && isObject(body.answers) ? body.answers.model : undefined
+  return isObject(answer) ? answer : undefined
+}
+
 export function parseResponse(
   res: { status: number; text: string },
   config: Config,
@@ -63,14 +74,8 @@ export function parseResponse(
 ): Decision {
   if (res.status < 200 || res.status > 299) return { fail: `http_${res.status}` }
 
-  let body: unknown
-  try {
-    body = JSON.parse(res.text)
-  } catch {
-    return { fail: 'bad_response' }
-  }
-  const answer = isObject(body) && isObject(body.answers) ? body.answers.model : undefined
-  if (!isObject(answer) || typeof answer.choice !== 'string') {
+  const answer = answerOf(res.text)
+  if (answer === undefined || typeof answer.choice !== 'string') {
     return { fail: 'bad_response' }
   }
 

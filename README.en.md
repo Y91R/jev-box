@@ -95,6 +95,7 @@ File: `~/.config/jev-box/config.json`; template: [`config.example.json`](config.
 | `subagentTypes` | no | `["general-purpose"]` | Subagent types whose model the plugin picks |
 | `timeoutMs` | no | `3000` | How long to wait for Jev, 1 to 9000 ms (a hook has a 10 s budget) |
 | `contextReserve` | no | `0.5` | Share of a model's window the current context may fill for the model to stay on the list |
+| `logLevel` | no | `"off"` | `"debug"` turns on the [debug log](#debug-log) |
 | `minConfidence` | no | — | Jev confidence threshold, 0 to 1; below it the turn stays on the session model |
 | `typesafe.apiKey` | if `provider = typesafe` | — | TypeSafe key |
 | `typesafe.model` | no | `jev-latest` | Jev model at TypeSafe |
@@ -114,6 +115,34 @@ File: `~/.config/jev-box/config.json`; template: [`config.example.json`](config.
 | `jev-box: internal`, `jev-box: <provider> internal` | Internal plugin error; the provider is named once the config has been read |
 
 In all these cases the turn runs on the session model.
+
+## Debug log
+
+Set `"logLevel": "debug"` in the config and the plugin logs every session to `~/.config/jev-box/logs/<session id>.jsonl`. The session id is the one `claude --resume` uses and the `session_id` field of `claude -p --output-format json`.
+
+Each line is a JSON object with `ts`, `event` and the event's data:
+
+| Event | Contents |
+|---|---|
+| `turn_start` | prompt head (first 200 characters and length), context fill, which models stayed candidates and which were dropped by window |
+| `jev_request` | provider, URL, Jev model, candidates, timeout |
+| `jev_response` / `jev_failure` | status, response time, Jev's choice, confidence and per-model probabilities — or the failure code |
+| `decision` | the resulting model or why there is none |
+| `step` | which model each step of the turn went to and why: `switched`, `fallback`, `no_decision`, `step0_missing`, `aborted` |
+| `spawn` | subagent: type, task head, chosen model or why it was skipped |
+| `turn_complete`, `session_start`, `session_end`, `config_invalid`, `internal` | housekeeping |
+
+`jq` makes it easy to read:
+
+```bash
+jq -c 'select(.event == "jev_response" or .event == "step")' ~/.config/jev-box/logs/<id>.jsonl
+```
+
+Good to know:
+- **No keys are logged,** but the head of every prompt is. The plugin cannot set file permissions, so the file follows your umask; lock the directory down with `chmod 700 ~/.config/jev-box`.
+- **Each file keeps the session's last 2000 entries.**
+- **Old files are not removed:** the Function Hooks API cannot delete files. Clean up yourself, e.g. `find ~/.config/jev-box/logs -name '*.jsonl' -mtime +7 -delete`.
+- **To turn it off,** set `"logLevel": "off"` or drop the field.
 
 ## Good to know
 
