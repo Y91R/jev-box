@@ -2,7 +2,7 @@
   "name": "jev-box",
   "description": "jev-box: Claude Code plugin that picks the Claude model for each turn with TypeSafe Jev.",
   "owner": {
-    "name": "Yaroslav Shleenkov"
+    "name": "y91r"
   },
   "plugins": [
     {
