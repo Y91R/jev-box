@@ -1,0 +1,38 @@
+{
+ "state": "**FR-17. TypeSafe.** Система должна отправить `POST https://api.typesafe.ai/v1/systemone` с заголовками `Authorization: Bearer <typesafe.apiKey>` и `Content-Type: application/json`. Тело запроса:\n  ```json\n  {\n    \"model\": \"<typesafe.model>\",\n    \"state\": \"<текст задачи>\",\n    \"questions\": {\n      \"model\": {\n        \"type\": \"choice\",\n        \"instructions\": \"Which Claude model should handle this task?\",\n        \"criteria\": { \"<кандидат.id>\": \"<кандидат.description>\" }\n      }\n    }\n  }\n  ```\n  Ответ принимается, если `answers.model.choice` — строка. Если задан `minConfidence`, то при `answers.model.confidence`, которое не является числом или меньше порога, результат — «нет решения». Источник: [4][5].",
+ "questions": {
+  "observable": {
+   "type": "noul",
+   "instructions": "Does the requirement name a result or effect that a test can observe?"
+  },
+  "several_rules": {
+   "type": "noul",
+   "instructions": "Does the requirement contain more than one independent rule that would be tested separately?"
+  },
+  "vague_word": {
+   "type": "noul",
+   "instructions": "Does the requirement use an evaluative word such as fast, convenient, correct or if necessary without a stated threshold or criterion?"
+  }
+ },
+ "response": {
+  "model": "jev-1.13.0",
+  "answers": {
+   "observable": {
+    "type": "noul",
+    "noul": 0.93
+   },
+   "several_rules": {
+    "type": "noul",
+    "noul": 0.87
+   },
+   "vague_word": {
+    "type": "noul",
+    "noul": 0.17
+   }
+  },
+  "usage": {
+   "input_tokens": 603,
+   "output_tokens": 56
+  }
+ }
+}

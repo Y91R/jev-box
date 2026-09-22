@@ -3,10 +3,11 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "typecheck": "tsc -p .",
+    "typecheck": "tsc -p . && tsc -p cli",
     "test": "bun test"
   },
   "devDependencies": {
+    "@types/bun": "^1.4.2",
     "typescript": "^5.9.0"
   }
 }

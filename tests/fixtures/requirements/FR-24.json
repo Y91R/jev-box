@@ -1,0 +1,38 @@
+{
+ "state": "**FR-24.** Система должна работать, только если переменная окружения `CLAUDE_CODE_ENABLE_FUNCTION_HOOKS` задана и не пустая. Значение читается через `$.env.get(\"CLAUDE_CODE_ENABLE_FUNCTION_HOOKS\")`. Без переменной каждый хук передаёт событие без изменений (`next(e)`): конфиг не читается, запросов к провайдерам и строк в лог нет. Сейчас рантайм без флага хуки не загружает [2], так что требование страхует на случай выхода Function Hooks из preview. Источник: решение пользователя от 2026-09-22 [9]. Номер FR-24 дан, чтобы не перенумеровывать остальные требования.",
+ "questions": {
+  "observable": {
+   "type": "noul",
+   "instructions": "Does the requirement name a result or effect that a test can observe?"
+  },
+  "several_rules": {
+   "type": "noul",
+   "instructions": "Does the requirement contain more than one independent rule that would be tested separately?"
+  },
+  "vague_word": {
+   "type": "noul",
+   "instructions": "Does the requirement use an evaluative word such as fast, convenient, correct or if necessary without a stated threshold or criterion?"
+  }
+ },
+ "response": {
+  "model": "jev-1.13.0",
+  "answers": {
+   "observable": {
+    "type": "noul",
+    "noul": 0.9
+   },
+   "several_rules": {
+    "type": "noul",
+    "noul": 0.45
+   },
+   "vague_word": {
+    "type": "noul",
+    "noul": 0.09
+   }
+  },
+  "usage": {
+   "input_tokens": 634,
+   "output_tokens": 56
+  }
+ }
+}

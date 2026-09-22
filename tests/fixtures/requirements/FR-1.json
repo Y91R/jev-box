@@ -1,0 +1,38 @@
+{
+ "state": "**FR-1.** Система должна читать конфиг из файла `<HOME>/.config/jev-box/config.json`, где `<HOME>` — значение переменной окружения `HOME`, полученное через `$.env.get(\"HOME\")`. Путь `~` движок не раскрывает [1]. Источник: [9]; [1].",
+ "questions": {
+  "observable": {
+   "type": "noul",
+   "instructions": "Does the requirement name a result or effect that a test can observe?"
+  },
+  "several_rules": {
+   "type": "noul",
+   "instructions": "Does the requirement contain more than one independent rule that would be tested separately?"
+  },
+  "vague_word": {
+   "type": "noul",
+   "instructions": "Does the requirement use an evaluative word such as fast, convenient, correct or if necessary without a stated threshold or criterion?"
+  }
+ },
+ "response": {
+  "model": "jev-1.13.0",
+  "answers": {
+   "observable": {
+    "type": "noul",
+    "noul": 0.67
+   },
+   "several_rules": {
+    "type": "noul",
+    "noul": 0.45
+   },
+   "vague_word": {
+    "type": "noul",
+    "noul": 0.05
+   }
+  },
+  "usage": {
+   "input_tokens": 458,
+   "output_tokens": 56
+  }
+ }
+}
