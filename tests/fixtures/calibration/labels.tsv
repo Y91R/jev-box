@@ -1,0 +1,279 @@
+# model=jev-1.13.0 requirements=1 plan-steps=1 language=ru providers=typesafe
+verifier	source	id	signal	label	firm	codex	typesafe	openrouter
+requirements	model_choice.md	FR-1	observable	0	твёрдо	0	0.643	-
+requirements	model_choice.md	FR-1	vague_word	0	твёрдо	0	0.050	-
+requirements	model_choice.md	FR-10	observable	0	твёрдо	0	0.877	-
+requirements	model_choice.md	FR-10	vague_word	0	твёрдо	0	0.080	-
+requirements	model_choice.md	FR-11	observable	0	твёрдо	0	0.843	-
+requirements	model_choice.md	FR-11	vague_word	0	твёрдо	0	0.137	-
+requirements	model_choice.md	FR-12	observable	0	твёрдо	0	0.880	-
+requirements	model_choice.md	FR-12	vague_word	0	твёрдо	0	0.163	-
+requirements	model_choice.md	FR-13	observable	0	твёрдо	0	0.890	-
+requirements	model_choice.md	FR-13	vague_word	0	твёрдо	0	0.257	-
+requirements	model_choice.md	FR-14	observable	0	твёрдо	0	0.873	-
+requirements	model_choice.md	FR-14	vague_word	0	твёрдо	0	0.077	-
+requirements	model_choice.md	FR-15	observable	0	твёрдо	0	0.790	-
+requirements	model_choice.md	FR-15	vague_word	0	твёрдо	0	0.093	-
+requirements	model_choice.md	FR-16	observable	0	твёрдо	0	0.943	-
+requirements	model_choice.md	FR-16	vague_word	0	твёрдо	0	0.093	-
+requirements	model_choice.md	FR-17	observable	0	твёрдо	0	0.930	-
+requirements	model_choice.md	FR-17	vague_word	0	твёрдо	0	0.160	-
+requirements	model_choice.md	FR-18	observable	0	твёрдо	0	0.910	-
+requirements	model_choice.md	FR-18	vague_word	0	твёрдо	0	0.117	-
+requirements	model_choice.md	FR-19	observable	0	твёрдо	0	0.950	-
+requirements	model_choice.md	FR-19	vague_word	0	твёрдо	0	0.060	-
+requirements	model_choice.md	FR-2	observable	0	твёрдо	0	0.837	-
+requirements	model_choice.md	FR-2	vague_word	0	твёрдо	0	0.143	-
+requirements	model_choice.md	FR-20	observable	0	твёрдо	0	0.887	-
+requirements	model_choice.md	FR-20	vague_word	0	твёрдо	0	0.217	-
+requirements	model_choice.md	FR-21	observable	0	твёрдо	0	0.930	-
+requirements	model_choice.md	FR-21	vague_word	0	твёрдо	0	0.113	-
+requirements	model_choice.md	FR-22	observable	0	твёрдо	0	0.950	-
+requirements	model_choice.md	FR-22	vague_word	0	твёрдо	0	0.073	-
+requirements	model_choice.md	FR-23	observable	0	твёрдо	0	0.470	-
+requirements	model_choice.md	FR-23	vague_word	0	твёрдо	0	0.080	-
+requirements	model_choice.md	FR-24	observable	0	твёрдо	0	0.897	-
+requirements	model_choice.md	FR-24	vague_word	0	твёрдо	0	0.090	-
+requirements	model_choice.md	FR-25	observable	0	твёрдо	0	0.960	-
+requirements	model_choice.md	FR-25	vague_word	0	твёрдо	0	0.093	-
+requirements	model_choice.md	FR-26	observable	0	твёрдо	0	0.950	-
+requirements	model_choice.md	FR-26	vague_word	0	твёрдо	0	0.117	-
+requirements	model_choice.md	FR-3	observable	0	твёрдо	0	0.847	-
+requirements	model_choice.md	FR-3	vague_word	0	твёрдо	0	0.183	-
+requirements	model_choice.md	FR-4	observable	0	твёрдо	0	0.767	-
+requirements	model_choice.md	FR-4	vague_word	0	твёрдо	0	0.123	-
+requirements	model_choice.md	FR-5	observable	0	твёрдо	0	0.950	-
+requirements	model_choice.md	FR-5	vague_word	0	твёрдо	0	0.160	-
+requirements	model_choice.md	FR-6	observable	0	твёрдо	0	0.853	-
+requirements	model_choice.md	FR-6	vague_word	0	твёрдо	0	0.107	-
+requirements	model_choice.md	FR-7	observable	0	твёрдо	0	0.823	-
+requirements	model_choice.md	FR-7	vague_word	0	твёрдо	0	0.070	-
+requirements	model_choice.md	FR-8	observable	0	твёрдо	0	0.907	-
+requirements	model_choice.md	FR-8	vague_word	0	твёрдо	0	0.107	-
+requirements	model_choice.md	FR-9	observable	0	спорно	0	0.893	-
+requirements	model_choice.md	FR-9	vague_word	0	твёрдо	0	0.090	-
+requirements	model_choice.md	NFR-1	observable	1	спорно	0	0.700	-
+requirements	model_choice.md	NFR-1	vague_word	0	твёрдо	0	0.087	-
+requirements	model_choice.md	NFR-2	observable	0	твёрдо	0	0.917	-
+requirements	model_choice.md	NFR-2	vague_word	0	твёрдо	0	0.097	-
+requirements	model_choice.md	NFR-3	observable	0	твёрдо	0	0.623	-
+requirements	model_choice.md	NFR-3	vague_word	0	твёрдо	0	0.150	-
+requirements	model_choice_in_turn.md	TURN-FR-1	observable	0	твёрдо	0	0.813	-
+requirements	model_choice_in_turn.md	TURN-FR-1	vague_word	0	твёрдо	0	0.077	-
+requirements	model_choice_in_turn.md	TURN-FR-10	observable	0	твёрдо	0	0.830	-
+requirements	model_choice_in_turn.md	TURN-FR-10	vague_word	0	твёрдо	0	0.137	-
+requirements	model_choice_in_turn.md	TURN-FR-11	observable	0	твёрдо	0	0.897	-
+requirements	model_choice_in_turn.md	TURN-FR-11	vague_word	0	твёрдо	0	0.090	-
+requirements	model_choice_in_turn.md	TURN-FR-12	observable	0	твёрдо	0	0.905	-
+requirements	model_choice_in_turn.md	TURN-FR-12	vague_word	0	твёрдо	0	0.115	-
+requirements	model_choice_in_turn.md	TURN-FR-13	observable	0	твёрдо	0	0.590	-
+requirements	model_choice_in_turn.md	TURN-FR-13	vague_word	0	твёрдо	0	0.473	-
+requirements	model_choice_in_turn.md	TURN-FR-14	observable	0	твёрдо	0	0.947	-
+requirements	model_choice_in_turn.md	TURN-FR-14	vague_word	0	твёрдо	0	0.070	-
+requirements	model_choice_in_turn.md	TURN-FR-2	observable	0	твёрдо	0	0.873	-
+requirements	model_choice_in_turn.md	TURN-FR-2	vague_word	0	твёрдо	0	0.097	-
+requirements	model_choice_in_turn.md	TURN-FR-3	observable	0	твёрдо	0	0.867	-
+requirements	model_choice_in_turn.md	TURN-FR-3	vague_word	0	твёрдо	0	0.170	-
+requirements	model_choice_in_turn.md	TURN-FR-4	observable	0	твёрдо	0	0.793	-
+requirements	model_choice_in_turn.md	TURN-FR-4	vague_word	0	твёрдо	0	0.137	-
+requirements	model_choice_in_turn.md	TURN-FR-5	observable	0	твёрдо	0	0.870	-
+requirements	model_choice_in_turn.md	TURN-FR-5	vague_word	0	твёрдо	0	0.433	-
+requirements	model_choice_in_turn.md	TURN-FR-6	observable	0	твёрдо	0	0.640	-
+requirements	model_choice_in_turn.md	TURN-FR-6	vague_word	0	твёрдо	0	0.233	-
+requirements	model_choice_in_turn.md	TURN-FR-7	observable	0	твёрдо	0	0.767	-
+requirements	model_choice_in_turn.md	TURN-FR-7	vague_word	0	твёрдо	0	0.147	-
+requirements	model_choice_in_turn.md	TURN-FR-8	observable	0	твёрдо	0	0.663	-
+requirements	model_choice_in_turn.md	TURN-FR-8	vague_word	0	твёрдо	0	0.213	-
+requirements	model_choice_in_turn.md	TURN-FR-9	observable	0	твёрдо	0	0.930	-
+requirements	model_choice_in_turn.md	TURN-FR-9	vague_word	0	твёрдо	0	0.115	-
+requirements	model_choice_in_turn.md	TURN-NFR-1	observable	0	твёрдо	0	0.847	-
+requirements	model_choice_in_turn.md	TURN-NFR-1	vague_word	0	твёрдо	0	0.183	-
+requirements	model_choice_in_turn.md	TURN-NFR-2	observable	0	твёрдо	0	0.790	-
+requirements	model_choice_in_turn.md	TURN-NFR-2	vague_word	0	твёрдо	0	0.077	-
+plan-steps	etap-1-formulirovki-trebovaniy.md	Шаг 1	manual_action	0	твёрдо	0	0.680	-
+plan-steps	etap-1-formulirovki-trebovaniy.md	Шаг 1	observable_check	0	твёрдо	0	0.943	-
+plan-steps	etap-1-formulirovki-trebovaniy.md	Шаг 1	unverified_behavior	0	твёрдо	0	0.547	-
+plan-steps	etap-1-formulirovki-trebovaniy.md	Шаг 2	manual_action	0	твёрдо	0	0.623	-
+plan-steps	etap-1-formulirovki-trebovaniy.md	Шаг 2	observable_check	0	твёрдо	0	0.967	-
+plan-steps	etap-1-formulirovki-trebovaniy.md	Шаг 2	unverified_behavior	0	твёрдо	0	0.393	-
+plan-steps	etap-1-formulirovki-trebovaniy.md	Шаг 3	manual_action	0	твёрдо	0	0.303	-
+plan-steps	etap-1-formulirovki-trebovaniy.md	Шаг 3	observable_check	1	спорно	1	0.400	-
+plan-steps	etap-1-formulirovki-trebovaniy.md	Шаг 3	unverified_behavior	0	твёрдо	0	0.237	-
+plan-steps	etap-1-formulirovki-trebovaniy.md	Шаг 4	manual_action	0	твёрдо	0	0.490	-
+plan-steps	etap-1-formulirovki-trebovaniy.md	Шаг 4	observable_check	0	твёрдо	0	0.945	-
+plan-steps	etap-1-formulirovki-trebovaniy.md	Шаг 4	unverified_behavior	0	твёрдо	0	0.305	-
+plan-steps	etap-1-formulirovki-trebovaniy.md	Шаг 5	manual_action	0	твёрдо	0	0.427	-
+plan-steps	etap-1-formulirovki-trebovaniy.md	Шаг 5	observable_check	0	твёрдо	0	0.903	-
+plan-steps	etap-1-formulirovki-trebovaniy.md	Шаг 5	unverified_behavior	0	твёрдо	0	0.457	-
+plan-steps	etap-1-formulirovki-trebovaniy.md	Шаг 6	manual_action	0	твёрдо	0	0.733	-
+plan-steps	etap-1-formulirovki-trebovaniy.md	Шаг 6	observable_check	0	твёрдо	0	0.957	-
+plan-steps	etap-1-formulirovki-trebovaniy.md	Шаг 6	unverified_behavior	1	твёрдо	1	0.550	-
+plan-steps	etap-1-formulirovki-trebovaniy.md	Шаг 7	manual_action	0	твёрдо	0	0.573	-
+plan-steps	etap-1-formulirovki-trebovaniy.md	Шаг 7	observable_check	0	твёрдо	0	0.890	-
+plan-steps	etap-1-formulirovki-trebovaniy.md	Шаг 7	unverified_behavior	0	твёрдо	0	0.283	-
+plan-steps	etap-2-sverka-s-istochnikom.md	Шаг 1	manual_action	0	твёрдо	0	0.547	-
+plan-steps	etap-2-sverka-s-istochnikom.md	Шаг 1	observable_check	1	спорно	0	0.207	-
+plan-steps	etap-2-sverka-s-istochnikom.md	Шаг 1	unverified_behavior	0	твёрдо	0	0.513	-
+plan-steps	etap-2-sverka-s-istochnikom.md	Шаг 2	manual_action	0	твёрдо	0	0.430	-
+plan-steps	etap-2-sverka-s-istochnikom.md	Шаг 2	observable_check	0	твёрдо	0	0.723	-
+plan-steps	etap-2-sverka-s-istochnikom.md	Шаг 2	unverified_behavior	0	твёрдо	0	0.167	-
+plan-steps	etap-2-sverka-s-istochnikom.md	Шаг 3	manual_action	0	твёрдо	0	0.320	-
+plan-steps	etap-2-sverka-s-istochnikom.md	Шаг 3	observable_check	0	твёрдо	0	0.533	-
+plan-steps	etap-2-sverka-s-istochnikom.md	Шаг 3	unverified_behavior	0	твёрдо	0	0.197	-
+plan-steps	etap-2-sverka-s-istochnikom.md	Шаг 4	manual_action	0	твёрдо	0	0.470	-
+plan-steps	etap-2-sverka-s-istochnikom.md	Шаг 4	observable_check	0	твёрдо	0	0.790	-
+plan-steps	etap-2-sverka-s-istochnikom.md	Шаг 4	unverified_behavior	0	твёрдо	0	0.503	-
+plan-steps	etap-2-sverka-s-istochnikom.md	Шаг 5	manual_action	0	твёрдо	0	0.397	-
+plan-steps	etap-2-sverka-s-istochnikom.md	Шаг 5	observable_check	0	твёрдо	0	0.960	-
+plan-steps	etap-2-sverka-s-istochnikom.md	Шаг 5	unverified_behavior	0	твёрдо	0	0.677	-
+plan-steps	etap-2-sverka-s-istochnikom.md	Шаг 6	manual_action	0	твёрдо	0	0.537	-
+plan-steps	etap-2-sverka-s-istochnikom.md	Шаг 6	observable_check	0	твёрдо	0	0.943	-
+plan-steps	etap-2-sverka-s-istochnikom.md	Шаг 6	unverified_behavior	0	твёрдо	0	0.197	-
+plan-steps	etap-3-shagi-plana.md	Шаг 1	manual_action	0	твёрдо	0	0.820	-
+plan-steps	etap-3-shagi-plana.md	Шаг 1	observable_check	1	спорно	0	0.150	-
+plan-steps	etap-3-shagi-plana.md	Шаг 1	unverified_behavior	0	твёрдо	0	0.800	-
+plan-steps	etap-3-shagi-plana.md	Шаг 2	manual_action	0	твёрдо	0	0.327	-
+plan-steps	etap-3-shagi-plana.md	Шаг 2	observable_check	0	твёрдо	0	0.360	-
+plan-steps	etap-3-shagi-plana.md	Шаг 2	unverified_behavior	0	твёрдо	0	0.260	-
+plan-steps	etap-3-shagi-plana.md	Шаг 3	manual_action	0	твёрдо	0	0.317	-
+plan-steps	etap-3-shagi-plana.md	Шаг 3	observable_check	0	твёрдо	0	0.670	-
+plan-steps	etap-3-shagi-plana.md	Шаг 3	unverified_behavior	0	твёрдо	0	0.307	-
+plan-steps	etap-3-shagi-plana.md	Шаг 4	manual_action	0	твёрдо	0	0.567	-
+plan-steps	etap-3-shagi-plana.md	Шаг 4	observable_check	0	твёрдо	0	0.607	-
+plan-steps	etap-3-shagi-plana.md	Шаг 4	unverified_behavior	0	твёрдо	0	0.580	-
+plan-steps	etap-3-shagi-plana.md	Шаг 5	manual_action	0	твёрдо	0	0.417	-
+plan-steps	etap-3-shagi-plana.md	Шаг 5	observable_check	0	твёрдо	0	0.970	-
+plan-steps	etap-3-shagi-plana.md	Шаг 5	unverified_behavior	1	твёрдо	1	0.533	-
+plan-steps	etap-3-shagi-plana.md	Шаг 6	manual_action	0	твёрдо	0	0.600	-
+plan-steps	etap-3-shagi-plana.md	Шаг 6	observable_check	0	твёрдо	0	0.943	-
+plan-steps	etap-3-shagi-plana.md	Шаг 6	unverified_behavior	0	твёрдо	0	0.203	-
+plan-steps	fluffy-yawning-castle.md	Шаг 1	manual_action	0	твёрдо	0	0.530	-
+plan-steps	fluffy-yawning-castle.md	Шаг 1	observable_check	0	твёрдо	0	0.950	-
+plan-steps	fluffy-yawning-castle.md	Шаг 1	unverified_behavior	0	твёрдо	0	0.257	-
+plan-steps	fluffy-yawning-castle.md	Шаг 2	manual_action	0	твёрдо	0	0.620	-
+plan-steps	fluffy-yawning-castle.md	Шаг 2	observable_check	0	твёрдо	0	0.970	-
+plan-steps	fluffy-yawning-castle.md	Шаг 2	unverified_behavior	0	твёрдо	0	0.260	-
+plan-steps	fluffy-yawning-castle.md	Шаг 3	manual_action	0	спорно	0	0.927	-
+plan-steps	fluffy-yawning-castle.md	Шаг 3	observable_check	0	твёрдо	1	0.890	-
+plan-steps	fluffy-yawning-castle.md	Шаг 3	unverified_behavior	0	твёрдо	0	0.643	-
+plan-steps	fluffy-yawning-castle.md	Шаг 4	manual_action	0	твёрдо	0	0.440	-
+plan-steps	fluffy-yawning-castle.md	Шаг 4	observable_check	0	твёрдо	0	0.963	-
+plan-steps	fluffy-yawning-castle.md	Шаг 4	unverified_behavior	0	твёрдо	0	0.223	-
+plan-steps	fluffy-yawning-castle.md	Шаг 5	manual_action	0	твёрдо	0	0.207	-
+plan-steps	fluffy-yawning-castle.md	Шаг 5	observable_check	0	твёрдо	0	0.963	-
+plan-steps	fluffy-yawning-castle.md	Шаг 5	unverified_behavior	0	твёрдо	0	0.423	-
+plan-steps	fluffy-yawning-castle.md	Шаг 6	manual_action	0	твёрдо	0	0.400	-
+plan-steps	fluffy-yawning-castle.md	Шаг 6	observable_check	0	твёрдо	0	0.970	-
+plan-steps	fluffy-yawning-castle.md	Шаг 6	unverified_behavior	0	твёрдо	0	0.327	-
+plan-steps	fluffy-yawning-castle.md	Шаг 7	manual_action	0	твёрдо	0	0.280	-
+plan-steps	fluffy-yawning-castle.md	Шаг 7	observable_check	0	твёрдо	0	0.970	-
+plan-steps	fluffy-yawning-castle.md	Шаг 7	unverified_behavior	0	твёрдо	0	0.620	-
+plan-steps	fluffy-yawning-castle.md	Шаг 8	manual_action	0	твёрдо	0	0.513	-
+plan-steps	fluffy-yawning-castle.md	Шаг 8	observable_check	0	твёрдо	0	0.943	-
+plan-steps	fluffy-yawning-castle.md	Шаг 8	unverified_behavior	0	твёрдо	0	0.310	-
+plan-steps	hashed-seeking-clover.md	Шаг 1	manual_action	0	твёрдо	0	0.580	-
+plan-steps	hashed-seeking-clover.md	Шаг 1	unverified_behavior	1	спорно	1	0.667	-
+plan-steps	hashed-seeking-clover.md	Шаг 2	manual_action	0	твёрдо	0	0.230	-
+plan-steps	hashed-seeking-clover.md	Шаг 2	unverified_behavior	0	твёрдо	0	0.430	-
+plan-steps	hashed-seeking-clover.md	Шаг 3	manual_action	0	твёрдо	0	0.157	-
+plan-steps	hashed-seeking-clover.md	Шаг 3	unverified_behavior	0	твёрдо	0	0.573	-
+plan-steps	hashed-seeking-clover.md	Шаг 4	manual_action	0	твёрдо	0	0.177	-
+plan-steps	hashed-seeking-clover.md	Шаг 4	unverified_behavior	0	твёрдо	0	0.633	-
+plan-steps	hashed-seeking-clover.md	Шаг 5	manual_action	0	твёрдо	0	0.323	-
+plan-steps	hashed-seeking-clover.md	Шаг 5	unverified_behavior	0	твёрдо	0	0.587	-
+requirements	fixture:FR-1	FR-1	observable	0	твёрдо	-	0.670	-
+requirements	fixture:FR-1	FR-1	vague_word	0	твёрдо	-	0.050	-
+requirements	fixture:FR-13	FR-13	observable	0	твёрдо	-	0.880	-
+requirements	fixture:FR-13	FR-13	vague_word	0	твёрдо	-	0.280	-
+requirements	fixture:FR-17	FR-17	observable	0	твёрдо	-	0.930	-
+requirements	fixture:FR-17	FR-17	vague_word	0	твёрдо	-	0.170	-
+requirements	fixture:FR-24	FR-24	observable	0	твёрдо	-	0.900	-
+requirements	fixture:FR-24	FR-24	vague_word	0	твёрдо	-	0.090	-
+requirements	fixture:bad-correct	bad-correct	observable	0	твёрдо	-	0.680	-
+requirements	fixture:bad-correct	bad-correct	vague_word	1	твёрдо	-	0.950	-
+requirements	fixture:bad-several	bad-several	observable	0	твёрдо	-	0.870	-
+requirements	fixture:bad-several	bad-several	vague_word	0	твёрдо	-	0.080	-
+requirements	fixture:bad-vague	bad-vague	observable	0	твёрдо	-	0.790	-
+requirements	fixture:bad-vague	bad-vague	vague_word	1	твёрдо	-	0.970	-
+plan-steps	fixture:steps-heading-Шаг-1	steps-heading-Шаг-1	observable_check	1	спорно	-	0.380	-
+plan-steps	fixture:steps-heading-Шаг-1	steps-heading-Шаг-1	manual_action	0	твёрдо	-	0.340	-
+plan-steps	fixture:steps-heading-Шаг-1	steps-heading-Шаг-1	unverified_behavior	0	твёрдо	-	0.230	-
+plan-steps	fixture:steps-heading-Шаг-2	steps-heading-Шаг-2	observable_check	0	твёрдо	-	0.890	-
+plan-steps	fixture:steps-heading-Шаг-2	steps-heading-Шаг-2	manual_action	0	твёрдо	-	0.360	-
+plan-steps	fixture:steps-heading-Шаг-2	steps-heading-Шаг-2	unverified_behavior	0	твёрдо	-	0.460	-
+plan-steps	fixture:steps-heading-Шаг-3	steps-heading-Шаг-3	observable_check	1	твёрдо	-	0.060	-
+plan-steps	fixture:steps-heading-Шаг-3	steps-heading-Шаг-3	manual_action	0	твёрдо	-	0.370	-
+plan-steps	fixture:steps-heading-Шаг-3	steps-heading-Шаг-3	unverified_behavior	0	твёрдо	-	0.480	-
+plan-steps	fixture:steps-heading-Шаг-4	steps-heading-Шаг-4	observable_check	1	твёрдо	-	0.140	-
+plan-steps	fixture:steps-heading-Шаг-4	steps-heading-Шаг-4	manual_action	1	твёрдо	-	0.990	-
+plan-steps	fixture:steps-heading-Шаг-4	steps-heading-Шаг-4	unverified_behavior	0	твёрдо	-	0.600	-
+plan-steps	fixture:steps-heading-Шаг-5	steps-heading-Шаг-5	manual_action	0	твёрдо	-	0.160	-
+plan-steps	fixture:steps-heading-Шаг-5	steps-heading-Шаг-5	unverified_behavior	1	твёрдо	-	0.920	-
+plan-steps	fixture:steps-numbered-Шаг-3	steps-numbered-Шаг-3	observable_check	0	твёрдо	-	0.970	-
+plan-steps	fixture:steps-numbered-Шаг-3	steps-numbered-Шаг-3	manual_action	0	твёрдо	-	0.350	-
+plan-steps	fixture:steps-numbered-Шаг-3	steps-numbered-Шаг-3	unverified_behavior	0	твёрдо	-	0.300	-
+plan-steps	fixture:steps-numbered-Шаг-5	steps-numbered-Шаг-5	observable_check	0	твёрдо	-	0.970	-
+plan-steps	fixture:steps-numbered-Шаг-5	steps-numbered-Шаг-5	manual_action	0	твёрдо	-	0.450	-
+plan-steps	fixture:steps-numbered-Шаг-5	steps-numbered-Шаг-5	unverified_behavior	0	твёрдо	-	0.410	-
+requirements	holdout-requirements.md	FR-1	observable	0	твёрдо	-	0.790	-
+requirements	holdout-requirements.md	FR-1	vague_word	1	твёрдо	-	0.980	-
+requirements	holdout-requirements.md	FR-2	observable	0	твёрдо	-	0.510	-
+requirements	holdout-requirements.md	FR-2	vague_word	1	твёрдо	-	0.970	-
+requirements	holdout-requirements.md	FR-3	observable	0	твёрдо	-	0.560	-
+requirements	holdout-requirements.md	FR-3	vague_word	1	твёрдо	-	0.940	-
+requirements	holdout-requirements.md	FR-4	observable	0	твёрдо	-	0.710	-
+requirements	holdout-requirements.md	FR-4	vague_word	1	твёрдо	-	0.920	-
+requirements	holdout-requirements.md	FR-5	observable	0	твёрдо	-	0.750	-
+requirements	holdout-requirements.md	FR-5	vague_word	1	твёрдо	-	0.920	-
+requirements	holdout-requirements.md	FR-6	observable	1	твёрдо	-	0.310	-
+requirements	holdout-requirements.md	FR-6	vague_word	1	твёрдо	-	0.960	-
+requirements	holdout-requirements.md	FR-7	observable	1	твёрдо	-	0.220	-
+requirements	holdout-requirements.md	FR-7	vague_word	1	твёрдо	-	0.130	-
+requirements	holdout-requirements.md	FR-8	observable	1	твёрдо	-	0.530	-
+requirements	holdout-requirements.md	FR-8	vague_word	0	твёрдо	-	0.080	-
+requirements	holdout-requirements.md	FR-9	observable	1	твёрдо	-	0.430	-
+requirements	holdout-requirements.md	FR-9	vague_word	0	твёрдо	-	0.100	-
+requirements	holdout-requirements.md	FR-10	observable	0	твёрдо	-	0.940	-
+requirements	holdout-requirements.md	FR-10	vague_word	0	твёрдо	-	0.080	-
+requirements	holdout-requirements.md	FR-11	observable	0	твёрдо	-	0.950	-
+requirements	holdout-requirements.md	FR-11	vague_word	0	твёрдо	-	0.070	-
+requirements	holdout-requirements.md	FR-12	observable	0	твёрдо	-	0.920	-
+requirements	holdout-requirements.md	FR-12	vague_word	0	твёрдо	-	0.060	-
+requirements	holdout-requirements.md	FR-13	observable	0	твёрдо	-	0.960	-
+requirements	holdout-requirements.md	FR-13	vague_word	0	твёрдо	-	0.060	-
+plan-steps	holdout-plan.md	Шаг 1	manual_action	1	твёрдо	-	0.970	-
+plan-steps	holdout-plan.md	Шаг 1	unverified_behavior	0	твёрдо	-	0.600	-
+plan-steps	holdout-plan.md	Шаг 1	observable_check	1	твёрдо	-	0.390	-
+plan-steps	holdout-plan.md	Шаг 2	manual_action	1	твёрдо	-	0.960	-
+plan-steps	holdout-plan.md	Шаг 2	unverified_behavior	0	твёрдо	-	0.320	-
+plan-steps	holdout-plan.md	Шаг 2	observable_check	1	твёрдо	-	0.320	-
+plan-steps	holdout-plan.md	Шаг 3	manual_action	1	твёрдо	-	0.960	-
+plan-steps	holdout-plan.md	Шаг 3	unverified_behavior	0	твёрдо	-	0.710	-
+plan-steps	holdout-plan.md	Шаг 3	observable_check	1	твёрдо	-	0.420	-
+plan-steps	holdout-plan.md	Шаг 4	manual_action	1	твёрдо	-	0.980	-
+plan-steps	holdout-plan.md	Шаг 4	unverified_behavior	0	твёрдо	-	0.680	-
+plan-steps	holdout-plan.md	Шаг 4	observable_check	1	твёрдо	-	0.340	-
+plan-steps	holdout-plan.md	Шаг 5	manual_action	0	твёрдо	-	0.570	-
+plan-steps	holdout-plan.md	Шаг 5	unverified_behavior	1	твёрдо	-	0.850	-
+plan-steps	holdout-plan.md	Шаг 5	observable_check	0	твёрдо	-	0.920	-
+plan-steps	holdout-plan.md	Шаг 6	manual_action	0	твёрдо	-	0.400	-
+plan-steps	holdout-plan.md	Шаг 6	unverified_behavior	1	твёрдо	-	0.760	-
+plan-steps	holdout-plan.md	Шаг 6	observable_check	0	твёрдо	-	0.970	-
+plan-steps	holdout-plan.md	Шаг 7	manual_action	0	твёрдо	-	0.380	-
+plan-steps	holdout-plan.md	Шаг 7	unverified_behavior	1	твёрдо	-	0.890	-
+plan-steps	holdout-plan.md	Шаг 7	observable_check	0	твёрдо	-	0.960	-
+plan-steps	holdout-plan.md	Шаг 8	manual_action	0	твёрдо	-	0.610	-
+plan-steps	holdout-plan.md	Шаг 8	unverified_behavior	1	твёрдо	-	0.870	-
+plan-steps	holdout-plan.md	Шаг 8	observable_check	0	твёрдо	-	0.960	-
+plan-steps	holdout-plan.md	Шаг 9	manual_action	0	твёрдо	-	0.560	-
+plan-steps	holdout-plan.md	Шаг 9	unverified_behavior	0	твёрдо	-	0.350	-
+plan-steps	holdout-plan.md	Шаг 9	observable_check	1	твёрдо	-	0.050	-
+plan-steps	holdout-plan.md	Шаг 10	manual_action	0	твёрдо	-	0.820	-
+plan-steps	holdout-plan.md	Шаг 10	unverified_behavior	0	твёрдо	-	0.200	-
+plan-steps	holdout-plan.md	Шаг 10	observable_check	1	твёрдо	-	0.070	-
+plan-steps	holdout-plan.md	Шаг 11	manual_action	0	твёрдо	-	0.430	-
+plan-steps	holdout-plan.md	Шаг 11	unverified_behavior	0	твёрдо	-	0.350	-
+plan-steps	holdout-plan.md	Шаг 11	observable_check	0	твёрдо	-	0.960	-
+plan-steps	holdout-plan.md	Шаг 12	manual_action	0	твёрдо	-	0.450	-
+plan-steps	holdout-plan.md	Шаг 12	unverified_behavior	0	твёрдо	-	0.170	-
+plan-steps	holdout-plan.md	Шаг 12	observable_check	0	твёрдо	-	0.960	-

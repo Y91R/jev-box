@@ -69,7 +69,20 @@ describe('run requirements', () => {
     await run(io, ['requirements', 'st.md'])
     expect(out[0]).toContain('| st.md:3 | FR-1 | vague_word | 0.97 | flag |')
     expect(out[0]).toContain('| st.md:4 | FR-2 | vague_word | 0.97 | flag |')
-    expect(out[0]).toContain('пороги не откалиброваны')
+    expect(out[0]).toContain('пороги откалиброваны предварительно: jev-1.13.0')
+  })
+
+  test('a model outside the calibration key is called out in the header', async () => {
+    const { response } = await recorded('FR-13')
+    const md = '- **FR-1.** A.\n'
+    const other = { ...response, model: 'jev-1.14.0' }
+    const { io, out } = setup({ [CONFIG_PATH]: config, 'st.md': md }, replying(200, other))
+    await run(io, ['requirements', 'st.md'])
+    expect(out[0]).toContain('Внимание: пороги откалиброваны для jev-1.13.0 / typesafe, ответ от jev-1.14.0 / typesafe.')
+
+    const same = setup({ [CONFIG_PATH]: config, 'st.md': md }, replying(200, response))
+    await run(same.io, ['requirements', 'st.md'])
+    expect(same.out[0]).not.toContain('Внимание:')
   })
 
   test('every request refused: one skipped line and exit 0', async () => {

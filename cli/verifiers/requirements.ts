@@ -30,12 +30,14 @@ export type Measurement = { id: string; line: number; values: Record<Signal, num
 // из 29 — любое со списком условий (решение пользователя от 2026-09-22).
 export const HINT_SIGNALS: readonly Signal[] = ['observable', 'vague_word']
 
-// Некалиброванные пороги (docs/plans/README.md, шлагбаум калибровки).
+// Ключ набора tests/fixtures/calibration/labels.tsv: пороги ниже верны только для него.
+export const CALIBRATION = { model: 'jev-1.13.0', questionVersion: 1, language: 'ru', providers: ['typesafe'] } as const
+
 const FLAG = 0.7
 const DISCRETION = 0.5
 
 export const LIMITATIONS = [
-  'пороги не откалиброваны на русских СТ',
+  'пороги откалиброваны предварительно: jev-1.13.0, вопросы v1, ru, typesafe; дефектов в наборе мало (tests/fixtures/calibration)',
   'несколько правил в одном пункте не подсказываются: сигнал помечает любой список условий',
 ]
 
