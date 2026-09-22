@@ -3,16 +3,18 @@ import { Turns } from '../hooks/turns'
 
 const step = (index: number, model = 'claude-opus-5') => ({ turnId: 't1', index, model })
 
-test('every step of the turn gets the decision', async () => {
+test('decision is sent on step 0 and not repeated', async () => {
   const turns = new Turns()
   turns.start('t1', Promise.resolve('claude-haiku-4-5'))
-  const switched = { id: 'claude-haiku-4-5', reason: 'switched' }
-  expect(await turns.resolveStep(step(0))).toEqual(switched)
-  expect(await turns.resolveStep(step(1))).toEqual(switched)
-  expect(await turns.resolveStep(step(2))).toEqual(switched)
+  expect(await turns.resolveStep(step(0))).toEqual({
+    id: 'claude-haiku-4-5',
+    reason: 'switched',
+  })
+  expect(await turns.resolveStep(step(1))).toEqual({ reason: 'no_decision' })
+  expect(await turns.resolveStep(step(2))).toEqual({ reason: 'no_decision' })
 })
 
-test('a step on another engine model is an engine fallback and is left alone', async () => {
+test('an engine fallback on step 1+ is reported but not retried', async () => {
   const turns = new Turns()
   turns.start('t1', Promise.resolve('claude-opus-5'))
   expect(await turns.resolveStep(step(0, 'claude-fable-5-1'))).toEqual({
@@ -20,14 +22,18 @@ test('a step on another engine model is an engine fallback and is left alone', a
     reason: 'switched',
   })
   expect(await turns.resolveStep(step(1, 'claude-opus-4-8'))).toEqual({ reason: 'fallback' })
+  expect(await turns.resolveStep(step(2, 'claude-opus-4-8'))).toEqual({ reason: 'fallback' })
 })
 
-test('a repeated step 0 on a fallback model is left alone', async () => {
+test('a fallback model on step 0 prevents repeated sends', async () => {
   const turns = new Turns()
   turns.start('t1', Promise.resolve('claude-haiku-4-5'))
-  expect((await turns.resolveStep(step(0, 'claude-opus-5'))).id).toBe('claude-haiku-4-5')
-  expect(await turns.resolveStep(step(0, 'claude-sonnet-5'))).toEqual({ reason: 'fallback' })
-  expect((await turns.resolveStep(step(1, 'claude-opus-5'))).id).toBe('claude-haiku-4-5')
+  expect(await turns.resolveStep(step(0, 'claude-opus-5'))).toEqual({
+    id: 'claude-haiku-4-5',
+    reason: 'switched',
+  })
+  expect(await turns.resolveStep(step(1, 'claude-opus-5'))).toEqual({ reason: 'no_decision' })
+  expect(await turns.resolveStep(step(2, 'claude-sonnet-5'))).toEqual({ reason: 'fallback' })
 })
 
 test('a turn whose step 0 never reached the plugin is not switched', async () => {
