@@ -17,6 +17,16 @@ const logInvalidOnce = ($: EngineInterface, r: Extract<ConfigResult, { ok: false
   $.ui.log(describeInvalid(r))
 }
 
+const ABORTED = { aborted: true } as const
+
+const isAborted = (v: unknown): v is typeof ABORTED => v === ABORTED
+
+const abortOf = (signal: AbortSignal): Promise<typeof ABORTED> =>
+  new Promise((resolve) => {
+    if (signal.aborted) return resolve(ABORTED)
+    signal.addEventListener('abort', () => resolve(ABORTED), { once: true })
+  })
+
 const logInternal = ($: EngineInterface, provider?: Provider) =>
   $.ui.log(provider === undefined ? 'jev-box: internal' : `jev-box: ${provider} internal`)
 
@@ -38,6 +48,11 @@ export function register(on: On): void {
     } catch {
       logInternal($)
     }
+    return next(e)
+  })
+
+  on('session.end', ($, e, next) => {
+    isInvalidLogged = false
     return next(e)
   })
 
@@ -65,7 +80,9 @@ export function register(on: On): void {
     let id: string | undefined
     if (e.agentId === undefined) {
       try {
-        id = await turns.resolveStep(e)
+        const outcome = await Promise.race([turns.resolveStep(e), abortOf(next.signal)])
+        if (isAborted(outcome)) return
+        id = outcome
       } catch {
         logInternal($)
       }
@@ -89,7 +106,12 @@ export function register(on: On): void {
         } else if (r.config.subagentTypes.includes(e.subagentType)) {
           provider = r.config.provider
           const text = `${e.description}\n\n${e.prompt}`
-          id = await classify(hostOf($), r.config, text, r.config.models)
+          const outcome = await Promise.race([
+            classify(hostOf($), r.config, text, r.config.models),
+            abortOf(next.signal),
+          ])
+          if (isAborted(outcome)) return { deny: 'jev-box: spawn aborted' }
+          id = outcome
         }
       }
     } catch {
