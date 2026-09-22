@@ -21,7 +21,9 @@ const configText = JSON.stringify({
   openrouter: { apiKey: 'k' },
 })
 
-const engine = (opts: { flag?: string; choice?: string; tokens?: number; config?: string } = {}) => {
+const engine = (
+  opts: { flag?: string; choice?: string; tokens?: number; config?: string; usageFails?: boolean } = {},
+) => {
   const calls: string[] = []
   const logs: string[] = []
   const env: Record<string, string | undefined> = {
@@ -46,7 +48,12 @@ const engine = (opts: { flag?: string; choice?: string; tokens?: number; config?
       },
     },
     clock: { sleep: () => new Promise(() => {}) },
-    session: { usage: async () => ({ context: { tokens: opts.tokens, window: 1000000 } }) },
+    session: {
+      usage: async () => {
+        if (opts.usageFails) throw new Error('usage unavailable')
+        return { context: { tokens: opts.tokens, window: 1000000 } }
+      },
+    },
     ui: { log: (text: string) => logs.push(text) },
   }
   return { $, calls, logs }
@@ -145,6 +152,19 @@ describe('register', () => {
         expect(calls.filter((c) => c.startsWith('http'))).toEqual([])
       })
     }
+  })
+
+  test('a failing host call after the config is read logs the provider and passes through once', async () => {
+    const hooks = hooksOf()
+    const { $, calls, logs } = engine({ usageFails: true })
+    const nexts: unknown[] = []
+    const e = { text: 'x', turnId: 't6' }
+    await hooks['turn.start']!($, e, async (arg: unknown) => nexts.push(arg))
+    expect(nexts).toEqual([e])
+    expect(logs).toEqual(['jev-box: openrouter internal'])
+    expect(calls.filter((c) => c.startsWith('http'))).toEqual([])
+    const step = { turnId: 't6', index: 0, model: 'claude-opus-5', messageCount: 1 }
+    expect(await runStep(hooks['turn.step']!, $, step)).toEqual(step)
   })
 
   test('an invalid config passes through and logs once', async () => {

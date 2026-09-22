@@ -18,6 +18,21 @@ test('a step on another engine model is an engine fallback and is left alone', a
   expect(await turns.resolveStep(step(1, 'claude-opus-4-8'))).toBeUndefined()
 })
 
+test('a repeated step 0 on a fallback model is left alone', async () => {
+  const turns = new Turns()
+  turns.start('t1', Promise.resolve('claude-haiku-4-5'))
+  expect(await turns.resolveStep(step(0, 'claude-opus-5'))).toBe('claude-haiku-4-5')
+  expect(await turns.resolveStep(step(0, 'claude-sonnet-5'))).toBeUndefined()
+  expect(await turns.resolveStep(step(1, 'claude-opus-5'))).toBe('claude-haiku-4-5')
+})
+
+test('a turn whose step 0 never reached the plugin is not switched', async () => {
+  const turns = new Turns()
+  turns.start('t1', Promise.resolve('claude-haiku-4-5'))
+  expect(await turns.resolveStep(step(1, 'claude-sonnet-5'))).toBeUndefined()
+  expect(await turns.resolveStep(step(2, 'claude-sonnet-5'))).toBeUndefined()
+})
+
 test('no decision passes every step through', async () => {
   const turns = new Turns()
   turns.start('t1', Promise.resolve(undefined))

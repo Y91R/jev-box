@@ -16,6 +16,7 @@ export type Config = {
   models: Model[]
   subagentTypes: string[]
   timeoutMs: number
+  contextReserve: number
   minConfidence?: number
   typesafe: ProviderSection
   openrouter: ProviderSection
@@ -36,6 +37,7 @@ const MAX_TIMEOUT_MS = 9000
 
 const DEFAULTS = {
   timeoutMs: 3000,
+  contextReserve: 0.5,
   subagentTypes: ['general-purpose'],
   typesafeModel: 'jev-latest',
   openrouterModel: '~typesafe/jev-latest',
@@ -123,6 +125,11 @@ export function validateConfig(raw: unknown): ConfigResult {
   const openrouterModel = openrouter.model ?? DEFAULTS.openrouterModel
   if (!isNonEmptyString(openrouterModel)) return invalid(13, 'openrouter.model')
 
+  const contextReserve = raw.contextReserve ?? DEFAULTS.contextReserve
+  if (typeof contextReserve !== 'number' || !(contextReserve > 0) || contextReserve > 1) {
+    return invalid(14, 'contextReserve')
+  }
+
   return {
     ok: true,
     config: {
@@ -130,6 +137,7 @@ export function validateConfig(raw: unknown): ConfigResult {
       models: parsed,
       subagentTypes,
       timeoutMs,
+      contextReserve,
       ...(minConfidence === undefined ? {} : { minConfidence }),
       typesafe: {
         model: typesafeModel,

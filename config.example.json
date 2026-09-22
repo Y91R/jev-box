@@ -26,6 +26,7 @@
     "general-purpose"
   ],
   "timeoutMs": 3000,
+  "contextReserve": 0.5,
   "typesafe": {
     "apiKey": "",
     "model": "jev-latest"

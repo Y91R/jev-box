@@ -37,7 +37,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Конфиг
 
-`~/.config/jev-box/config.json` (шаблон — `config.example.json`): провайдер, ключи, список моделей (`id`, `description`, `contextWindow`), `subagentTypes`, `timeoutMs` (не больше 9000: у хука лимит 10 с), `minConfidence`. Ключи лежат в этом же файле. `userConfig` в `plugin.json` и переменные окружения для настроек не используются. Конфиг перечитывается перед каждой классификацией.
+`~/.config/jev-box/config.json` (шаблон — `config.example.json`): провайдер, ключи, список моделей (`id`, `description`, `contextWindow`), `subagentTypes`, `timeoutMs` (не больше 9000: у хука лимит 10 с), `contextReserve` (какую долю окна модели может занимать текущий контекст, по умолчанию 0.5), `minConfidence`. Ключи лежат в этом же файле. `userConfig` в `plugin.json` и переменные окружения для настроек не используются. Конфиг перечитывается перед каждой классификацией.
 
 ## Команды
 

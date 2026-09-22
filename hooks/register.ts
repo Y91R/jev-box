@@ -1,7 +1,7 @@
 import type { EngineInterface, On } from 'claude-code'
 import { selectCandidates } from './candidates'
 import { classify, type ClassifyHost } from './classify'
-import { describeInvalid, loadConfig, type ConfigHost, type ConfigResult } from './config'
+import { describeInvalid, loadConfig, type ConfigHost, type ConfigResult, type Provider } from './config'
 import { Turns } from './turns'
 
 const turns = new Turns()
@@ -17,7 +17,8 @@ const logInvalidOnce = ($: EngineInterface, r: Extract<ConfigResult, { ok: false
   $.ui.log(describeInvalid(r))
 }
 
-const logInternal = ($: EngineInterface) => $.ui.log('jev-box: internal')
+const logInternal = ($: EngineInterface, provider?: Provider) =>
+  $.ui.log(provider === undefined ? 'jev-box: internal' : `jev-box: ${provider} internal`)
 
 const hostOf = ($: EngineInterface): ConfigHost & ClassifyHost => ({
   env: { get: () => $.env.get('HOME') },
@@ -41,19 +42,21 @@ export function register(on: On): void {
   })
 
   on('turn.start', async ($, e, next) => {
+    let provider: Provider | undefined
     try {
       if (e.text !== '' && (await isEnabled($))) {
         const r = await loadConfig(hostOf($))
         if (!r.ok) {
           logInvalidOnce($, r)
         } else {
+          provider = r.config.provider
           const usage = await $.session.usage()
-          const candidates = selectCandidates(r.config.models, usage.context.tokens)
+          const candidates = selectCandidates(r.config.models, usage.context.tokens, r.config.contextReserve)
           turns.start(e.turnId, classify(hostOf($), r.config, e.text, candidates))
         }
       }
     } catch {
-      logInternal($)
+      logInternal($, provider)
     }
     return next(e)
   })
@@ -77,18 +80,20 @@ export function register(on: On): void {
 
   on('agent.spawn', async ($, e, next) => {
     let id: string | undefined
+    let provider: Provider | undefined
     try {
       if (!e.fork && e.model === undefined && (await isEnabled($))) {
         const r = await loadConfig(hostOf($))
         if (!r.ok) {
           logInvalidOnce($, r)
         } else if (r.config.subagentTypes.includes(e.subagentType)) {
+          provider = r.config.provider
           const text = `${e.description}\n\n${e.prompt}`
           id = await classify(hostOf($), r.config, text, r.config.models)
         }
       }
     } catch {
-      logInternal($)
+      logInternal($, provider)
     }
     return next(id === undefined ? e : { ...e, model: id })
   })
