@@ -14,11 +14,26 @@ The plugin runs on **Function Hooks**, a preview feature of Claude Code enabled 
 - **Failures.** If Jev does not answer within the timeout, returns an error, picks a model outside the list, or the config is broken, the turn runs on the session model as usual, and the failure is written as one line in the transcript.
 - **Left alone.** `effort`, and the fallback model Claude Code switches to by itself.
 
+## Skills with Jev hints
+
+The plugin ships two skills — copies of the global `analyst-reviewer` and `system-analyst` with a cheap Jev pass:
+
+- `/jev-box:analyst-reviewer <spec.md>` — before the codex review, Jev flags requirements (`- **FR-N.** …`) with no observable result or with an evaluative word lacking a threshold. The flags set the order of the own review and go to the codex prompt as one paragraph; codex and the full review always run.
+- `/jev-box:system-analyst` — before handing over, the draft goes through the same pass; every flag is either fixed or kept with a reason in the summary.
+
+Hints never block anything, and the thresholds are not calibrated yet. The skills run `bun run ${CLAUDE_PLUGIN_ROOT}/cli/verify.ts` and open the sandbox to `api.typesafe.ai` and `openrouter.ai`; in the default permission mode Claude Code asks you to approve a run outside the sandbox. If Jev is unavailable, the summary says "Слой Jev пропущен: <code>" and the review runs as usual.
+
+The same pass by hand:
+
+```bash
+bun run cli/verify.ts requirements docs/requirements/model_choice.md
+```
+
 ## Requirements
 
 - **Claude Code with the Function Hooks preview runtime.** Tested on 2.1.278; third-party articles say the runtime ships since 2.1.260.
 - **An API key** for TypeSafe or OpenRouter. Only one provider is used — the one named in the config.
-- **For development only:** [Bun](https://bun.sh/) 1.3+. The plugin itself does not need Bun.
+- **[Bun](https://bun.sh/) 1.3+** — for the skills with Jev hints and for development. The model-choice hooks do not need Bun.
 
 ## Installation
 
