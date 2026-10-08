@@ -1,6 +1,6 @@
-import type { QuestionMap } from '../hooks/core/questions'
-import { buildJevRequest, type State } from '../hooks/core/request'
-import { parseJevResponse, type ParsedAnswers } from '../hooks/core/response'
+import type { QuestionMap } from '../core/questions'
+import { buildJevRequest, type State } from '../core/request'
+import { parseJevResponse, type ParsedAnswers } from '../core/response'
 import { send, type Http, type Timer } from './transport'
 
 export type CliJevConfig = { url: string; apiKey: string; jevModel: string; timeoutMs: number }

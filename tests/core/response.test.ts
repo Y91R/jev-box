@@ -1,6 +1,6 @@
 import { describe, expect, test } from 'bun:test'
-import type { ChoiceQuestion, NoulQuestion, ScoreQuestion } from '../../hooks/core/questions'
-import { parseJevResponse, peekAnswer, peekModel } from '../../hooks/core/response'
+import type { ChoiceQuestion, NoulQuestion, ScoreQuestion } from '../../core/questions'
+import { parseJevResponse, peekAnswer, peekModel } from '../../core/response'
 
 const fixture = (name: string) =>
   Bun.file(`${import.meta.dir}/../fixtures/${name}.json`).text()

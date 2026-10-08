@@ -1,4 +1,4 @@
-import type { AnswerMap, NoulQuestion } from '../../hooks/core/questions'
+import type { AnswerMap, NoulQuestion } from '../../core/questions'
 import type { Item } from '../extract'
 
 // Растёт при смене смысла любого вопроса: пороги ниже после этого устаревают.
