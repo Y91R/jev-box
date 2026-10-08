@@ -6,16 +6,27 @@ A Claude Code plugin with skills where a cheap pass of [Jev](https://typesafe.ai
 
 ## Skills with Jev hints
 
-The plugin ships four skills — copies of the global `analyst-reviewer`, `system-analyst`, `feature-planner` and `review-plan` with a cheap Jev pass:
+The plugin ships four skills — copies of the `blue-tape` upstream skills (`analyst`, `analyst-review`, `plan`, `review-plan`) with a cheap Jev pass. The common text matches the upstream skills word for word; the Jev additions sit in `<!-- jev:begin -->` … `<!-- jev:end -->` blocks, and a test checks the match.
 
-- `/jev-box:analyst-reviewer <spec.md>` — before the codex review, Jev flags requirements (`- **FR-N.** …`) with no observable result or with an evaluative word lacking a threshold. The flags set the order of the own review and go to the codex prompt as one paragraph; codex and the full review always run.
-- `/jev-box:system-analyst` — before handing over, the draft goes through the same pass; every flag is either fixed or kept with a reason in the summary.
-- `/jev-box:feature-planner` — before the self-check, the saved plan goes through a step check: code flags steps with no `**Проверка:**` line and no file paths, Jev flags a check with no command and result, manual actions, and reliance on third-party behaviour without a way to verify it.
-- `/jev-box:review-plan <plan.md>` — the same step check before the plan goes to codex; the flags set the order of the own review and go to the codex prompt as one paragraph.
+- `/jev-box:analyst-review <spec.md>` — before the codex review, Jev flags requirements with no observable result or with an evaluative word lacking a threshold. Requirements are found both by code `- **FR-N.** …` and by name `- **Name.** …`. A third pass checks how readable the document is, see below. The flags set the order of the own review and go to the codex task as one paragraph; codex and the full review always run.
+- `/jev-box:analyst` — before handing over, the spec draft goes through the wording pass; every flag is either fixed or kept with a reason in the summary.
+- `/jev-box:plan` — before the plan is shown, its `### Задача N:` tasks go through a check: code flags tasks with no test or check items and no file paths, Jev flags a check with no command and result, manual actions, and reliance on third-party behaviour without a way to verify it.
+- `/jev-box:review-plan <plan.md>` — the same task check plus the readability check before the plan goes to codex.
 
-Hints never block anything. The thresholds come from a preliminary calibration on `tests/fixtures/calibration` (jev-1.13.0, questions v1, ru, typesafe); with another model or provider the CLI says so in its header. The skills run `bun run ${CLAUDE_PLUGIN_ROOT}/cli/verify.ts` and open the sandbox to `api.typesafe.ai` and `openrouter.ai`; in the default permission mode Claude Code asks you to approve a run outside the sandbox. If Jev is unavailable, the summary says "Слой Jev пропущен: <code>" and the review runs as usual.
+Hints never block anything. The thresholds come from a preliminary calibration on `tests/fixtures/calibration` (jev-1.13.0, ru, typesafe); with another model or provider the CLI says so in its header. The skills run `bun run ${CLAUDE_PLUGIN_ROOT}/cli/verify.ts`, run codex through `blue-tape external-review`, and open the sandbox to `api.typesafe.ai` and `openrouter.ai`; in the default permission mode Claude Code asks you to approve a run outside the sandbox. If Jev is unavailable, the summary says "Слой Jev пропущен: <code>" and the review runs as usual.
 
-If the spec has a local source (a task file, a brief), `analyst-reviewer` makes a second pass that checks the spec against it: it flags requirements the source contradicts (`contradicts`) and requirements with no support in the source (`unsupported`). It only checks that nothing was made up; source constraints the spec left out are not searched for.
+If the spec has a local source (a task file, a brief), `analyst-review` makes a second pass that checks the spec against it: it flags requirements the source contradicts (`contradicts`) and requirements with no support in the source (`unsupported`). It only checks that nothing was made up; source constraints the spec left out are not searched for.
+
+### Readability check
+
+The `readability` command splits a document into paragraphs, list items, table rows and headings. What can be counted is found by code:
+
+- machine references with no retelling: `FR-8`, `ADR-0043`, `§15`, «п. 2», «вариант Б». A reference retold in brackets or after a dash is not flagged;
+- `path:line` anchors in a spec (they are fine in a plan, so `--plan` does not flag them);
+- more than one bold or italic emphasis in a fragment, emoji and arrows;
+- lists of three or more items of three words or fewer.
+
+Jev is asked about meaning: does the fragment read like a slogan, is it an empty claim, can the thought be understood without other context, is it overloaded with terms. Jev gets the document glossary along with the fragment. A document that is not in Russian is not sent to Jev; the code flags stay.
 
 The same passes by hand:
 
@@ -23,6 +34,7 @@ The same passes by hand:
 bun run cli/verify.ts requirements <spec.md>
 bun run cli/verify.ts sources <spec.md> --source <source.md>
 bun run cli/verify.ts plan-steps <plan.md>
+bun run cli/verify.ts readability <document.md> [--plan]
 ```
 
 ## Requirements
@@ -70,7 +82,8 @@ If the config fails validation, the CLI prints `Слой Jev пропущен: c
 
 ## Worth knowing
 
-- **Text goes to the provider.** Requirements, plan steps and source passages are sent to TypeSafe or OpenRouter.
+- **Text goes to the provider.** Requirements, plan steps, source passages and document fragments of the readability check are sent to TypeSafe or OpenRouter.
+- **`blue-tape` is needed.** The review skills run codex with `blue-tape external-review` from the `blue-tape` plugin.
 
 ## Development
 
@@ -80,6 +93,7 @@ bun test             # all tests
 bun test tests/cli/run.test.ts    # one file
 bun test -t "plan"                # tests by name fragment
 bun run typecheck                 # type check
+UPSTREAM_SKILLS=<path>/skills bun test tests/skills.test.ts  # the upstream snapshot is not stale
 claude plugin validate .                           # marketplace manifest
 claude plugin validate .claude-plugin/plugin.json  # plugin and skills
 ```

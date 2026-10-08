@@ -47,3 +47,11 @@ describe('plan step rules', () => {
     expect(codeFindingsOf(step('bun test'))).toEqual([])
   })
 })
+
+describe('code findings on plan tasks', () => {
+  test('a task without test items gets no_check', async () => {
+    const [first, second] = stepsOf(await Bun.file(`${fixtures}/plans/tasks.md`).text())
+    expect(codeFindingsOf(first!).map((f) => f.signal)).toEqual([])
+    expect(codeFindingsOf(second!).map((f) => f.signal)).toEqual(['no_check', 'no_paths'])
+  })
+})

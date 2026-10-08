@@ -49,7 +49,7 @@ const THRESHOLDS: Record<JevSignal, { flag: number; discretion: number }> = {
 
 export const LIMITATIONS = [
   'пороги откалиброваны предварительно: jev-1.13.0, вопросы v1, ru, typesafe; дефектов в наборе мало (tests/fixtures/calibration)',
-  'шаги ищутся только в форматах «## Шаг N» и «### N.» под «## Решение»',
+  'шаги ищутся только в форматах «## Шаг N», «### N.» под «## Решение» и «### Задача N:»',
 ]
 
 const zoneOf = (signal: JevSignal, bad: number): Zone | undefined =>

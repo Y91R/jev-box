@@ -289,3 +289,120 @@ describe('run plan-steps', () => {
     expect(report.findings.map((f: { signal: string }) => f.signal)).toEqual(['no_check', 'no_paths'])
   })
 })
+
+describe('run readability', () => {
+  const fixture = () => Bun.file(`${root}/tests/fixtures/typesafe-readability.json`).json()
+  const doc = [
+    '# Приёмка короба',
+    '',
+    '## Глоссарий',
+    '',
+    '- **Короб** — тара с посылками.',
+    '',
+    '## Сценарий',
+    '',
+    'Три посылки — три пути: короб едет дальше, а смысл остаётся с нами.',
+    '',
+    'По FR-8 короб уходит → в ячейку, см. `cli/run.ts:12`.',
+    '',
+  ].join('\n')
+
+  test('code flags and Jev flags in one table', async () => {
+    const { response } = await fixture()
+    const { io, out } = setup({ [CONFIG_PATH]: config, 'doc.md': doc }, replying(200, response))
+    expect(await run(io, ['readability', 'doc.md'])).toBe(0)
+    const lines = out[0]!.split('\n')
+    expect(lines).toContain('| место | фрагмент | сигнал | значение | зона |')
+    expect(lines).toContain('| doc.md:9 | Три посылки — три пути: короб едет дальше, а смысл остаётся | slogan | 0.95 | flag |')
+    expect(lines).toContain('| doc.md:11 | По FR-8 короб уходит → в ячейку, см. `cli/run.ts:12`. | bare_reference | FR-8 | flag |')
+    expect(lines).toContain('| doc.md:11 | По FR-8 короб уходит → в ячейку, см. `cli/run.ts:12`. | line_anchor | cli/run.ts:12 | flag |')
+    expect(lines).toContain('| doc.md:11 | По FR-8 короб уходит → в ячейку, см. `cli/run.ts:12`. | pictograph | → | flag |')
+  })
+
+  test('--plan allows line anchors', async () => {
+    const { response } = await fixture()
+    const { io, out } = setup({ [CONFIG_PATH]: config, 'doc.md': doc }, replying(200, response))
+    await run(io, ['readability', 'doc.md', '--plan'])
+    expect(out[0]).not.toContain('line_anchor')
+  })
+
+  test('--json keeps code measurements and Jev values, the glossary goes to Jev', async () => {
+    const { response } = await fixture()
+    const bodies: string[] = []
+    const http: Http = async (_url, init) => {
+      bodies.push(init.body)
+      return { status: 200, text: JSON.stringify(response) }
+    }
+    const { io, out } = setup({ [CONFIG_PATH]: config, 'doc.md': doc }, http)
+    await run(io, ['readability', 'doc.md', '--json'])
+    const report = JSON.parse(out[0]!)
+    const m = report.measurements.find((x: { line: number }) => x.line === 9)
+    expect(m.values.slogan).toBe(0.95)
+    expect(m.code).toEqual({ emphasis: 0 })
+    expect(JSON.parse(bodies[0]!).state.glossary).toBe('**Короб** — тара с посылками.')
+    expect(report.checked).toBe(6)
+    expect(report.jevChecked).toBe(3)
+  })
+
+  test('when Jev is unavailable the code flags stay under the skipped line', async () => {
+    const { io, out } = setup({ [CONFIG_PATH]: config, 'doc.md': doc }, async () => {
+      throw new Error('down')
+    })
+    expect(await run(io, ['readability', 'doc.md'])).toBe(0)
+    const lines = out[0]!.split('\n')
+    expect(lines[0]).toBe('Слой Jev пропущен: network (вызов, возможно, отрезан песочницей — нужны allowed_domains для api.typesafe.ai и openrouter.ai)')
+    expect(lines.some((l) => l.includes('| bare_reference | FR-8 | flag |'))).toBe(true)
+  })
+
+  test('skips: no document, no fragments, not Russian; wrong arguments exit 2', async () => {
+    const cases: [Record<string, string>, string][] = [
+      [{ [CONFIG_PATH]: config }, 'Слой Jev пропущен: no_document'],
+      [{ [CONFIG_PATH]: config, 'doc.md': '```\nкод\n```\n' }, 'Слой Jev пропущен: no_fragments'],
+      [{ [CONFIG_PATH]: config, 'doc.md': 'The plugin ships skills, see FR-8.\n' }, 'Слой Jev пропущен: not_russian'],
+    ]
+    for (const [files, first] of cases) {
+      const { io, out } = setup(files, replying(200, {}))
+      expect(await run(io, ['readability', 'doc.md'])).toBe(0)
+      expect(out[0]!.split('\n')[0]).toBe(first)
+    }
+    const { io, out } = setup({ 'doc.md': 'The plugin ships skills, see FR-8.\n' }, replying(200, {}))
+    await run(io, ['readability', 'doc.md'])
+    expect(out[0]).toContain('| bare_reference | FR-8 | flag |')
+    expect(await run(setup({}, replying(200, {})).io, ['readability'])).toBe(2)
+  })
+
+  test('only short fragments: header with zero checked by Jev, no skipped line', async () => {
+    const { io, out } = setup({ [CONFIG_PATH]: config, 'doc.md': '# Раздел\n\n- один\n- два\n- три\n' }, replying(200, {}))
+    await run(io, ['readability', 'doc.md'])
+    expect(out[0]).toStartWith('Подсказки Jev по doc.md (читаемость): проверено фрагментов — 4, из них Jev — 0, отказов — 0.')
+    expect(out[0]).toContain('| fragment_list | 3 пункта, до 1 слов | flag |')
+  })
+
+  test('a failing fragment is reported, the rest stay', async () => {
+    const { response } = await fixture()
+    let n = 0
+    const http: Http = async () => (++n === 1 ? { status: 500, text: '' } : { status: 200, text: JSON.stringify(response) })
+    const { io, out } = setup({ [CONFIG_PATH]: config, 'doc.md': doc }, http)
+    await run(io, ['readability', 'doc.md'])
+    expect(out[0]).toMatch(/Отказ по doc\.md:\d+: http_500/)
+  })
+
+  test('the glossary limitation belongs to one run only', async () => {
+    const { response } = await fixture()
+    const long = `# СТ\n\n## Глоссарий\n\n- **Термин** — ${'длинное определение '.repeat(1500)}\n\n## Текст\n\nОбычный абзац из нескольких слов.\n`
+    const first = setup({ [CONFIG_PATH]: config, 'doc.md': long }, replying(200, response))
+    await run(first.io, ['readability', 'doc.md'])
+    expect(first.out[0]).toContain('глоссарий не передан: слишком длинный')
+    const second = setup({ [CONFIG_PATH]: config, 'doc.md': doc }, replying(200, response))
+    await run(second.io, ['readability', 'doc.md'])
+    expect(second.out[0]).not.toContain('глоссарий не передан')
+  })
+
+  test('an OpenRouter answer is called out against the calibration key', async () => {
+    const { response } = await fixture()
+    const viaOpenRouter = JSON.stringify({ ...JSON.parse(config), provider: 'openrouter', openrouter: { apiKey: 'k', model: '~typesafe/jev-latest' } })
+    const { io, out } = setup({ [CONFIG_PATH]: viaOpenRouter, 'doc.md': doc }, replying(200, response))
+    await run(io, ['readability', 'doc.md'])
+    expect(out[0]).toContain('Внимание: пороги откалиброваны для jev-1.13.0 / typesafe')
+  })
+})

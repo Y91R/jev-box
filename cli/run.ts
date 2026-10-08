@@ -1,10 +1,11 @@
 import { loadConfig, type Provider } from './config'
 import { ENDPOINTS } from '../core/request'
-import { requirementsOf, stepsOf, type Item } from './extract'
+import { fragmentsOf, requirementsOf, stepsOf, type Fragment, type Item } from './extract'
 import { askJev, type CliJevConfig } from './jev-client'
 import { passagesOf, shortlist } from './passages'
 import type { Http, Timer } from './transport'
 import * as planSteps from './verifiers/plan-steps'
+import * as readability from './verifiers/readability'
 import * as requirements from './verifiers/requirements'
 import * as sources from './verifiers/sources'
 
@@ -21,6 +22,7 @@ const USAGE = [
   'использование: verify.ts requirements <файл.md> [--json]',
   '               verify.ts sources <файл.md> --source <источник> [--json]',
   '               verify.ts plan-steps <план.md> [--json]',
+  '               verify.ts readability <файл.md> [--plan] [--json]',
 ].join('\n')
 // Прокси песочницы Claude отвечает на закрытый хост статусом 403, а не сетевой ошибкой.
 const SANDBOX_CODES = new Set(['network', 'http_403'])
@@ -68,6 +70,14 @@ type SourcesReport = Common & { source: string; findings: sources.Finding[] }
 type PlanStepsReport = Common & {
   findings: planSteps.Finding[]
   measurements: { id: string; line: number; values: Record<string, number> }[]
+}
+
+type ReadabilityFinding = readability.Finding | readability.CodeFinding
+type ReadabilityReport = Common & {
+  jevChecked: number
+  findings: ReadabilityFinding[]
+  measurements: { id: string; line: number; values: Record<string, number>; code: Record<string, number | string> }[]
+  snippets: Record<string, string>
 }
 
 class Skip {
@@ -285,6 +295,83 @@ async function verifyPlanSteps(io: Io, file: string): Promise<PlanStepsReport> {
   }
 }
 
+const SNIPPET = 60
+const snippetOf = (f: Fragment) => f.text.replace(/\s+/g, ' ').replace(/\|/g, '\\|').slice(0, SNIPPET).trimEnd()
+
+// Пометки кода от Jev не зависят: при его отказе и на нерусском документе они остаются в выводе.
+async function verifyReadability(io: Io, file: string, plan: boolean): Promise<ReadabilityReport> {
+  const fragments = fragmentsOf(await readOrSkip(io, file, 'no_document'))
+  if (fragments.length === 0) throw new Skip('no_fragments')
+  const series = new Map(readability.listSeriesOf(fragments).map((s) => [s.line, s]))
+  const codeFindings: ReadabilityFinding[] = [
+    ...fragments.flatMap((f) => readability.codeFindingsOf(f, { plan })),
+    ...readability.listFindingsOf(fragments),
+  ]
+  const codeOf = (f: Fragment): Record<string, number | string> => {
+    const s = series.get(f.line)
+    return { emphasis: readability.emphasisOf(f), ...(s === undefined ? {} : { fragment_list: `${s.length}x${s.maxWords}` }) }
+  }
+  const snippets = Object.fromEntries(fragments.map((f) => [f.id, snippetOf(f)]))
+  const askable = fragments.filter((f) => Object.keys(readability.questionsFor(f)).length > 0)
+  const glossary = readability.glossaryOf(fragments)
+  const glossaryDropped = askable.some((f) => readability.stateOf(f, glossary).glossaryDropped)
+  const limitations = [...readability.LIMITATIONS, ...(glossaryDropped ? [readability.GLOSSARY_DROPPED] : [])]
+  const base = { file, questionVersion: readability.QUESTION_VERSION, language: 'ru' as const, limitations, snippets }
+  const withoutJev = (code: string): ReadabilityReport => ({
+    ...skipped(code, file, readability.QUESTION_VERSION, limitations),
+    snippets,
+    checked: fragments.length,
+    jevChecked: 0,
+    findings: codeFindings.sort(byZoneThenLine),
+    measurements: fragments.map((f) => ({ id: f.id, line: f.line, values: {}, code: codeOf(f) })),
+  })
+  if (!readability.isRussian(fragments)) return withoutJev('not_russian')
+  if (askable.length === 0) {
+    return { ...withoutJev(''), skipped: undefined, ...base, checked: fragments.length, failures: [] }
+  }
+
+  let jevConfig: Awaited<ReturnType<typeof jevOf>>
+  try {
+    jevConfig = await jevOf(io)
+  } catch (e) {
+    if (e instanceof Skip) return withoutJev(e.code)
+    throw e
+  }
+  const { jev, provider } = jevConfig
+  const outcomes = await mapLimited(askable, PARALLEL, async (fragment) => ({
+    fragment,
+    reply: await askJev(io, jev, readability.stateOf(fragment, glossary).state, readability.questionsFor(fragment)),
+  }))
+
+  const failures: Failure[] = []
+  const findings: ReadabilityFinding[] = [...codeFindings]
+  const values = new Map<string, Record<string, number>>()
+  let model: string | undefined
+  for (const { fragment, reply } of outcomes) {
+    if (!reply.ok) {
+      failures.push({ id: fragment.id, line: fragment.line, code: reply.fail })
+      continue
+    }
+    model ??= reply.jevModel
+    findings.push(...readability.findingsOf(fragment, reply.answers))
+    values.set(fragment.id, Object.fromEntries(Object.entries(reply.answers).map(([k, a]) => [k, a.noul])))
+  }
+  if (failures.length === askable.length) return withoutJev(failures[0]!.code)
+
+  const note = calibrationNote(readability.CALIBRATION, model, provider)
+  return {
+    ...base,
+    ...(model === undefined ? {} : { model }),
+    provider,
+    ...(note === undefined ? {} : { calibration: note }),
+    checked: fragments.length,
+    jevChecked: askable.length,
+    failures,
+    findings: findings.sort(byZoneThenLine),
+    measurements: fragments.map((f) => ({ id: f.id, line: f.line, values: values.get(f.id) ?? {}, code: codeOf(f) })),
+  }
+}
+
 const headerOf = (r: Common, what: string, counted = 'требований'): string[] => [
   `Подсказки Jev по ${r.file} (${what}): проверено ${counted} — ${r.checked}, отказов — ${r.failures.length}.`,
   `Модель ${r.model ?? 'неизвестна'}, провайдер ${r.provider}, версия вопросов ${r.questionVersion}, язык ${r.language}.`,
@@ -340,6 +427,25 @@ function planStepsMarkdown(r: PlanStepsReport): string {
   return [...lines, ...failuresOf(r)].join('\n')
 }
 
+function readabilityMarkdown(r: ReadabilityReport): string {
+  const rows = r.findings.map((f) => {
+    const value = 'found' in f ? f.found : f.value.toFixed(2)
+    return `| ${r.file}:${f.line} | ${r.snippets[f.id] ?? ''} | ${f.signal} | ${value} | ${f.zone} |`
+  })
+  const table = ['| место | фрагмент | сигнал | значение | зона |', '|---|---|---|---|---|', ...rows]
+  if (r.skipped !== undefined) {
+    if (rows.length === 0) return skipLine(r)
+    return [skipLine(r), '', 'Пометки кода (без Jev):', '', ...table].join('\n')
+  }
+  const lines = [
+    `Подсказки Jev по ${r.file} (читаемость): проверено фрагментов — ${r.checked}, из них Jev — ${r.jevChecked}, отказов — ${r.failures.length}.`,
+    ...headerOf(r, 'читаемость').slice(1),
+    ...(rows.length === 0 ? ['Пометок нет.'] : table),
+    ...r.failures.map((f) => `Отказ по ${r.file}:${f.line}: ${f.code}`),
+  ]
+  return lines.join('\n')
+}
+
 const skipLine = (r: Common) =>
   `Слой Jev пропущен: ${r.skipped}${r.hint === undefined ? '' : ` (${r.hint})`}`
 
@@ -348,7 +454,7 @@ export async function run(io: Io, argv: readonly string[]): Promise<number> {
   const json = rest.includes('--json')
   const at = rest.indexOf('--source')
   const source = at === -1 ? undefined : rest[at + 1]
-  if (file === undefined || !['requirements', 'sources', 'plan-steps'].includes(command ?? '')) {
+  if (file === undefined || !['requirements', 'sources', 'plan-steps', 'readability'].includes(command ?? '')) {
     io.out(USAGE)
     return 2
   }
@@ -358,6 +464,7 @@ export async function run(io: Io, argv: readonly string[]): Promise<number> {
   try {
     if (command === 'requirements') print(await verifyRequirements(io, file), requirementsMarkdown)
     else if (command === 'sources') print(await verifySources(io, file, source), sourcesMarkdown)
+    else if (command === 'readability') print(await verifyReadability(io, file, rest.includes('--plan')), readabilityMarkdown)
     else print(await verifyPlanSteps(io, file), planStepsMarkdown)
   } catch (e) {
     if (!(e instanceof Skip)) throw e
@@ -366,7 +473,9 @@ export async function run(io: Io, argv: readonly string[]): Promise<number> {
         ? [requirements.QUESTION_VERSION, requirements.LIMITATIONS]
         : command === 'sources'
           ? [sources.QUESTION_VERSION, sources.LIMITATIONS]
-          : [planSteps.QUESTION_VERSION, planSteps.LIMITATIONS]
+          : command === 'readability'
+            ? [readability.QUESTION_VERSION, readability.LIMITATIONS]
+            : [planSteps.QUESTION_VERSION, planSteps.LIMITATIONS]
     print(skipped(e.code, file, version, limitations), skipLine)
   }
   return 0

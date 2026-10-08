@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'bun:test'
-import { requirementsOf, stepsOf } from '../../cli/extract'
+import { fragmentsOf, requirementsOf, stepsOf, wordsOf } from '../../cli/extract'
 
 const root = `${import.meta.dir}/../..`
 const st = () => Bun.file(`${root}/tests/fixtures/requirements/model_choice.md`).text()
@@ -106,5 +106,111 @@ describe('code blocks', () => {
   test('a longer fence is closed only by a fence at least as long', () => {
     const md = ['## Шаг 1. A', '````', '```', '## Шаг 2. Внутри', '````', '## Шаг 3. B'].join('\n')
     expect(stepsOf(md).map((s) => s.id)).toEqual(['Шаг 1', 'Шаг 3'])
+  })
+})
+
+describe('requirementsOf on named requirements', () => {
+  const named = () => Bun.file(`${root}/tests/fixtures/requirements/named.md`).text()
+
+  test('takes bold-named items only inside the requirements sections', async () => {
+    expect(requirementsOf(await named()).map((i) => [i.id, i.line])).toEqual([
+      ['Перенос одним коммитом', 11],
+      ['Отчёт команды', 13],
+      ['Код выхода', 21],
+    ])
+  })
+
+  test('the item keeps its continuation lines', async () => {
+    const item = requirementsOf(await named()).find((i) => i.id === 'Перенос одним коммитом')!
+    expect(item.text).toBe('**Перенос одним коммитом.** Система должна переносить файлы одним коммитом.\n  Продолжение с отступом.')
+  })
+
+  test('the text after the name is not checked, glossary items are skipped', () => {
+    const md = '## Глоссарий\n\n- **Термин** — определение.\n\n## Функциональные требования\n\n- **Отчёт.** Скилл должен дать строку.'
+    expect(requirementsOf(md).map((i) => i.id)).toEqual(['Отчёт'])
+  })
+})
+
+describe('stepsOf on plan tasks', () => {
+  const tasks = () => Bun.file(`${root}/tests/fixtures/plans/tasks.md`).text()
+
+  test('"### Задача N:" tasks, a task inside an HTML comment is skipped', async () => {
+    expect(stepsOf(await tasks()).map((s) => [s.id, s.line])).toEqual([
+      ['Задача 1', 12],
+      ['Задача 2', 22],
+      ['Задача 2.1', 26],
+    ])
+  })
+
+  test('the check is the test and run checklist items, the paths include the Files block', async () => {
+    const [first, second] = stepsOf(await tasks())
+    expect(first!.check).toBe('тесты на названия требований Прогнать `bun test tests/cli` — зелёные')
+    expect(first!.paths).toEqual(['cli/extract.ts', 'tests/fixtures/requirements/named.md'])
+    expect(second!.check).toBeUndefined()
+  })
+
+  test('a numbered sub-task does not swallow the next heading', async () => {
+    const steps = stepsOf(await tasks())
+    expect(steps[1]!.text).not.toContain('Ещё документация')
+    expect(steps[2]!.text).not.toContain('Ручная проверка')
+  })
+})
+
+describe('fragmentsOf', () => {
+  const doc = () => Bun.file(`${root}/tests/fixtures/readability/fragments.md`).text()
+
+  test('paragraphs, items, rows and headings with their lines and sections', async () => {
+    const got = fragmentsOf(await doc()).map((f) => [f.kind, f.line, f.text, f.section])
+    expect(got).toEqual([
+      ['heading', 4, 'Документ', 'Документ'],
+      ['paragraph', 6, 'Первый абзац\nво второй строке.', 'Документ'],
+      ['item', 9, 'Пункт первый\nпродолжение пункта', 'Документ'],
+      ['item', 11, 'вложенный пункт', 'Документ'],
+      ['item', 12, 'Пункт второй', 'Документ'],
+      ['paragraph', 14, 'Абзац между списками.', 'Документ'],
+      ['item', 16, 'Нумерованный пункт', 'Документ'],
+      ['row', 20, 'id | uuid', 'Документ'],
+      ['heading', 31, 'Раздел два', 'Раздел два'],
+      ['paragraph', 33, 'Последний абзац.', 'Раздел два'],
+    ])
+  })
+
+  test('items carry their depth and list, a paragraph starts a new list', async () => {
+    const items = fragmentsOf(await doc()).filter((f) => f.kind === 'item')
+    expect(items.map((f) => [f.line, f.depth, f.list])).toEqual([
+      [9, 0, 1],
+      [11, 1, 1],
+      [12, 0, 1],
+      [16, 0, 2],
+    ])
+  })
+
+  test('a document of code only has no fragments', () => {
+    expect(fragmentsOf('```\n# код\n```\n')).toEqual([])
+  })
+})
+
+describe('wordsOf', () => {
+  test('a code span is one word, hyphens and punctuation split', () => {
+    expect(wordsOf('`cli/run.ts` падает, по-прежнему')).toBe(4)
+  })
+})
+
+describe('stepsOf: checks of plan tasks', () => {
+  test('«проверка» and «проверить» items are checks, a wrapped item keeps its continuation', () => {
+    const md = [
+      '### Задача 1: Переименовать',
+      '',
+      '- [ ] `git mv a b`',
+      '- [ ] проверка: `grep -rn a skills` даёт 0 совпадений',
+      '- [ ] тесты на разбор: пустой ввод,',
+      '      ошибка формата',
+      '- [ ] проверить, что каталог на месте',
+    ].join('\n')
+    const [task] = stepsOf(md)
+    expect(task!.check).toBe(
+      'проверка: `grep -rn a skills` даёт 0 совпадений тесты на разбор: пустой ввод, ошибка формата проверить, что каталог на месте',
+    )
+    expect(task!.text).not.toContain('ошибка формата')
   })
 })
