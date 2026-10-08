@@ -12,7 +12,7 @@
   },
   "empty_thesis": {
    "type": "noul",
-   "instructions": "Does `fragment` state a general claim with no concrete fact, decision, number or reason, like filler written by a text generator?"
+   "instructions": "Is `fragment` a complete statement (not a heading, not a lead-in to a list, not a template placeholder) that makes a general claim without any concrete fact, decision, number, name or reason?"
   },
   "unexpanded": {
    "type": "noul",
@@ -32,11 +32,11 @@
    },
    "empty_thesis": {
     "type": "noul",
-    "noul": 0.68
+    "noul": 0.75
    },
    "unexpanded": {
     "type": "noul",
-    "noul": 0.47
+    "noul": 0.46
    },
    "term_overload": {
     "type": "noul",
@@ -44,7 +44,7 @@
    }
   },
   "usage": {
-   "input_tokens": 508,
+   "input_tokens": 524,
    "output_tokens": 78
   }
  }

@@ -406,3 +406,12 @@ describe('run readability', () => {
     expect(out[0]).toContain('Внимание: пороги откалиброваны для jev-1.13.0 / typesafe')
   })
 })
+
+describe('unknown flags', () => {
+  test('an unknown flag prints the usage and exits 2', async () => {
+    const { io, out } = setup({ 'doc.md': 'Текст.' }, replying(200, {}))
+    expect(await run(io, ['readability', 'doc.md', '--paln'])).toBe(2)
+    expect(out[0]).toStartWith('использование:')
+    expect(await run(setup({ 'doc.md': 'Текст.' }, replying(200, {})).io, ['sources', 'doc.md', '--source', 'src.md', '--json'])).not.toBe(2)
+  })
+})

@@ -24,6 +24,8 @@ const BOLD = /\*\*[^*\n]+?\*\*|__[^_\n]+?__/g
 const ITALIC = /(?<![*\p{L}\p{N}])\*[^*\n]+?\*(?!\*)|(?<![_\p{L}\p{N}])_[^_\n]+?_(?![_\p{L}\p{N}])/gu
 const PICTOGRAPH = /\p{Extended_Pictographic}|[→←↔⇒⇐⇔]|->|=>/u
 
+// Шаблон plan основного набора требует префиксы ➕ (новая задача) и ⚠️ (блокер) у пунктов плана.
+const PROGRESS_PREFIX = /^(?:\[[ xX]\]\s+)?(?:➕|⚠️?)\s*/u
 const withoutCodeSpans = (text: string) => text.replace(/`[^`]*`/g, ' ')
 const sentencesOf = (text: string) => text.split(/(?<=[.!?])\s+(?=[А-ЯЁA-Z«])/u)
 
@@ -64,7 +66,8 @@ export function codeFindingsOf(fragment: Fragment, { plan }: { plan: boolean }):
   }
   const emphases = emphasesOf(fragment.text)
   if (emphases > EMPHASIS_MAX) findings.push({ ...at, signal: 'emphasis', found: `${emphases} выделения` })
-  const picture = PICTOGRAPH.exec(withoutCodeSpans(fragment.text))
+  const text = plan && fragment.kind === 'item' ? fragment.text.replace(PROGRESS_PREFIX, '') : fragment.text
+  const picture = PICTOGRAPH.exec(withoutCodeSpans(text))
   if (picture) findings.push({ ...at, signal: 'pictograph', found: picture[0] })
   return findings
 }
@@ -116,7 +119,7 @@ export function listFindingsOf(fragments: Fragment[]): CodeFinding[] {
 }
 
 // Растёт при смене смысла любого вопроса: пороги ниже после этого устаревают.
-export const QUESTION_VERSION = 1
+export const QUESTION_VERSION = 2
 
 export const QUESTIONS = {
   slogan: {
@@ -127,7 +130,7 @@ export const QUESTIONS = {
   empty_thesis: {
     type: 'noul',
     instructions:
-      'Does `fragment` state a general claim with no concrete fact, decision, number or reason, like filler written by a text generator?',
+      'Is `fragment` a complete statement (not a heading, not a lead-in to a list, not a template placeholder) that makes a general claim without any concrete fact, decision, number, name or reason?',
   },
   unexpanded: {
     type: 'noul',
@@ -146,25 +149,28 @@ export type Finding = { id: string; line: number; signal: Signal; value: number;
 export type Answers = Partial<AnswerMap<typeof QUESTIONS>>
 
 // Ключ набора tests/fixtures/calibration/labels.tsv: пороги ниже верны только для него.
-export const CALIBRATION = { model: 'jev-1.13.0', questionVersion: 1, language: 'ru', providers: ['typesafe'] } as const
+export const CALIBRATION = { model: 'jev-1.13.0', questionVersion: 2, language: 'ru', providers: ['typesafe'] } as const
 
-// Подобраны на документах freight-forwarding (tests/fixtures/calibration/labels.tsv). Дефектов на
-// сигнал меньше 30, поэтому пороги предварительные. empty_thesis Jev не отделяет от вводных строк
-// и заглушек шаблонов: его пороги выше всех значений в корпусе, подсказок он почти не даёт.
+// Подобраны 2026-10-09 на документах freight-forwarding: 912 фрагментов, разметка Claude и слепая
+// разметка codex (tests/fixtures/calibration/labels.tsv). Jev плохо отделяет дефекты на этом
+// корпусе, поэтому пороги держат шум низким. slogan: при 0,86 верны 3 пометки из 5.
+// term_overload: при 0,82 верны 7 из 25. unexpanded верными пометками не отделяется ни на одном
+// пороге — его порог выше всех значений корпуса. empty_thesis с версии вопросов 2 спрашивает про
+// законченное утверждение, а не про вводную строку: по корпусу 10 пометок от 0,75, верны две.
 export const THRESHOLDS: Record<Signal, { flag: number; discretion: number }> = {
-  slogan: { flag: 0.85, discretion: 0.8 },
-  empty_thesis: { flag: 0.9, discretion: 0.88 },
-  unexpanded: { flag: 0.85, discretion: 0.8 },
-  term_overload: { flag: 0.8, discretion: 0.78 },
+  slogan: { flag: 0.86, discretion: 0.86 },
+  empty_thesis: { flag: 0.8, discretion: 0.75 },
+  unexpanded: { flag: 0.9, discretion: 0.88 },
+  term_overload: { flag: 0.84, discretion: 0.82 },
 }
 const MIN_WORDS = 3
 // Запас под лимит Jev в 32 тысячи токенов на state и самый длинный вопрос.
 const MAX_STATE_CHARS = 20_000
 
 export const LIMITATIONS = [
-  'пороги откалиброваны предварительно: jev-1.13.0, вопросы v1, ru, typesafe, документы freight-forwarding',
-  'пороги slogan, unexpanded, term_overload, emphasis и fragment_list не откалиброваны: в наборе меньше 30 дефектов на сигнал (16, 7, 16, 8 и 0)',
-  'порог empty_thesis не откалиброван: вводные строки и заглушки шаблонов Jev оценивает выше настоящих пустых тезисов',
+  'пороги откалиброваны на документах freight-forwarding: jev-1.13.0, вопросы v2, ru, typesafe; точность смысловых пометок низкая (slogan — 3 из 5, term_overload — 7 из 25, empty_thesis — 2 из 10)',
+  'пороги slogan, unexpanded, empty_thesis, emphasis и fragment_list не откалиброваны: в наборе меньше 30 дефектов на сигнал (9, 9, 2, 15 и 0)',
+  'unexpanded Jev от нормы не отделяет — порог выше всех значений корпуса, пометок почти не будет',
   'смысловые вопросы задаются только фрагментам из трёх слов и больше, строкам таблиц не задаются',
 ]
 export const GLOSSARY_DROPPED = 'глоссарий не передан: слишком длинный'

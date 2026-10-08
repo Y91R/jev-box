@@ -24,6 +24,13 @@ const USAGE = [
   '               verify.ts plan-steps <план.md> [--json]',
   '               verify.ts readability <файл.md> [--plan] [--json]',
 ].join('\n')
+// Опечатка во флаге не должна молча менять режим проверки: неизвестный флаг — ошибка аргументов.
+const FLAGS: Record<string, readonly string[]> = {
+  requirements: ['--json'],
+  sources: ['--json', '--source'],
+  'plan-steps': ['--json'],
+  readability: ['--json', '--plan'],
+}
 // Прокси песочницы Claude отвечает на закрытый хост статусом 403, а не сетевой ошибкой.
 const SANDBOX_CODES = new Set(['network', 'http_403'])
 const SANDBOX_HINT =
@@ -454,7 +461,9 @@ export async function run(io: Io, argv: readonly string[]): Promise<number> {
   const json = rest.includes('--json')
   const at = rest.indexOf('--source')
   const source = at === -1 ? undefined : rest[at + 1]
-  if (file === undefined || !['requirements', 'sources', 'plan-steps', 'readability'].includes(command ?? '')) {
+  const flags = command !== undefined && Object.hasOwn(FLAGS, command) ? FLAGS[command] : undefined
+  const unknown = rest.some((arg, i) => !(flags?.includes(arg) || (arg === source && rest[i - 1] === '--source')))
+  if (file === undefined || flags === undefined || unknown) {
     io.out(USAGE)
     return 2
   }

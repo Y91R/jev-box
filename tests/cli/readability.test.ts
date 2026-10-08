@@ -172,3 +172,14 @@ describe('table rows', () => {
     expect(Object.keys(questionsFor(row))).toEqual([])
   })
 })
+
+describe('progress prefixes of the plan template', () => {
+  const item = (text: string): Fragment => ({ id: '1', line: 1, kind: 'item', text, section: 'Итог', depth: 0, list: 1 })
+
+  test('➕ and ⚠️ at the start of a plan item are not flagged with --plan, elsewhere they are', () => {
+    expect(codeFindingsOf(item('➕ новая задача'), { plan: true })).toEqual([])
+    expect(codeFindingsOf(item('[x] ⚠️ блокер снят'), { plan: true })).toEqual([])
+    expect(codeFindingsOf(item('➕ новая задача'), { plan: false }).map((f) => f.signal)).toEqual(['pictograph'])
+    expect(codeFindingsOf(item('новая задача ➕ и стрелка →'), { plan: true }).map((f) => f.found)).toEqual(['➕'])
+  })
+})

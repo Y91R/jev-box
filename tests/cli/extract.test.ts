@@ -214,3 +214,17 @@ describe('stepsOf: checks of plan tasks', () => {
     expect(task!.text).not.toContain('ошибка формата')
   })
 })
+
+describe('review fixes', () => {
+  test('a coded requirement inside a code block is not a requirement', () => {
+    const md = '## Функциональные требования\n\n```\n- **FR-9.** пример\n```\n\n- **FR-1.** Система должна A.\n'
+    expect(requirementsOf(md).map((i) => i.id)).toEqual(['FR-1'])
+  })
+
+  test('a table without the leading pipe is split into rows', () => {
+    expect(fragmentsOf('a | b\n---|---\nx | y\nz | w\n').map((f) => [f.kind, f.line, f.text])).toEqual([
+      ['row', 3, 'x | y'],
+      ['row', 4, 'z | w'],
+    ])
+  })
+})
