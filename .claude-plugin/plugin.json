@@ -1,6 +1,6 @@
 {
   "name": "jev-box",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "description": "Ships analyst, analyst-review, plan and review-plan skills (copies of the blue-tape skills) with cheap TypeSafe Jev hints on requirements, plan tasks and document readability, called directly or through OpenRouter. Reads ~/.config/jev-box/config.json.",
   "author": {
     "name": "yar"

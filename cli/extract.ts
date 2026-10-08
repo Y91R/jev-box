@@ -24,7 +24,7 @@ export function requirementsOf(markdown: string): Item[] {
   for (const [i, line] of markdown.split('\n').entries()) {
     const fenced = inCode(line)
     if (!fenced && line.startsWith('## ')) inRequirements = REQUIREMENT_SECTIONS.has(line.slice(3).trim())
-    const m = REQUIREMENT.exec(line)
+    const m = fenced ? null : REQUIREMENT.exec(line)
     const named = !m && !fenced && inRequirements ? NAMED_REQUIREMENT.exec(line) : null
     if (m || named) {
       close()
@@ -168,6 +168,7 @@ export function fragmentsOf(markdown: string): Fragment[] {
   let inComment = false
   let list = 0
   let listOpen = false
+  let inTable = false
   const indents: number[] = []
   const close = () => {
     if (current) {
@@ -200,6 +201,7 @@ export function fragmentsOf(markdown: string): Fragment[] {
     }
     const at = { id: String(i + 1), line: i + 1, section }
     if (line.trim() === '') {
+      inTable = false
       if (current?.kind !== 'item') close()
       continue
     }
@@ -211,10 +213,13 @@ export function fragmentsOf(markdown: string): Fragment[] {
       fragments.push({ ...at, section, kind: 'heading', text: section })
       continue
     }
-    if (line.trimStart().startsWith('|')) {
+    // Строка таблицы GFM может идти и без ведущего «|»: тогда её выдаёт разделитель под шапкой.
+    const separatorNext = line.includes('|') && TABLE_SEPARATOR.test(lines[i + 1] ?? '') && (lines[i + 1] ?? '').includes('-')
+    if (line.trimStart().startsWith('|') || separatorNext || (inTable && line.includes('|'))) {
       close()
       breakList()
-      if (TABLE_SEPARATOR.test(line) || TABLE_SEPARATOR.test(lines[i + 1] ?? '')) continue
+      inTable = true
+      if (TABLE_SEPARATOR.test(line) || separatorNext) continue
       fragments.push({ ...at, kind: 'row', text: line.trim().replace(/^\||\|$/g, '').trim().replace(/\s*\|\s*/g, ' | ') })
       continue
     }

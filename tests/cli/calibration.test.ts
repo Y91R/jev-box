@@ -115,12 +115,11 @@ describe('calibration set', () => {
     const items = rows.filter((r) => r.verifier === 'readability').map((r) => [r])
     const got = tally(items, (item) => new Set(flagged(item[0]!) ? [item[0]!.signal] : []))
     expect(got).toEqual({
-      slogan: { caught: 11, extra: 2, missed: 5 },
-      empty_thesis: { caught: 0, extra: 0, missed: 3 },
-      unexpanded: { caught: 3, extra: 2, missed: 4 },
-      term_overload: { caught: 5, extra: 1, missed: 11 },
-      emphasis: { caught: 8, extra: 2, missed: 0 },
-      fragment_list: { caught: 0, extra: 0, missed: 0 },
+      slogan: { caught: 3, extra: 2, missed: 6 },
+      empty_thesis: { caught: 2, extra: 2, missed: 0 },
+      unexpanded: { caught: 0, extra: 0, missed: 9 },
+      term_overload: { caught: 7, extra: 18, missed: 44 },
+      emphasis: { caught: 15, extra: 25, missed: 0 },
     })
   })
 })
