@@ -1,4 +1,4 @@
-# model=jev-1.13.0 requirements=1 plan-steps=1 language=ru providers=typesafe
+# model=jev-1.13.0 requirements=1 plan-steps=1 readability=1 emphasis=1 fragment_list=3x3 language=ru providers=typesafe
 verifier	source	id	signal	label	firm	codex	typesafe	openrouter
 requirements	model_choice.md	FR-1	observable	0	твёрдо	0	0.643	-
 requirements	model_choice.md	FR-1	vague_word	0	твёрдо	0	0.050	-
@@ -277,3 +277,340 @@ plan-steps	holdout-plan.md	Шаг 11	observable_check	0	твёрдо	-	0.960	-
 plan-steps	holdout-plan.md	Шаг 12	manual_action	0	твёрдо	-	0.450	-
 plan-steps	holdout-plan.md	Шаг 12	unverified_behavior	0	твёрдо	-	0.170	-
 plan-steps	holdout-plan.md	Шаг 12	observable_check	0	твёрдо	-	0.960	-
+plan-steps	signal-nedovolstva.md	Задача 1	manual_action	0	твёрдо	0	0.780	-
+plan-steps	signal-nedovolstva.md	Задача 1	observable_check	0	твёрдо	0	0.970	-
+plan-steps	signal-nedovolstva.md	Задача 1	unverified_behavior	0	твёрдо	0	0.570	-
+plan-steps	signal-nedovolstva.md	Задача 2	manual_action	0	твёрдо	0	0.760	-
+plan-steps	signal-nedovolstva.md	Задача 2	observable_check	0	твёрдо	0	0.950	-
+plan-steps	signal-nedovolstva.md	Задача 2	unverified_behavior	0	твёрдо	0	0.200	-
+plan-steps	signal-nedovolstva.md	Задача 3	manual_action	0	твёрдо	0	0.550	-
+plan-steps	signal-nedovolstva.md	Задача 3	observable_check	0	твёрдо	0	0.950	-
+plan-steps	signal-nedovolstva.md	Задача 3	unverified_behavior	0	твёрдо	0	0.410	-
+plan-steps	signal-nedovolstva.md	Задача 4	manual_action	0	твёрдо	0	0.750	-
+plan-steps	signal-nedovolstva.md	Задача 4	observable_check	0	твёрдо	0	0.960	-
+plan-steps	signal-nedovolstva.md	Задача 4	unverified_behavior	0	твёрдо	0	0.680	-
+plan-steps	signal-nedovolstva.md	Задача 5	manual_action	0	твёрдо	0	0.760	-
+plan-steps	signal-nedovolstva.md	Задача 5	observable_check	0	твёрдо	0	0.950	-
+plan-steps	signal-nedovolstva.md	Задача 5	unverified_behavior	1	спорно	0	0.700	-
+plan-steps	signal-nedovolstva.md	Задача 6	manual_action	1	твёрдо	1	0.930	-
+plan-steps	signal-nedovolstva.md	Задача 6	observable_check	0	твёрдо	0	0.840	-
+plan-steps	signal-nedovolstva.md	Задача 6	unverified_behavior	0	твёрдо	0	0.740	-
+plan-steps	signal-nedovolstva.md	Задача 7	manual_action	0	твёрдо	0	0.590	-
+plan-steps	signal-nedovolstva.md	Задача 7	unverified_behavior	0	твёрдо	0	0.610	-
+plan-steps	signal-nedovolstva.md	Задача 8	manual_action	0	твёрдо	0	0.520	-
+plan-steps	signal-nedovolstva.md	Задача 8	unverified_behavior	0	твёрдо	0	0.530	-
+plan-steps	blue-tape:20260928-laconic-skill-names.md	Задача 1	manual_action	0	твёрдо	0	0.800	-
+plan-steps	blue-tape:20260928-laconic-skill-names.md	Задача 1	observable_check	0	твёрдо	0	0.980	-
+plan-steps	blue-tape:20260928-laconic-skill-names.md	Задача 1	unverified_behavior	0	твёрдо	0	0.130	-
+plan-steps	blue-tape:20260928-laconic-skill-names.md	Задача 2	manual_action	0	твёрдо	0	0.740	-
+plan-steps	blue-tape:20260928-laconic-skill-names.md	Задача 2	observable_check	0	твёрдо	0	0.970	-
+plan-steps	blue-tape:20260928-laconic-skill-names.md	Задача 2	unverified_behavior	0	твёрдо	0	0.190	-
+plan-steps	blue-tape:20260928-laconic-skill-names.md	Задача 3	manual_action	0	твёрдо	0	0.800	-
+plan-steps	blue-tape:20260928-laconic-skill-names.md	Задача 3	observable_check	0	твёрдо	0	0.980	-
+plan-steps	blue-tape:20260928-laconic-skill-names.md	Задача 3	unverified_behavior	0	твёрдо	0	0.120	-
+plan-steps	blue-tape:20260928-laconic-skill-names.md	Задача 4	manual_action	0	твёрдо	0	0.800	-
+plan-steps	blue-tape:20260928-laconic-skill-names.md	Задача 4	observable_check	0	твёрдо	0	0.980	-
+plan-steps	blue-tape:20260928-laconic-skill-names.md	Задача 4	unverified_behavior	0	твёрдо	0	0.130	-
+plan-steps	blue-tape:20260928-laconic-skill-names.md	Задача 5	manual_action	0	твёрдо	0	0.790	-
+plan-steps	blue-tape:20260928-laconic-skill-names.md	Задача 5	observable_check	0	твёрдо	0	0.980	-
+plan-steps	blue-tape:20260928-laconic-skill-names.md	Задача 5	unverified_behavior	0	твёрдо	0	0.130	-
+plan-steps	blue-tape:20260928-laconic-skill-names.md	Задача 6	manual_action	0	твёрдо	0	0.740	-
+plan-steps	blue-tape:20260928-laconic-skill-names.md	Задача 6	unverified_behavior	0	твёрдо	0	0.200	-
+plan-steps	blue-tape:20260928-laconic-skill-names.md	Задача 7	manual_action	0	твёрдо	0	0.910	-
+plan-steps	blue-tape:20260928-laconic-skill-names.md	Задача 7	unverified_behavior	0	твёрдо	0	0.170	-
+plan-steps	blue-tape:20260929-go-rewrite.md	Задача 1	manual_action	0	твёрдо	0	0.550	-
+plan-steps	blue-tape:20260929-go-rewrite.md	Задача 1	observable_check	0	твёрдо	0	0.950	-
+plan-steps	blue-tape:20260929-go-rewrite.md	Задача 1	unverified_behavior	0	твёрдо	0	0.430	-
+plan-steps	blue-tape:20260929-go-rewrite.md	Задача 2	manual_action	0	твёрдо	0	0.270	-
+plan-steps	blue-tape:20260929-go-rewrite.md	Задача 2	observable_check	0	твёрдо	0	0.870	-
+plan-steps	blue-tape:20260929-go-rewrite.md	Задача 2	unverified_behavior	0	спорно	1	0.540	-
+plan-steps	blue-tape:20260929-go-rewrite.md	Задача 3	manual_action	0	твёрдо	0	0.490	-
+plan-steps	blue-tape:20260929-go-rewrite.md	Задача 3	observable_check	0	твёрдо	0	0.850	-
+plan-steps	blue-tape:20260929-go-rewrite.md	Задача 3	unverified_behavior	0	спорно	1	0.610	-
+plan-steps	blue-tape:20260929-go-rewrite.md	Задача 4	manual_action	0	твёрдо	0	0.340	-
+plan-steps	blue-tape:20260929-go-rewrite.md	Задача 4	observable_check	0	твёрдо	0	0.620	-
+plan-steps	blue-tape:20260929-go-rewrite.md	Задача 4	unverified_behavior	0	твёрдо	0	0.600	-
+plan-steps	blue-tape:20260929-go-rewrite.md	Задача 5	manual_action	0	твёрдо	0	0.370	-
+plan-steps	blue-tape:20260929-go-rewrite.md	Задача 5	observable_check	0	твёрдо	0	0.760	-
+plan-steps	blue-tape:20260929-go-rewrite.md	Задача 5	unverified_behavior	0	твёрдо	0	0.630	-
+plan-steps	blue-tape:20260929-go-rewrite.md	Задача 6	manual_action	0	твёрдо	0	0.340	-
+plan-steps	blue-tape:20260929-go-rewrite.md	Задача 6	observable_check	1	спорно	0	0.420	-
+plan-steps	blue-tape:20260929-go-rewrite.md	Задача 6	unverified_behavior	0	твёрдо	0	0.610	-
+plan-steps	blue-tape:20260929-go-rewrite.md	Задача 7	manual_action	0	твёрдо	0	0.300	-
+plan-steps	blue-tape:20260929-go-rewrite.md	Задача 7	observable_check	0	спорно	0	0.550	-
+plan-steps	blue-tape:20260929-go-rewrite.md	Задача 7	unverified_behavior	0	твёрдо	0	0.530	-
+plan-steps	blue-tape:20260929-go-rewrite.md	Задача 8	manual_action	0	твёрдо	0	0.240	-
+plan-steps	blue-tape:20260929-go-rewrite.md	Задача 8	observable_check	0	твёрдо	0	0.800	-
+plan-steps	blue-tape:20260929-go-rewrite.md	Задача 8	unverified_behavior	0	спорно	1	0.680	-
+plan-steps	blue-tape:20260929-go-rewrite.md	Задача 9	manual_action	0	твёрдо	0	0.220	-
+plan-steps	blue-tape:20260929-go-rewrite.md	Задача 9	observable_check	0	твёрдо	0	0.840	-
+plan-steps	blue-tape:20260929-go-rewrite.md	Задача 9	unverified_behavior	0	спорно	1	0.650	-
+plan-steps	blue-tape:20260929-go-rewrite.md	Задача 10	manual_action	0	твёрдо	0	0.910	-
+plan-steps	blue-tape:20260929-go-rewrite.md	Задача 10	observable_check	0	твёрдо	0	0.880	-
+plan-steps	blue-tape:20260929-go-rewrite.md	Задача 10	unverified_behavior	0	твёрдо	0	0.630	-
+plan-steps	blue-tape:20260929-go-rewrite.md	Задача 11	manual_action	0	твёрдо	0	0.590	-
+plan-steps	blue-tape:20260929-go-rewrite.md	Задача 11	unverified_behavior	0	твёрдо	0	0.100	-
+plan-steps	blue-tape:20260929-grafana-skill.md	Задача 1	manual_action	0	твёрдо	0	0.820	-
+plan-steps	blue-tape:20260929-grafana-skill.md	Задача 1	observable_check	0	твёрдо	0	0.930	-
+plan-steps	blue-tape:20260929-grafana-skill.md	Задача 1	unverified_behavior	0	твёрдо	0	0.270	-
+plan-steps	blue-tape:20260929-grafana-skill.md	Задача 2	manual_action	0	твёрдо	0	0.590	-
+plan-steps	blue-tape:20260929-grafana-skill.md	Задача 2	observable_check	0	твёрдо	0	0.950	-
+plan-steps	blue-tape:20260929-grafana-skill.md	Задача 2	unverified_behavior	0	спорно	1	0.470	-
+plan-steps	blue-tape:20260929-grafana-skill.md	Задача 3	manual_action	1	твёрдо	1	0.940	-
+plan-steps	blue-tape:20260929-grafana-skill.md	Задача 3	observable_check	1	твёрдо	1	0.600	-
+plan-steps	blue-tape:20260929-grafana-skill.md	Задача 3	unverified_behavior	0	твёрдо	0	0.540	-
+plan-steps	blue-tape:20260929-grafana-skill.md	Задача 4	manual_action	0	твёрдо	0	0.800	-
+plan-steps	blue-tape:20260929-grafana-skill.md	Задача 4	observable_check	0	твёрдо	0	0.950	-
+plan-steps	blue-tape:20260929-grafana-skill.md	Задача 4	unverified_behavior	0	твёрдо	0	0.640	-
+plan-steps	blue-tape:20260929-grafana-skill.md	Задача 5	manual_action	0	твёрдо	0	0.760	-
+plan-steps	blue-tape:20260929-grafana-skill.md	Задача 5	observable_check	0	твёрдо	0	0.910	-
+plan-steps	blue-tape:20260929-grafana-skill.md	Задача 5	unverified_behavior	0	твёрдо	0	0.580	-
+plan-steps	blue-tape:20260929-grafana-skill.md	Задача 6	manual_action	1	твёрдо	1	0.900	-
+plan-steps	blue-tape:20260929-grafana-skill.md	Задача 6	observable_check	0	твёрдо	0	0.910	-
+plan-steps	blue-tape:20260929-grafana-skill.md	Задача 6	unverified_behavior	0	твёрдо	0	0.590	-
+plan-steps	blue-tape:20260929-grafana-skill.md	Задача 7	manual_action	0	твёрдо	0	0.710	-
+plan-steps	blue-tape:20260929-grafana-skill.md	Задача 7	observable_check	0	твёрдо	0	0.790	-
+plan-steps	blue-tape:20260929-grafana-skill.md	Задача 7	unverified_behavior	0	твёрдо	0	0.690	-
+plan-steps	blue-tape:20260929-grafana-skill.md	Задача 7.1	manual_action	1	твёрдо	1	0.860	-
+plan-steps	blue-tape:20260929-grafana-skill.md	Задача 7.1	observable_check	0	твёрдо	0	0.940	-
+plan-steps	blue-tape:20260929-grafana-skill.md	Задача 7.1	unverified_behavior	0	твёрдо	0	0.590	-
+plan-steps	blue-tape:20260929-grafana-skill.md	Задача 8	manual_action	0	спорно	1	0.830	-
+plan-steps	blue-tape:20260929-grafana-skill.md	Задача 8	observable_check	0	твёрдо	0	0.860	-
+plan-steps	blue-tape:20260929-grafana-skill.md	Задача 8	unverified_behavior	0	твёрдо	0	0.650	-
+plan-steps	blue-tape:20260929-grafana-skill.md	Задача 9	manual_action	1	спорно	1	0.760	-
+plan-steps	blue-tape:20260929-grafana-skill.md	Задача 9	unverified_behavior	0	твёрдо	0	0.590	-
+plan-steps	blue-tape:20260929-grafana-skill.md	Задача 10	manual_action	0	твёрдо	0	0.600	-
+plan-steps	blue-tape:20260929-grafana-skill.md	Задача 10	unverified_behavior	0	твёрдо	0	0.140	-
+readability	freight-forwarding:docs/adr/0035_sozdanie_chernovika_raspiski_po_podtverzhdennomu_titulu_2.md	49	slogan	1	твёрдо	1	0.910	-
+readability	freight-forwarding:docs/adr/0012_tozhdestvo_vkhodyashchego_porucheniya_po_identifikatoru_dokumenta.md	70	slogan	1	твёрдо	1	0.890	-
+readability	freight-forwarding:docs/req/template_st.md	98	slogan	1	спорно	1	0.890	-
+readability	freight-forwarding:docs/req/analiz_api_saby.md	40	slogan	1	твёрдо	1	0.870	-
+readability	freight-forwarding:docs/plans/template_parent_plan.md	29	slogan	1	твёрдо	1	0.860	-
+readability	freight-forwarding:docs/adr/README.md	29	slogan	1	твёрдо	1	0.850	-
+readability	freight-forwarding:docs/plans/template_index.md	34	slogan	1	спорно	1	0.850	-
+readability	freight-forwarding:docs/plans/template_parent_plan.md	31	slogan	0	спорно	1	0.850	-
+readability	freight-forwarding:docs/adr/0067_ruchnoy_vvod_uslugi_i_blokir_pustogo_sostava.md	74	slogan	1	спорно	0	0.750	-
+readability	freight-forwarding:docs/adr/0022_otlozhennaya_lokalnaya_xsd_validaciya.md	62	slogan	0	твёрдо	0	0.730	-
+readability	freight-forwarding:docs/adr/0020_semantika_chastichnogo_obnovleniya_chernovikov.md	22	slogan	0	твёрдо	0	0.780	-
+readability	freight-forwarding:docs/adr/0020_semantika_chastichnogo_obnovleniya_chernovikov.md	37	slogan	0	твёрдо	0	0.700	-
+readability	freight-forwarding:docs/adr/0020_semantika_chastichnogo_obnovleniya_chernovikov.md	87	slogan	1	спорно	1	0.830	-
+readability	freight-forwarding:docs/adr/0058_slovari_enum_znacheniy_otdelnoy_ruchkoy.md	49	slogan	0	твёрдо	0	0.740	-
+readability	freight-forwarding:docs/ai-instructions/DATABASE.md	65	slogan	0	спорно	1	0.820	-
+readability	freight-forwarding:docs/adr/0051_kodirovka_faylov_obmena_utf8.md	83	slogan	0	твёрдо	0	0.730	-
+readability	freight-forwarding:docs/adr/0043_nezavisimye_statusy_titulov.md	91	slogan	0	твёрдо	0	0.710	-
+readability	freight-forwarding:docs/req/analiz_polya_gis_epd_status_raspiski.md	34	slogan	1	спорно	0	0.700	-
+readability	freight-forwarding:docs/adr/0060_emkost_chislovyh_rekvizitov_formata_fns.md	56	slogan	0	твёрдо	0	0.780	-
+readability	freight-forwarding:docs/plans/template_index.md	19	slogan	1	твёрдо	1	0.800	-
+readability	freight-forwarding:docs/plans/template_index.md	31	slogan	0	спорно	1	0.740	-
+readability	freight-forwarding:docs/plans/template_index.md	36	slogan	0	спорно	1	0.710	-
+readability	freight-forwarding:docs/task/nachalnoe_zapolnenie_privyazok_ezz.md	50	slogan	0	твёрдо	0	0.730	-
+readability	freight-forwarding:docs/req/st_process_i_statusy.md	602	slogan	1	спорно	1	0.810	-
+readability	freight-forwarding:docs/adr/0018_ischodyashchiy_outbox_otpravki_raspiski.md	82	slogan	1	спорно	1	0.830	-
+readability	freight-forwarding:docs/adr/0068_otmena_porucheniya_lokalnym_statusom.md	141	slogan	0	твёрдо	0	0.730	-
+readability	freight-forwarding:docs/adr/0043_nezavisimye_statusy_titulov.md	127	slogan	0	твёрдо	0	0.770	-
+readability	freight-forwarding:docs/adr/0046_sbor_sobytiy_operatora_po_nashey_organizacii.md	102	slogan	0	твёрдо	0	0.700	-
+readability	freight-forwarding:docs/adr/0067_ruchnoy_vvod_uslugi_i_blokir_pustogo_sostava.md	59	slogan	1	спорно	0	0.630	-
+readability	freight-forwarding:docs/adr/0026_raskladka_paketov_faylov_obmena.md	101	slogan	0	твёрдо	0	0.520	-
+readability	freight-forwarding:docs/adr/0026_raskladka_paketov_faylov_obmena.md	121	slogan	0	твёрдо	0	0.630	-
+readability	freight-forwarding:docs/adr/0026_raskladka_paketov_faylov_obmena.md	125	slogan	0	твёрдо	0	0.520	-
+readability	freight-forwarding:docs/adr/0066_markirovka_i_strany_proiskhozhdeniya_raspiski_tolko_iz_porucheniya.md	33	slogan	1	спорно	0	0.580	-
+readability	freight-forwarding:docs/adr/0066_markirovka_i_strany_proiskhozhdeniya_raspiski_tolko_iz_porucheniya.md	48	slogan	0	твёрдо	0	0.630	-
+readability	freight-forwarding:docs/adr/0022_otlozhennaya_lokalnaya_xsd_validaciya.md	38	slogan	0	твёрдо	0	0.560	-
+readability	freight-forwarding:docs/adr/0022_otlozhennaya_lokalnaya_xsd_validaciya.md	55	slogan	1	спорно	0	0.500	-
+readability	freight-forwarding:docs/adr/0022_otlozhennaya_lokalnaya_xsd_validaciya.md	66	slogan	0	твёрдо	0	0.530	-
+readability	freight-forwarding:docs/adr/0022_otlozhennaya_lokalnaya_xsd_validaciya.md	70	slogan	0	твёрдо	0	0.560	-
+readability	freight-forwarding:docs/adr/0059_servisnyy_klyuch_saby_vmesto_logina.md	40	slogan	0	твёрдо	0	0.630	-
+readability	freight-forwarding:docs/adr/0059_servisnyy_klyuch_saby_vmesto_logina.md	48	slogan	0	твёрдо	0	0.620	-
+readability	freight-forwarding:docs/adr/0015_vkhodyashchiy_inbox_sobytiy_operatora_edo.md	1	slogan	0	твёрдо	0	0.070	-
+readability	freight-forwarding:docs/adr/0015_vkhodyashchiy_inbox_sobytiy_operatora_edo.md	4	slogan	0	твёрдо	0	0.080	-
+readability	freight-forwarding:docs/adr/0015_vkhodyashchiy_inbox_sobytiy_operatora_edo.md	5	slogan	0	твёрдо	0	0.070	-
+readability	freight-forwarding:docs/adr/0067_ruchnoy_vvod_uslugi_i_blokir_pustogo_sostava.md	15	slogan	0	твёрдо	0	0.100	-
+readability	freight-forwarding:docs/adr/0067_ruchnoy_vvod_uslugi_i_blokir_pustogo_sostava.md	24	slogan	0	твёрдо	0	0.200	-
+readability	freight-forwarding:docs/adr/0067_ruchnoy_vvod_uslugi_i_blokir_pustogo_sostava.md	31	slogan	0	твёрдо	0	0.050	-
+readability	freight-forwarding:docs/adr/0067_ruchnoy_vvod_uslugi_i_blokir_pustogo_sostava.md	36	slogan	0	твёрдо	0	0.120	-
+readability	freight-forwarding:docs/adr/0067_ruchnoy_vvod_uslugi_i_blokir_pustogo_sostava.md	41	slogan	0	твёрдо	0	0.310	-
+readability	freight-forwarding:docs/adr/0067_ruchnoy_vvod_uslugi_i_blokir_pustogo_sostava.md	43	slogan	0	твёрдо	0	0.060	-
+readability	freight-forwarding:docs/adr/0067_ruchnoy_vvod_uslugi_i_blokir_pustogo_sostava.md	45	slogan	0	твёрдо	0	0.350	-
+readability	freight-forwarding:docs/plans/template_plan.md	65	empty_thesis	0	спорно	0	0.860	-
+readability	freight-forwarding:docs/req/analiz_uslugi_bez_istochnika_v_poruchenii.md	43	empty_thesis	0	спорно	0	0.860	-
+readability	freight-forwarding:docs/task/template_task.md	58	empty_thesis	0	твёрдо	0	0.860	-
+readability	freight-forwarding:docs/adr/0018_ischodyashchiy_outbox_otpravki_raspiski.md	89	empty_thesis	0	твёрдо	0	0.850	-
+readability	freight-forwarding:docs/adr/0068_otmena_porucheniya_lokalnym_statusom.md	19	empty_thesis	0	твёрдо	0	0.850	-
+readability	freight-forwarding:docs/adr/0067_ruchnoy_vvod_uslugi_i_blokir_pustogo_sostava.md	41	empty_thesis	0	спорно	1	0.700	-
+readability	freight-forwarding:docs/adr/0037_edinaya_ruchka_podpisaniya_po_porucheniyu.md	48	empty_thesis	0	твёрдо	0	0.830	-
+readability	freight-forwarding:docs/req/analiz_api_saby.md	86	empty_thesis	0	твёрдо	0	0.700	-
+readability	freight-forwarding:docs/req/st_process_i_statusy.md	69	empty_thesis	0	твёрдо	0	0.730	-
+readability	freight-forwarding:docs/req/analiz_polya_gis_epd_status_raspiski.md	79	empty_thesis	1	твёрдо	1	0.840	-
+readability	freight-forwarding:docs/req/st_ruchnoe_podpisanie_titulov.md	148	empty_thesis	0	твёрдо	0	0.700	-
+readability	freight-forwarding:docs/adr/0035_sozdanie_chernovika_raspiski_po_podtverzhdennomu_titulu_2.md	21	empty_thesis	0	твёрдо	0	0.810	-
+readability	freight-forwarding:docs/adr/0035_sozdanie_chernovika_raspiski_po_podtverzhdennomu_titulu_2.md	49	empty_thesis	1	спорно	0	0.770	-
+readability	freight-forwarding:docs/adr/0000_template.md	4	empty_thesis	0	твёрдо	0	0.740	-
+readability	freight-forwarding:docs/plans/template_plan.md	101	empty_thesis	0	твёрдо	0	0.770	-
+readability	freight-forwarding:docs/plans/template_plan.md	102	empty_thesis	0	твёрдо	0	0.770	-
+readability	freight-forwarding:docs/adr/0039_posledniy_titul_porucheniya_v_gride.md	22	empty_thesis	0	твёрдо	0	0.760	-
+readability	freight-forwarding:docs/req/analiz_polya_gis_epd_status_raspiski.md	150	empty_thesis	1	твёрдо	1	0.740	-
+readability	freight-forwarding:docs/req/st_poruchenie.md	908	empty_thesis	0	твёрдо	0	0.700	-
+readability	freight-forwarding:docs/plans/template_plan.md	63	empty_thesis	0	твёрдо	0	0.730	-
+readability	freight-forwarding:docs/plans/template_plan.md	67	empty_thesis	0	твёрдо	0	0.700	-
+readability	freight-forwarding:docs/adr/0000_template.md	11	empty_thesis	0	твёрдо	0	0.700	-
+readability	freight-forwarding:docs/adr/0000_template.md	16	empty_thesis	0	твёрдо	0	0.780	-
+readability	freight-forwarding:docs/adr/0000_template.md	25	empty_thesis	0	твёрдо	0	0.750	-
+readability	freight-forwarding:docs/adr/0037_edinaya_ruchka_podpisaniya_po_porucheniyu.md	37	empty_thesis	0	твёрдо	0	0.610	-
+readability	freight-forwarding:docs/adr/0012_tozhdestvo_vkhodyashchego_porucheniya_po_identifikatoru_dokumenta.md	70	empty_thesis	0	твёрдо	0	0.580	-
+readability	freight-forwarding:docs/req/st_ruchnoe_podpisanie_titulov.md	38	empty_thesis	0	твёрдо	0	0.680	-
+readability	freight-forwarding:docs/req/st_ruchnoe_podpisanie_titulov.md	79	empty_thesis	0	твёрдо	0	0.520	-
+readability	freight-forwarding:docs/task/ov_card_05_fakticheskaya_tara_na_pozicii.md	73	empty_thesis	0	твёрдо	0	0.610	-
+readability	freight-forwarding:docs/req/st_process_i_statusy.md	45	empty_thesis	0	твёрдо	0	0.680	-
+readability	freight-forwarding:docs/req/analiz_polya_gis_epd_status_raspiski.md	16	empty_thesis	0	твёрдо	0	0.670	-
+readability	freight-forwarding:docs/req/analiz_polya_gis_epd_status_raspiski.md	20	empty_thesis	0	твёрдо	0	0.570	-
+readability	freight-forwarding:docs/req/analiz_polya_gis_epd_status_raspiski.md	50	empty_thesis	0	твёрдо	0	0.530	-
+readability	freight-forwarding:docs/adr/0015_vkhodyashchiy_inbox_sobytiy_operatora_edo.md	4	empty_thesis	0	твёрдо	0	0.040	-
+readability	freight-forwarding:docs/adr/0015_vkhodyashchiy_inbox_sobytiy_operatora_edo.md	5	empty_thesis	0	твёрдо	0	0.050	-
+readability	freight-forwarding:docs/adr/0067_ruchnoy_vvod_uslugi_i_blokir_pustogo_sostava.md	15	empty_thesis	0	твёрдо	0	0.020	-
+readability	freight-forwarding:docs/adr/0067_ruchnoy_vvod_uslugi_i_blokir_pustogo_sostava.md	24	empty_thesis	0	твёрдо	0	0.040	-
+readability	freight-forwarding:docs/adr/0067_ruchnoy_vvod_uslugi_i_blokir_pustogo_sostava.md	31	empty_thesis	0	твёрдо	0	0.050	-
+readability	freight-forwarding:docs/adr/0067_ruchnoy_vvod_uslugi_i_blokir_pustogo_sostava.md	36	empty_thesis	0	твёрдо	0	0.040	-
+readability	freight-forwarding:docs/adr/0067_ruchnoy_vvod_uslugi_i_blokir_pustogo_sostava.md	45	empty_thesis	0	твёрдо	0	0.060	-
+readability	freight-forwarding:docs/adr/0067_ruchnoy_vvod_uslugi_i_blokir_pustogo_sostava.md	50	empty_thesis	0	твёрдо	0	0.060	-
+readability	freight-forwarding:docs/adr/0067_ruchnoy_vvod_uslugi_i_blokir_pustogo_sostava.md	55	empty_thesis	0	твёрдо	0	0.050	-
+readability	freight-forwarding:docs/adr/0067_ruchnoy_vvod_uslugi_i_blokir_pustogo_sostava.md	59	empty_thesis	0	твёрдо	0	0.050	-
+readability	freight-forwarding:docs/adr/0012_tozhdestvo_vkhodyashchego_porucheniya_po_identifikatoru_dokumenta.md	88	unexpanded	1	твёрдо	1	0.870	-
+readability	freight-forwarding:docs/adr/0067_ruchnoy_vvod_uslugi_i_blokir_pustogo_sostava.md	143	unexpanded	0	спорно	1	0.860	-
+readability	freight-forwarding:docs/req/st_poruchenie.md	1090	unexpanded	1	спорно	0	0.860	-
+readability	freight-forwarding:docs/task/template_task.md	59	unexpanded	0	спорно	1	0.860	-
+readability	freight-forwarding:docs/req/st_process_i_statusy.md	58	unexpanded	1	спорно	1	0.850	-
+readability	freight-forwarding:docs/adr/0067_ruchnoy_vvod_uslugi_i_blokir_pustogo_sostava.md	31	unexpanded	0	твёрдо	0	0.780	-
+readability	freight-forwarding:docs/adr/0067_ruchnoy_vvod_uslugi_i_blokir_pustogo_sostava.md	59	unexpanded	0	твёрдо	0	0.780	-
+readability	freight-forwarding:docs/adr/0067_ruchnoy_vvod_uslugi_i_blokir_pustogo_sostava.md	89	unexpanded	1	спорно	0	0.740	-
+readability	freight-forwarding:docs/plans/template_index.md	1	unexpanded	0	спорно	1	0.730	-
+readability	freight-forwarding:docs/adr/0068_otmena_porucheniya_lokalnym_statusom.md	51	unexpanded	0	твёрдо	0	0.700	-
+readability	freight-forwarding:docs/adr/0063_proekciya_privyazok_k_ezz_iz_sobytiya_smezhnogo_servisa.md	111	unexpanded	0	спорно	1	0.740	-
+readability	freight-forwarding:docs/adr/0063_proekciya_privyazok_k_ezz_iz_sobytiya_smezhnogo_servisa.md	114	unexpanded	0	спорно	1	0.720	-
+readability	freight-forwarding:docs/adr/0026_raskladka_paketov_faylov_obmena.md	122	unexpanded	0	спорно	1	0.710	-
+readability	freight-forwarding:docs/adr/0066_markirovka_i_strany_proiskhozhdeniya_raspiski_tolko_iz_porucheniya.md	42	unexpanded	0	твёрдо	0	0.700	-
+readability	freight-forwarding:docs/adr/0066_markirovka_i_strany_proiskhozhdeniya_raspiski_tolko_iz_porucheniya.md	72	unexpanded	0	твёрдо	0	0.710	-
+readability	freight-forwarding:docs/adr/0059_servisnyy_klyuch_saby_vmesto_logina.md	34	unexpanded	0	твёрдо	0	0.780	-
+readability	freight-forwarding:docs/adr/0035_sozdanie_chernovika_raspiski_po_podtverzhdennomu_titulu_2.md	5	unexpanded	1	спорно	0	0.710	-
+readability	freight-forwarding:docs/adr/0003_otkaz_ot_poley_bez_istochnika_v_formate.md	5	unexpanded	1	спорно	0	0.740	-
+readability	freight-forwarding:docs/adr/0015_vkhodyashchiy_inbox_sobytiy_operatora_edo.md	5	unexpanded	1	спорно	0	0.680	-
+readability	freight-forwarding:docs/adr/0067_ruchnoy_vvod_uslugi_i_blokir_pustogo_sostava.md	15	unexpanded	0	твёрдо	0	0.570	-
+readability	freight-forwarding:docs/adr/0067_ruchnoy_vvod_uslugi_i_blokir_pustogo_sostava.md	24	unexpanded	0	твёрдо	0	0.660	-
+readability	freight-forwarding:docs/adr/0067_ruchnoy_vvod_uslugi_i_blokir_pustogo_sostava.md	36	unexpanded	0	твёрдо	0	0.540	-
+readability	freight-forwarding:docs/adr/0067_ruchnoy_vvod_uslugi_i_blokir_pustogo_sostava.md	50	unexpanded	0	твёрдо	0	0.590	-
+readability	freight-forwarding:docs/adr/0067_ruchnoy_vvod_uslugi_i_blokir_pustogo_sostava.md	55	unexpanded	0	твёрдо	0	0.570	-
+readability	freight-forwarding:docs/adr/0067_ruchnoy_vvod_uslugi_i_blokir_pustogo_sostava.md	74	unexpanded	0	твёрдо	0	0.580	-
+readability	freight-forwarding:docs/adr/0067_ruchnoy_vvod_uslugi_i_blokir_pustogo_sostava.md	76	unexpanded	0	твёрдо	0	0.570	-
+readability	freight-forwarding:docs/adr/0067_ruchnoy_vvod_uslugi_i_blokir_pustogo_sostava.md	81	unexpanded	0	твёрдо	0	0.550	-
+readability	freight-forwarding:docs/adr/0067_ruchnoy_vvod_uslugi_i_blokir_pustogo_sostava.md	86	unexpanded	0	твёрдо	0	0.570	-
+readability	freight-forwarding:docs/adr/0067_ruchnoy_vvod_uslugi_i_blokir_pustogo_sostava.md	94	unexpanded	0	твёрдо	0	0.580	-
+readability	freight-forwarding:docs/adr/0068_otmena_porucheniya_lokalnym_statusom.md	19	unexpanded	0	твёрдо	0	0.580	-
+readability	freight-forwarding:docs/adr/0015_vkhodyashchiy_inbox_sobytiy_operatora_edo.md	1	unexpanded	0	твёрдо	0	0.480	-
+readability	freight-forwarding:docs/adr/0015_vkhodyashchiy_inbox_sobytiy_operatora_edo.md	4	unexpanded	0	твёрдо	0	0.300	-
+readability	freight-forwarding:docs/adr/0067_ruchnoy_vvod_uslugi_i_blokir_pustogo_sostava.md	41	unexpanded	0	спорно	1	0.460	-
+readability	freight-forwarding:docs/adr/0067_ruchnoy_vvod_uslugi_i_blokir_pustogo_sostava.md	43	unexpanded	0	твёрдо	0	0.470	-
+readability	freight-forwarding:docs/adr/0067_ruchnoy_vvod_uslugi_i_blokir_pustogo_sostava.md	45	unexpanded	0	твёрдо	0	0.400	-
+readability	freight-forwarding:docs/adr/0067_ruchnoy_vvod_uslugi_i_blokir_pustogo_sostava.md	67	unexpanded	0	твёрдо	0	0.320	-
+readability	freight-forwarding:docs/adr/0067_ruchnoy_vvod_uslugi_i_blokir_pustogo_sostava.md	71	unexpanded	0	твёрдо	0	0.470	-
+readability	freight-forwarding:docs/adr/0067_ruchnoy_vvod_uslugi_i_blokir_pustogo_sostava.md	92	unexpanded	0	твёрдо	0	0.460	-
+readability	freight-forwarding:docs/adr/0067_ruchnoy_vvod_uslugi_i_blokir_pustogo_sostava.md	99	unexpanded	0	твёрдо	0	0.460	-
+readability	freight-forwarding:docs/adr/0068_otmena_porucheniya_lokalnym_statusom.md	14	unexpanded	0	твёрдо	0	0.410	-
+readability	freight-forwarding:docs/task/ov_t1_01_podpis_kak_uslovie_priema.md	75	term_overload	1	твёрдо	1	0.860	-
+readability	freight-forwarding:docs/adr/0015_vkhodyashchiy_inbox_sobytiy_operatora_edo.md	5	term_overload	1	спорно	0	0.760	-
+readability	freight-forwarding:docs/adr/0067_ruchnoy_vvod_uslugi_i_blokir_pustogo_sostava.md	15	term_overload	1	спорно	1	0.740	-
+readability	freight-forwarding:docs/adr/0067_ruchnoy_vvod_uslugi_i_blokir_pustogo_sostava.md	24	term_overload	1	спорно	0	0.750	-
+readability	freight-forwarding:docs/adr/0067_ruchnoy_vvod_uslugi_i_blokir_pustogo_sostava.md	31	term_overload	1	твёрдо	1	0.830	-
+readability	freight-forwarding:docs/adr/0067_ruchnoy_vvod_uslugi_i_blokir_pustogo_sostava.md	55	term_overload	1	спорно	1	0.700	-
+readability	freight-forwarding:docs/adr/0067_ruchnoy_vvod_uslugi_i_blokir_pustogo_sostava.md	59	term_overload	1	твёрдо	1	0.840	-
+readability	freight-forwarding:docs/adr/0067_ruchnoy_vvod_uslugi_i_blokir_pustogo_sostava.md	94	term_overload	0	твёрдо	0	0.720	-
+readability	freight-forwarding:docs/adr/0068_otmena_porucheniya_lokalnym_statusom.md	21	term_overload	0	твёрдо	0	0.780	-
+readability	freight-forwarding:docs/adr/0068_otmena_porucheniya_lokalnym_statusom.md	47	term_overload	0	твёрдо	0	0.700	-
+readability	freight-forwarding:docs/adr/0068_otmena_porucheniya_lokalnym_statusom.md	51	term_overload	0	спорно	1	0.720	-
+readability	freight-forwarding:docs/adr/0068_otmena_porucheniya_lokalnym_statusom.md	63	term_overload	1	спорно	1	0.720	-
+readability	freight-forwarding:docs/adr/0026_raskladka_paketov_faylov_obmena.md	122	term_overload	0	твёрдо	0	0.760	-
+readability	freight-forwarding:docs/adr/0066_markirovka_i_strany_proiskhozhdeniya_raspiski_tolko_iz_porucheniya.md	42	term_overload	1	твёрдо	1	0.780	-
+readability	freight-forwarding:docs/adr/0066_markirovka_i_strany_proiskhozhdeniya_raspiski_tolko_iz_porucheniya.md	48	term_overload	1	твёрдо	1	0.760	-
+readability	freight-forwarding:docs/adr/0066_markirovka_i_strany_proiskhozhdeniya_raspiski_tolko_iz_porucheniya.md	65	term_overload	1	спорно	1	0.750	-
+readability	freight-forwarding:docs/adr/0066_markirovka_i_strany_proiskhozhdeniya_raspiski_tolko_iz_porucheniya.md	81	term_overload	1	твёрдо	1	0.780	-
+readability	freight-forwarding:docs/adr/0067_ruchnoy_vvod_uslugi_i_blokir_pustogo_sostava.md	45	term_overload	0	спорно	1	0.600	-
+readability	freight-forwarding:docs/adr/0067_ruchnoy_vvod_uslugi_i_blokir_pustogo_sostava.md	50	term_overload	0	твёрдо	0	0.650	-
+readability	freight-forwarding:docs/adr/0067_ruchnoy_vvod_uslugi_i_blokir_pustogo_sostava.md	76	term_overload	1	твёрдо	1	0.570	-
+readability	freight-forwarding:docs/adr/0067_ruchnoy_vvod_uslugi_i_blokir_pustogo_sostava.md	81	term_overload	1	спорно	1	0.630	-
+readability	freight-forwarding:docs/adr/0067_ruchnoy_vvod_uslugi_i_blokir_pustogo_sostava.md	89	term_overload	1	спорно	0	0.610	-
+readability	freight-forwarding:docs/adr/0067_ruchnoy_vvod_uslugi_i_blokir_pustogo_sostava.md	99	term_overload	0	твёрдо	0	0.540	-
+readability	freight-forwarding:docs/adr/0068_otmena_porucheniya_lokalnym_statusom.md	14	term_overload	0	твёрдо	0	0.540	-
+readability	freight-forwarding:docs/adr/0068_otmena_porucheniya_lokalnym_statusom.md	24	term_overload	0	твёрдо	0	0.630	-
+readability	freight-forwarding:docs/adr/0068_otmena_porucheniya_lokalnym_statusom.md	26	term_overload	0	спорно	1	0.510	-
+readability	freight-forwarding:docs/adr/0068_otmena_porucheniya_lokalnym_statusom.md	28	term_overload	0	спорно	1	0.540	-
+readability	freight-forwarding:docs/adr/0068_otmena_porucheniya_lokalnym_statusom.md	79	term_overload	0	спорно	1	0.570	-
+readability	freight-forwarding:docs/adr/0068_otmena_porucheniya_lokalnym_statusom.md	85	term_overload	0	спорно	1	0.500	-
+readability	freight-forwarding:docs/adr/0015_vkhodyashchiy_inbox_sobytiy_operatora_edo.md	4	term_overload	0	твёрдо	0	0.200	-
+readability	freight-forwarding:docs/adr/0067_ruchnoy_vvod_uslugi_i_blokir_pustogo_sostava.md	36	term_overload	0	твёрдо	0	0.450	-
+readability	freight-forwarding:docs/adr/0067_ruchnoy_vvod_uslugi_i_blokir_pustogo_sostava.md	41	term_overload	0	твёрдо	0	0.110	-
+readability	freight-forwarding:docs/adr/0067_ruchnoy_vvod_uslugi_i_blokir_pustogo_sostava.md	67	term_overload	0	твёрдо	0	0.440	-
+readability	freight-forwarding:docs/adr/0067_ruchnoy_vvod_uslugi_i_blokir_pustogo_sostava.md	71	term_overload	0	твёрдо	0	0.340	-
+readability	freight-forwarding:docs/adr/0067_ruchnoy_vvod_uslugi_i_blokir_pustogo_sostava.md	86	term_overload	1	спорно	0	0.450	-
+readability	freight-forwarding:docs/adr/0068_otmena_porucheniya_lokalnym_statusom.md	19	term_overload	0	твёрдо	0	0.120	-
+readability	freight-forwarding:docs/adr/0068_otmena_porucheniya_lokalnym_statusom.md	34	term_overload	0	твёрдо	0	0.340	-
+readability	freight-forwarding:docs/adr/0068_otmena_porucheniya_lokalnym_statusom.md	37	term_overload	0	твёрдо	0	0.410	-
+readability	freight-forwarding:docs/task/sverka_podpisanta_so_spravochnikom.md	3	emphasis	1	спорно	0	2	-
+readability	freight-forwarding:docs/ai-instructions/skills/functional-tests-rest-scenarios/SKILL.md	8	emphasis	0	спорно	0	2	-
+readability	freight-forwarding:docs/task/template_task.md	3	emphasis	1	спорно	0	2	-
+readability	freight-forwarding:docs/task/kontrol_komplektnosti_stoimosti_porucheniya.md	3	emphasis	1	спорно	0	2	-
+readability	freight-forwarding:docs/task/ov_card_05_fakticheskaya_tara_na_pozicii.md	31	emphasis	1	спорно	0	2	-
+readability	freight-forwarding:docs/task/ov_card_05_fakticheskaya_tara_na_pozicii.md	32	emphasis	1	спорно	0	2	-
+readability	freight-forwarding:docs/req/analiz_polya_gis_epd_status_raspiski.md	52	emphasis	1	спорно	0	2	-
+readability	freight-forwarding:docs/req/analiz_polya_gis_epd_status_raspiski.md	57	emphasis	1	спорно	0	2	-
+readability	freight-forwarding:docs/req/analiz_polya_gis_epd_status_raspiski.md	83	emphasis	1	спорно	0	2	-
+readability	freight-forwarding:docs/ai-instructions/skills/functional-tests-rest-scenarios/SKILL.md	102	emphasis	0	твёрдо	0	1	-
+readability	freight-forwarding:docs/ai-instructions/skills/functional-tests-rest-scenarios/SKILL.md	103	emphasis	0	твёрдо	0	1	-
+readability	freight-forwarding:docs/ai-instructions/skills/functional-tests-rest-scenarios/SKILL.md	109	emphasis	0	твёрдо	0	1	-
+readability	freight-forwarding:docs/ai-instructions/skills/functional-tests-rest-scenarios/SKILL.md	110	emphasis	0	твёрдо	0	1	-
+readability	freight-forwarding:docs/ai-instructions/skills/functional-tests-rest-scenarios/SKILL.md	115	emphasis	0	твёрдо	0	1	-
+readability	freight-forwarding:docs/ai-instructions/skills/functional-tests-rest-scenarios/SKILL.md	116	emphasis	0	твёрдо	0	1	-
+readability	freight-forwarding:docs/ai-instructions/skills/functional-tests-rest-scenarios/SKILL.md	119	emphasis	0	твёрдо	0	1	-
+readability	freight-forwarding:docs/ai-instructions/skills/functional-tests-rest-scenarios/SKILL.md	120	emphasis	0	твёрдо	0	1	-
+readability	freight-forwarding:docs/ai-instructions/skills/functional-tests-rest-scenarios/SKILL.md	121	emphasis	0	твёрдо	0	1	-
+readability	freight-forwarding:docs/ai-instructions/skills/functional-tests-rest-scenarios/SKILL.md	122	emphasis	0	твёрдо	0	1	-
+readability	freight-forwarding:docs/ai-instructions/skills/functional-tests-rest-scenarios/SKILL.md	123	emphasis	0	твёрдо	0	1	-
+readability	freight-forwarding:docs/ai-instructions/skills/functional-tests-rest-scenarios/SKILL.md	128	emphasis	0	твёрдо	0	2	-
+readability	freight-forwarding:docs/ai-instructions/skills/functional-tests-rest-scenarios/SKILL.md	129	emphasis	0	твёрдо	0	1	-
+readability	freight-forwarding:docs/ai-instructions/skills/functional-tests-rest-scenarios/SKILL.md	132	emphasis	0	твёрдо	0	1	-
+readability	freight-forwarding:docs/ai-instructions/skills/functional-tests-rest-scenarios/SKILL.md	133	emphasis	0	твёрдо	0	1	-
+readability	freight-forwarding:docs/ai-instructions/skills/functional-tests-rest-scenarios/SKILL.md	138	emphasis	0	твёрдо	0	1	-
+readability	freight-forwarding:docs/ai-instructions/skills/functional-tests-rest-scenarios/SKILL.md	139	emphasis	0	твёрдо	0	1	-
+readability	freight-forwarding:docs/ai-instructions/skills/functional-tests-rest-scenarios/SKILL.md	142	emphasis	0	твёрдо	0	1	-
+readability	freight-forwarding:docs/ai-instructions/skills/functional-tests-rest-scenarios/SKILL.md	143	emphasis	0	твёрдо	0	1	-
+readability	freight-forwarding:docs/ai-instructions/skills/functional-tests-rest-scenarios/SKILL.md	162	emphasis	0	твёрдо	0	1	-
+readability	freight-forwarding:docs/ai-instructions/skills/functional-tests-rest-scenarios/SKILL.md	166	emphasis	0	твёрдо	0	1	-
+readability	freight-forwarding:docs/ai-instructions/skills/functional-tests-rest-scenarios/SKILL.md	171	emphasis	0	твёрдо	0	1	-
+readability	freight-forwarding:docs/ai-instructions/skills/functional-tests-rest-scenarios/SKILL.md	179	emphasis	0	твёрдо	0	1	-
+readability	freight-forwarding:docs/ai-instructions/skills/functional-tests-rest-scenarios/SKILL.md	180	emphasis	0	твёрдо	0	1	-
+readability	freight-forwarding:docs/ai-instructions/skills/functional-tests-rest-scenarios/SKILL.md	182	emphasis	0	твёрдо	0	1	-
+readability	freight-forwarding:docs/ai-instructions/skills/functional-tests-rest-scenarios/SKILL.md	188	emphasis	0	твёрдо	0	1	-
+readability	freight-forwarding:docs/adr/0026_raskladka_paketov_faylov_obmena.md	106	emphasis	0	твёрдо	0	1	-
+readability	freight-forwarding:docs/adr/0066_markirovka_i_strany_proiskhozhdeniya_raspiski_tolko_iz_porucheniya.md	33	emphasis	0	твёрдо	0	1	-
+readability	freight-forwarding:docs/adr/0022_otlozhennaya_lokalnaya_xsd_validaciya.md	22	emphasis	0	твёрдо	0	1	-
+readability	freight-forwarding:docs/adr/0022_otlozhennaya_lokalnaya_xsd_validaciya.md	47	emphasis	0	твёрдо	0	1	-
+readability	freight-forwarding:docs/adr/0022_otlozhennaya_lokalnaya_xsd_validaciya.md	50	emphasis	0	твёрдо	0	1	-
+readability	freight-forwarding:docs/req/analiz_uslugi_bez_istochnika_v_poruchenii.md	109	emphasis	0	твёрдо	0	1	-
+readability	freight-forwarding:docs/adr/0037_edinaya_ruchka_podpisaniya_po_porucheniyu.md	37	emphasis	0	твёрдо	0	1	-
+readability	freight-forwarding:docs/adr/0012_tozhdestvo_vkhodyashchego_porucheniya_po_identifikatoru_dokumenta.md	54	emphasis	0	твёрдо	0	1	-
+readability	freight-forwarding:docs/adr/0012_tozhdestvo_vkhodyashchego_porucheniya_po_identifikatoru_dokumenta.md	70	emphasis	0	твёрдо	0	1	-
+readability	freight-forwarding:docs/adr/0012_tozhdestvo_vkhodyashchego_porucheniya_po_identifikatoru_dokumenta.md	88	emphasis	0	твёрдо	0	1	-
+readability	freight-forwarding:docs/adr/0012_tozhdestvo_vkhodyashchego_porucheniya_po_identifikatoru_dokumenta.md	90	emphasis	0	твёрдо	0	1	-
+readability	freight-forwarding:docs/adr/0012_tozhdestvo_vkhodyashchego_porucheniya_po_identifikatoru_dokumenta.md	93	emphasis	0	твёрдо	0	1	-
+readability	freight-forwarding:docs/adr/0012_tozhdestvo_vkhodyashchego_porucheniya_po_identifikatoru_dokumenta.md	97	emphasis	0	твёрдо	0	1	-
+readability	freight-forwarding:docs/adr/0020_semantika_chastichnogo_obnovleniya_chernovikov.md	100	emphasis	0	твёрдо	0	1	-
+readability	freight-forwarding:docs/adr/0020_semantika_chastichnogo_obnovleniya_chernovikov.md	139	emphasis	0	твёрдо	0	1	-
+readability	freight-forwarding:docs/adr/0015_vkhodyashchiy_inbox_sobytiy_operatora_edo.md	3	emphasis	0	твёрдо	0	0	-
+readability	freight-forwarding:docs/adr/0015_vkhodyashchiy_inbox_sobytiy_operatora_edo.md	4	emphasis	0	твёрдо	0	0	-
+readability	freight-forwarding:docs/adr/0015_vkhodyashchiy_inbox_sobytiy_operatora_edo.md	5	emphasis	0	твёрдо	0	0	-
+readability	freight-forwarding:docs/adr/0067_ruchnoy_vvod_uslugi_i_blokir_pustogo_sostava.md	15	emphasis	0	твёрдо	0	0	-
+readability	freight-forwarding:docs/adr/0067_ruchnoy_vvod_uslugi_i_blokir_pustogo_sostava.md	24	emphasis	0	твёрдо	0	0	-
+readability	freight-forwarding:docs/adr/0067_ruchnoy_vvod_uslugi_i_blokir_pustogo_sostava.md	31	emphasis	0	твёрдо	0	0	-
+readability	freight-forwarding:docs/adr/0067_ruchnoy_vvod_uslugi_i_blokir_pustogo_sostava.md	36	emphasis	0	твёрдо	0	0	-
+readability	freight-forwarding:docs/adr/0067_ruchnoy_vvod_uslugi_i_blokir_pustogo_sostava.md	41	emphasis	0	твёрдо	0	0	-
+readability	freight-forwarding:docs/adr/0067_ruchnoy_vvod_uslugi_i_blokir_pustogo_sostava.md	45	emphasis	0	твёрдо	0	0	-
+readability	freight-forwarding:docs/adr/0067_ruchnoy_vvod_uslugi_i_blokir_pustogo_sostava.md	50	emphasis	0	твёрдо	0	0	-
+readability	freight-forwarding:docs/adr/0013_pereezd_tms_libs_na_novyy_put_modulya.md	3	fragment_list	0	твёрдо	0	2x3	-
+readability	freight-forwarding:docs/adr/0001_perepisyvanie_migraciy_do_pervogo_deploya.md	3	fragment_list	0	твёрдо	0	2x3	-

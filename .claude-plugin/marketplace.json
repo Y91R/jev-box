@@ -8,7 +8,7 @@
     {
       "name": "jev-box",
       "source": "./",
-      "description": "Spec and plan review skills with cheap TypeSafe Jev hints on requirements and plan steps, called directly or through OpenRouter."
+      "description": "Analyst, plan and review skills with cheap TypeSafe Jev hints on requirements, plan tasks and document readability, called directly or through OpenRouter."
     }
   ]
 }

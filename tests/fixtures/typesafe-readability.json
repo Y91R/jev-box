@@ -1,0 +1,51 @@
+{
+ "markdown": "# Приёмка\n\n## Глоссарий\n\n- **Короб** — тара с посылками.\n\n## Сценарий\n\nТри посылки — три пути: короб едет дальше, а смысл остаётся с нами.\n",
+ "state": {
+  "fragment": "Три посылки — три пути: короб едет дальше, а смысл остаётся с нами.",
+  "section": "Сценарий",
+  "glossary": "**Короб** — тара с посылками."
+ },
+ "questions": {
+  "slogan": {
+   "type": "noul",
+   "instructions": "Does `fragment` read like a slogan or a poster rather than a plain explanation: a rhyme, a parallelism such as \"three parcels, three paths\", a dash or a colon used for effect, or pathos?"
+  },
+  "empty_thesis": {
+   "type": "noul",
+   "instructions": "Does `fragment` state a general claim with no concrete fact, decision, number or reason, like filler written by a text generator?"
+  },
+  "unexpanded": {
+   "type": "noul",
+   "instructions": "Is the thought in `fragment` compressed into labels or fragments so that a colleague cannot understand it without other context?"
+  },
+  "term_overload": {
+   "type": "noul",
+   "instructions": "Does `fragment` use so many terms, abbreviations and identifiers that are explained neither in `glossary` nor in `fragment` itself that it is hard to read?"
+  }
+ },
+ "response": {
+  "model": "jev-1.13.0",
+  "answers": {
+   "slogan": {
+    "type": "noul",
+    "noul": 0.95
+   },
+   "empty_thesis": {
+    "type": "noul",
+    "noul": 0.68
+   },
+   "unexpanded": {
+    "type": "noul",
+    "noul": 0.47
+   },
+   "term_overload": {
+    "type": "noul",
+    "noul": 0.09
+   }
+  },
+  "usage": {
+   "input_tokens": 508,
+   "output_tokens": 78
+  }
+ }
+}
