@@ -1,4 +1,4 @@
-import type { JevRequest } from '../hooks/core/request'
+import type { JevRequest } from '../core/request'
 
 // signal отменяется по таймауту: иначе запрос продолжает идти и тратить квоту после отказа.
 export type Http = (

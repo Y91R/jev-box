@@ -1,5 +1,5 @@
-import { loadConfig, type Provider } from '../hooks/config'
-import { ENDPOINTS } from '../hooks/core/request'
+import { loadConfig, type Provider } from './config'
+import { ENDPOINTS } from '../core/request'
 import { requirementsOf, stepsOf, type Item } from './extract'
 import { askJev, type CliJevConfig } from './jev-client'
 import { passagesOf, shortlist } from './passages'

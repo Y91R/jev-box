@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'bun:test'
-import { buildJevRequest } from '../../hooks/core/request'
+import { buildJevRequest } from '../../core/request'
 
 const questions = {
   urgent: { type: 'noul' as const, instructions: 'Is it urgent?' },

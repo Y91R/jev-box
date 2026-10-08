@@ -1,6 +1,6 @@
 {
   "name": "jev-box",
-  "description": "jev-box: Claude Code plugin that picks the Claude model for each turn with TypeSafe Jev.",
+  "description": "jev-box: Claude Code plugin with spec and plan review skills that get cheap hints from TypeSafe Jev.",
   "owner": {
     "name": "y91r"
   },
@@ -8,7 +8,7 @@
     {
       "name": "jev-box",
       "source": "./",
-      "description": "Picks the Claude model for each turn and for selected subagents by asking TypeSafe Jev, directly or through OpenRouter."
+      "description": "Spec and plan review skills with cheap TypeSafe Jev hints on requirements and plan steps, called directly or through OpenRouter."
     }
   ]
 }

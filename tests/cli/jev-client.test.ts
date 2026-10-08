@@ -1,7 +1,7 @@
 import { describe, expect, test } from 'bun:test'
 import { askJev } from '../../cli/jev-client'
 import type { Http } from '../../cli/transport'
-import type { NoulQuestion, ScoreQuestion } from '../../hooks/core/questions'
+import type { NoulQuestion, ScoreQuestion } from '../../core/questions'
 
 const questions = {
   measurable: {

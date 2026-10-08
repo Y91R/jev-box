@@ -2,7 +2,7 @@ import { describe, expect, test } from 'bun:test'
 import { requirementsOf } from '../../cli/extract'
 import { passagesOf, shortlist } from '../../cli/passages'
 import { findingsOf, locateQuestions, RELATION_QUESTIONS } from '../../cli/verifiers/sources'
-import { parseJevResponse } from '../../hooks/core/response'
+import { parseJevResponse } from '../../core/response'
 
 const dir = `${import.meta.dir}/../fixtures/sources`
 

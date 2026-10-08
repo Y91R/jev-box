@@ -1,6 +1,6 @@
 import { describe, expect, test } from 'bun:test'
 import { findingsOf, measurementOf, QUESTIONS } from '../../cli/verifiers/requirements'
-import { parseJevResponse } from '../../hooks/core/response'
+import { parseJevResponse } from '../../core/response'
 
 const fixture = (name: string) =>
   Bun.file(`${import.meta.dir}/../fixtures/requirements/${name}.json`).json()

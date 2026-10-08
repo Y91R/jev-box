@@ -1,7 +1,7 @@
 import { describe, expect, test } from 'bun:test'
 import { stepsOf } from '../../cli/extract'
 import { codeFindingsOf, findingsOf, questionsFor, stateOf } from '../../cli/verifiers/plan-steps'
-import { parseJevResponse } from '../../hooks/core/response'
+import { parseJevResponse } from '../../core/response'
 
 const fixtures = `${import.meta.dir}/../fixtures`
 

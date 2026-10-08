@@ -8,7 +8,6 @@ const CONFIG_PATH = `${HOME}/.config/jev-box/config.json`
 
 const config = JSON.stringify({
   provider: 'typesafe',
-  models: [{ id: 'claude-opus-5', description: 'd', contextWindow: 1000000 }],
   typesafe: { apiKey: 'secret-key', model: 'jev-latest' },
   openrouter: { model: '~typesafe/jev-latest' },
 })

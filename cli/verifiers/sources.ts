@@ -1,4 +1,4 @@
-import type { AnswerMap, ChoiceQuestion } from '../../hooks/core/questions'
+import type { AnswerMap, ChoiceQuestion } from '../../core/questions'
 import type { Item } from '../extract'
 import type { Passage } from '../passages'
 
